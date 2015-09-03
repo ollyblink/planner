@@ -1,0 +1,73 @@
+<!--
+    Coded by Oliver Zihler, MSc Geography, Student MSc Computer Science.
+-->
+<!doctype html>
+<html ng-app="simplehandler">
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
+<script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
+<script
+	src="http://tombatossals.github.io/angular-leaflet-directive/bower_components/angular/angular.min.js"></script>
+<script
+	src="http://tombatossals.github.io/angular-leaflet-directive/bower_components/leaflet/dist/leaflet.js"></script>
+<script
+	src="http://tombatossals.github.io/angular-leaflet-directive/dist/angular-leaflet-directive.min.js"></script>
+<link rel="stylesheet"
+	href="http://tombatossals.github.io/angular-leaflet-directive/bower_components/leaflet/dist/leaflet.css" />
+<script type="text/javascript">
+
+
+        angular.module('simplehandler', ['leaflet-directive', 'ngSanitize'])
+
+            .controller('SimpleCtrl', function ($scope, $http) {
+                 var rest = 'http://localhost:8081/GGLecturePlanner/rest/employees/allemployees'; 
+                
+
+                $scope.welcome = function () {
+                    return $http.get(rest ).
+
+                     success(function (data) {
+                         $scope.employees = data;
+                     });
+                }; 
+
+                 
+                
+
+            }) 
+        ;
+
+
+
+    </script>
+
+
+</head>
+
+<body>
+	<div id="container" ng-controller="SimpleCtrl" ng-init="welcome()">
+		<div id="top"ng-repeat="employee in employees">
+			<div>{{employee.employeeNr}}</div>
+			<div>{{employee.firstName}}</div>
+			<div>{{employee.lastName}}</div>
+			<div>{{employee.email}}</div>
+			<div>{{employee.internalCostCenter}}</div>
+			<div>{{employee.externalInstitute}}</div>
+			<div>{{employee.username}}</div>
+			<div>{{employee.password}}</div>
+			<div>{{employee.isExternal}}</div>
+			<div>{{employee.isExternalPaidSeperatly}}</div>
+			<div>{{employee.comments}}</div> 
+		</div>
+	</div>
+
+
+
+</body>
+</html>

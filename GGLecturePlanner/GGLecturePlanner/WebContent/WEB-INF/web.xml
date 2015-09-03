@@ -4,13 +4,16 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	id="WebApp_ID" version="3.1">
 	<display-name>GGLecturePlanner</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
 	<servlet>
 		<servlet-name>Jersey REST Service</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<!-- ALWAYS USE JACKSON INSTEAD OF THE NORMAL JERSEY JSON CONVERTER -->
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>rest/indexresource;org.codehaus.jackson.jaxrs</param-value>
+			<param-value>rest;org.codehaus.jackson.jaxrs</param-value>
 		</init-param>
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
@@ -20,8 +23,8 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Jersey REST Service</servlet-name>
-		<url-pattern>/planner/*</url-pattern>
-	</servlet-mapping> 
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
 	<filter>
 		<filter-name>CORS</filter-name>
 		<filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
@@ -60,6 +63,14 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>CORS</filter-name>
-		<url-pattern>/planner/*</url-pattern>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>AuthenticationFilter</filter-name>
+		<filter-class>rest.RestAuthenticationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>AuthenticationFilter</filter-name>
+		<url-pattern>/rest/helloworld</url-pattern>
 	</filter-mapping>
 </web-app>
