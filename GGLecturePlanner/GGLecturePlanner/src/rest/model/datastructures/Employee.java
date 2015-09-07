@@ -35,6 +35,9 @@ public class Employee {
   
 
 
+ 
+
+
 	public Employee(String employeeNr, String firstName, String lastName, String email, Integer internalCostCenter, String externalInstitute,
 			Boolean isExternal, Boolean isExternalPaidSeparately, String username, String password, String comments, ArrayList<Role> roles,
 			ArrayList<Course> courses) {
@@ -52,6 +55,59 @@ public class Employee {
 		this.roles = roles;
 		this.courses = courses;
 	}
+
+
+
+
+
+
+
+	public Boolean getIsExternal() {
+		return isExternal;
+	}
+
+
+
+
+
+
+
+	public void setIsExternal(Boolean isExternal) {
+		this.isExternal = isExternal;
+	}
+
+
+
+
+
+
+
+	public Boolean getIsExternalPaidSeparately() {
+		return isExternalPaidSeparately;
+	}
+
+
+
+
+
+
+
+	public void setIsExternalPaidSeparately(Boolean isExternalPaidSeparately) {
+		this.isExternalPaidSeparately = isExternalPaidSeparately;
+	}
+
+
+
+
+
+
+
+	public void setInternalCostCenter(Integer internalCostCenter) {
+		this.internalCostCenter = internalCostCenter;
+	}
+
+
+
 
 
 

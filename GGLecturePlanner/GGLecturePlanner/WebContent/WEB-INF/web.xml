@@ -67,7 +67,7 @@
 	</filter-mapping>
 	<filter>
 		<filter-name>AuthenticationFilter</filter-name>
-		<filter-class>rest.RestAuthenticationFilter</filter-class>
+		<filter-class>rest.auth.RestAuthenticationFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>AuthenticationFilter</filter-name>

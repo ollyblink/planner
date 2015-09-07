@@ -126,4 +126,13 @@ public class Module {
 	public void setCourses(ArrayList<Course> courses) {
 		this.courses = courses;
 	}
+
+	@Override
+	public String toString() {
+		return "Module [primaryNr=" + primaryNr + ", secondaryNrs=" + secondaryNrs + ", semesterNr=" + semesterNr + ", assessmentType="
+				+ assessmentType + ", assessmentDate=" + assessmentDate + ", responsibleEmployee=" + responsibleEmployee + ", comments=" + comments
+				+ ", courses=" + courses + ", moduleType=" + moduleType + ", disciplines=" + disciplines + ", department=" + department + "]";
+	}
+	
+	
 }

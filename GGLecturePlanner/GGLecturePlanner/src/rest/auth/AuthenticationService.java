@@ -1,4 +1,4 @@
-package rest;
+package rest.auth;
 
 import java.io.IOException;
 import java.util.Base64;

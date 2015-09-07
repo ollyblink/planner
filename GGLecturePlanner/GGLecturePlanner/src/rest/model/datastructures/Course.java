@@ -191,4 +191,16 @@ public class Course {
 		this.comments = comments;
 	}
 
+
+
+
+	@Override
+	public String toString() {
+		return "Course [courseDescription=" + courseDescription + ", moduleNr=" + moduleNr + ", vvzNr=" + vvzNr + ", modulePart=" + modulePart
+				+ ", nrOfGroups=" + nrOfGroups + ", nrOfStudentsExpectedperGroup=" + nrOfStudentsExpectedperGroup
+				+ ", isMaxNrStudentsExpectedPerGroup=" + isMaxNrStudentsExpectedPerGroup + ", swsTotalPerGroup=" + swsTotalPerGroup
+				+ ", nrOfLecturers=" + nrOfLecturers + ", swsPerLecturer=" + swsPerLecturer + ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", rythm=" + rythm + ", comments=" + comments + ", courseTimesAndRooms=" + courseTimesAndRooms + ", lecturers=" + lecturers + "]";
+	}
+
 }

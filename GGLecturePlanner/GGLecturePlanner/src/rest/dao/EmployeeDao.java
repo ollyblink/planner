@@ -6,14 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import rest.model.datastructures.AssessmentType;
-import rest.model.datastructures.CourseType;
-import rest.model.datastructures.Discipline;
 import rest.model.datastructures.Employee;
-import rest.model.datastructures.ModuleType;
-import rest.model.datastructures.Role;
-import utils.dbconnection.AbstractDBConnector;
-import utils.dbconnection.PGDBConnector;
 
 public enum EmployeeDao {
 	instance;

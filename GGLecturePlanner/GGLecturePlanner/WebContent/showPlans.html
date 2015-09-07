@@ -16,7 +16,7 @@
 	src="http://tombatossals.github.io/angular-leaflet-directive/bower_components/leaflet/dist/leaflet.js"></script>
 <script
 	src="http://tombatossals.github.io/angular-leaflet-directive/dist/angular-leaflet-directive.min.js"></script>
-<link rel="stylesheet"
+<link rel="stylesheet" 
 	href="http://tombatossals.github.io/angular-leaflet-directive/bower_components/leaflet/dist/leaflet.css" />
 <script type="text/javascript">
 
@@ -48,9 +48,9 @@
 		</tr>
 			<tr ng-repeat="plan in plans">
 				<td>{{plan.semester}}&nbsp;{{plan.year}}</td>
-				<td>bearbeiten</td>
-				<td>löschen</td>
-				<td>drucken</td>
+ 				<td><a href="changePlan.html?semester={{plan.semester}}&year={{plan.year}}">bearbeiten</a></td>
+				<td><a href="deletePlan.html?semester={{plan.semester}}&year={{plan.year}}">löschen</a></td>
+				<td><a href="printPlan.html?semester={{plan.semester}}&year={{plan.year}}">drucken</a></td>
 			</tr>
 		</table>
 	</div>
