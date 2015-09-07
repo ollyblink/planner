@@ -6,31 +6,33 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import rest.model.datastructures.AssessmentType;
+import rest.model.datastructures.CourseType;
+import rest.model.datastructures.Discipline;
 import rest.model.datastructures.Employee;
+import rest.model.datastructures.ModuleType;
+import rest.model.datastructures.Role;
 import utils.dbconnection.AbstractDBConnector;
 import utils.dbconnection.PGDBConnector;
 
-public enum ServiceDao {
+public enum EmployeeDao {
 	instance;
-
-	private AbstractDBConnector dataSource;
-
-	private String host = "localhost";
-	private String port = "5432";
-	private String database = "gglectureplanner";
-	private String user = "postgres";
-	private String password = "32qjivkd";
 
 	private PreparedStatement addEmployeeStatement;
 
-	private ServiceDao() {
-		this.dataSource = new PGDBConnector(host, port, database, user, password);
 
-		try {
-			this.addEmployeeStatement = dataSource.getConnection().prepareStatement("insert into employees(employee_nr, first_name, last_name, email, internal_cost_center, external_institute, is_external, is_external_paid_separately, username, password, comments) values (?,?,?,?,?,?,?,?,?,?,?);");
+
+	private EmployeeDao() {
+	try {
+			this.addEmployeeStatement = DBConnectionProvider.instance
+					.getDataSource()
+					.getConnection()
+					.prepareStatement(
+							"insert into employees(employee_nr, first_name, last_name, email, internal_cost_center, external_institute, is_external, is_external_paid_separately, username, password, comments) values (?,?,?,?,?,?,?,?,?,?,?);");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -39,7 +41,7 @@ public enum ServiceDao {
 	 * @param employee
 	 * @return a message of success or fail
 	 */
-	public boolean addEmployee(Employee employee) { 
+	public boolean addEmployee(Employee employee) {
 		if (employee.getEmail() == null) {
 			return false;
 		} else {
@@ -50,14 +52,14 @@ public enum ServiceDao {
 				this.addEmployeeStatement.setString(2, employee.getFirstName());
 				this.addEmployeeStatement.setString(3, employee.getLastName());
 				this.addEmployeeStatement.setString(4, employee.getEmail());
-//				this.addEmployeeStatement.setInt(5, employee.getInternalCostCenter());
-//				this.addEmployeeStatement.setString(6, employee.getExternalInstitute());
-//				this.addEmployeeStatement.setBoolean(7, employee.isExternal());
-//				this.addEmployeeStatement.setBoolean(8, employee.isExternalPaidSeparately());
+				this.addEmployeeStatement.setInt(5, employee.getInternalCostCenter());
+				this.addEmployeeStatement.setString(6, employee.getExternalInstitute());
+				this.addEmployeeStatement.setBoolean(7, employee.isExternal());
+				this.addEmployeeStatement.setBoolean(8, employee.isExternalPaidSeparately());
 				this.addEmployeeStatement.setString(9, employee.getUsername());
 				this.addEmployeeStatement.setString(10, employee.getPassword());
 				this.addEmployeeStatement.setString(11, employee.getComments());
- 
+
 				int success = this.addEmployeeStatement.executeUpdate();
 
 				if (success > 0) {
@@ -75,7 +77,7 @@ public enum ServiceDao {
 	public ArrayList<Employee> getEmployees() {
 		ArrayList<Employee> employees = new ArrayList<>();
 		try {
-			Statement s = this.dataSource.getConnection().createStatement();
+			Statement s =  DBConnectionProvider.instance.getDataSource().getConnection().createStatement();
 			ResultSet r = s.executeQuery("select * from employees");
 
 			while (r.next()) {
@@ -84,10 +86,10 @@ public enum ServiceDao {
 				employee.setFirstName(r.getString(2));
 				employee.setLastName(r.getString(3));
 				employee.setEmail(r.getString(4));
-//				employee.setInternalCostCenter(r.getInt(5));
-//				employee.setExternalInstitute(r.getString(6));
-//				employee.setExternal(r.getBoolean(7));
-//				employee.setExternalPaidSeparately(r.getBoolean(8));
+				employee.setInternalCostCenter(r.getInt(5));
+				employee.setExternalInstitute(r.getString(6));
+				employee.setExternal(r.getBoolean(7));
+				employee.setExternalPaidSeparately(r.getBoolean(8));
 				employee.setUsername(r.getString(9));
 				employee.setPassword(r.getString(10));
 				employee.setComments(r.getString(11));
@@ -101,23 +103,5 @@ public enum ServiceDao {
 		}
 		return employees;
 	}
-
-	public void dbTest() {
-		try {
-			Statement s = this.dataSource.getConnection().createStatement();
-			ResultSet r = s.executeQuery("select * from courses");
-			while (r.next()) {
-				String cd = r.getString("course_description");
-				System.out.println(cd);
-			}
-			r.close();
-			s.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void main(String[] args) {
-		ServiceDao.instance.dbTest();
-	}
+ 
 }

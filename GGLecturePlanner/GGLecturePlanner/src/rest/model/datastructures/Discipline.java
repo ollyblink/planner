@@ -3,16 +3,16 @@ package rest.model.datastructures;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Disciplines {
+public class Discipline {
 	private String abbreviation;
 	private String description;
 
-	public Disciplines(String abbreviation, String description) {
+	public Discipline(String abbreviation, String description) {
 		this.abbreviation = abbreviation;
 		this.description = description;
 	}
 
-	public Disciplines() {
+	public Discipline() {
 	}
 
 	public String getAbbreviation() {

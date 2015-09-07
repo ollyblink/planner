@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-import rest.dao.ServiceDao;
+import rest.dao.EmployeeDao;
 import rest.model.datastructures.Employee;
 
 // Plain old Java Object it does not extend as class or implements 
@@ -42,39 +42,28 @@ public class EmployeesResource {
 	@Path("/allemployees")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<Employee> getEmployees() {
-		return ServiceDao.instance.getEmployees();
+		return EmployeeDao.instance.getEmployees();
 	}
 
 	@POST
 	@Path("/addemployee/")
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void addEmployee(@FormParam("employeenr") String employeeNr, @FormParam("firstname") String firstName,
-			@FormParam("lastname") String lastName, @FormParam("email") String email, @FormParam("internalcostcenter") String internalcostcenter,
-			@FormParam("externalinstitute") String externalInstitute, @FormParam("isexternal") String isExternal,
-			@FormParam("isexternalpaidseparately") String isExternalPaidSeparately, @FormParam("username") String username,
+	public void addGenericEmployee(@FormParam("employeenr") String employeeNr, @FormParam("firstname") String firstName,
+			@FormParam("lastname") String lastName, @FormParam("email") String email, @FormParam("username") String username,
 			@FormParam("password") String password, @FormParam("comments") String comments, @Context HttpServletResponse servletResponse)
 			throws IOException {
 
-		System.out.println("I am in EmployeeResource.addEmployee: employee_nr:"+employeeNr);
-		boolean isExternalBool = false, isExternalPaidSeparatelyBool = false;
-		if (isExternal.equalsIgnoreCase("ja")) {
-			isExternalBool = true;
-		}
-		if (isExternalPaidSeparately.equalsIgnoreCase("ja")) {
-			isExternalPaidSeparatelyBool = true;
-		}
-		Employee employee = new Employee();
-//				Employee(employeeNr, firstName, lastName, email, Integer.parseInt(internalcostcenter), externalInstitute,
-//				isExternalBool, isExternalPaidSeparatelyBool, username, password, comments);
+  	 
+//		Employee employee = new Employee(employeeNr, firstName, lastName, email, null, null, null, null, username, password, comments);
+//
+//		boolean employeeHasBeenAdded = EmployeeDao.instance.addEmployee(employee);
 
-		boolean employeeHasBeenAdded = ServiceDao.instance.addEmployee(employee);
-
-		if (employeeHasBeenAdded) {
-			servletResponse.sendRedirect("../../index.html");
-		} else {
-			servletResponse.sendRedirect("../../answer.html");
-		}
+//		if (employeeHasBeenAdded) {
+//			servletResponse.sendRedirect("../../index.html");
+//		} else {
+//			servletResponse.sendRedirect("../../answer.html");
+//		}
 	}
 
 }

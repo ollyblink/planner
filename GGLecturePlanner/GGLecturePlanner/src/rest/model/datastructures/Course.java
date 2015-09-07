@@ -21,14 +21,17 @@ public class Course {
 	private String rythm;
 	private String comments;
 	private ArrayList<CourseTimesAndRooms> courseTimesAndRooms;
-	private ArrayList<Lecturer> lecturers;
+	private ArrayList<Employee> lecturers;
 
 	public Course() {
 	}
 
+	 
+
+
 	public Course(String courseDescription, String moduleNr, String vvzNr, String modulePart, int nrOfGroups, int nrOfStudentsExpectedperGroup,
 			boolean isMaxNrStudentsExpectedPerGroup, float swsTotalPerGroup, float nrOfLecturers, float swsPerLecturer, String startDate,
-			String endDate, String rythm, String comments, ArrayList<CourseTimesAndRooms> courseTimesAndRooms) {
+			String endDate, String rythm, String comments, ArrayList<CourseTimesAndRooms> courseTimesAndRooms, ArrayList<Employee> lecturers) {
 		this.courseDescription = courseDescription;
 		this.moduleNr = moduleNr;
 		this.vvzNr = vvzNr;
@@ -44,7 +47,37 @@ public class Course {
 		this.rythm = rythm;
 		this.comments = comments;
 		this.courseTimesAndRooms = courseTimesAndRooms;
+		this.lecturers = lecturers;
 	}
+
+
+
+
+	public ArrayList<Employee> getLecturers() {
+		return lecturers;
+	}
+
+
+
+
+	public void setLecturers(ArrayList<Employee> lecturers) {
+		this.lecturers = lecturers;
+	}
+
+
+
+
+	public ArrayList<CourseTimesAndRooms> getCourseTimesAndRooms() {
+		return courseTimesAndRooms;
+	}
+
+
+
+	public void setCourseTimesAndRooms(ArrayList<CourseTimesAndRooms> courseTimesAndRooms) {
+		this.courseTimesAndRooms = courseTimesAndRooms;
+	}
+
+
 
 	public String getCourseDescription() {
 		return courseDescription;

@@ -1,8 +1,6 @@
-<!--
-    Coded by Oliver Zihler, MSc Geography, Student MSc Computer Science.
--->
+
 <!doctype html>
-<html ng-app="simplehandler">
+<html ng-app="planhandler">
 <head>
 <title></title>
 <link rel="stylesheet" type="text/css" href="style.css" />
@@ -23,25 +21,17 @@
 <script type="text/javascript">
 
 
-        angular.module('simplehandler', ['leaflet-directive', 'ngSanitize'])
+        angular.module('planhandler', [])
 
-            .controller('SimpleCtrl', function ($scope, $http) {
-                 var rest = 'http://localhost:8081/GGLecturePlanner/rest/employees/allemployees'; 
-                
-
-                $scope.welcome = function () {
-                    return $http.get(rest ).
-
+            .controller('planCtrl', function ($scope, $http) {
+                var rest = 'http://localhost:8081/GGLecturePlanner/rest/plans/allplans';  
+                $scope.getAllPlans = function () {
+                    return $http.get(rest).
                      success(function (data) {
-                         $scope.employees = data;
+                         $scope.plans = data; 
                      });
-                }; 
-
-                 
-                
-
-            }) 
-        ;
+                };  
+            });
 
 
 
@@ -51,23 +41,18 @@
 </head>
 
 <body>
-	<div id="container" ng-controller="SimpleCtrl" ng-init="welcome()">
-		<div id="top"ng-repeat="employee in employees">
-			<div>{{employee.employeeNr}}</div>
-			<div>{{employee.firstName}}</div>
-			<div>{{employee.lastName}}</div>
-			<div>{{employee.email}}</div>
-			<div>{{employee.internalCostCenter}}</div>
-			<div>{{employee.externalInstitute}}</div>
-			<div>{{employee.username}}</div>
-			<div>{{employee.password}}</div>
-			<div>{{employee.isExternal}}</div>
-			<div>{{employee.isExternalPaidSeperatly}}</div>
-			<div>{{employee.comments}}</div> 
-		</div>
+	<div class="container" ng-controller="planCtrl" ng-init="getAllPlans()">
+		<table >
+		<tr>
+		<th colspan="4">Pläne</th> 
+		</tr>
+			<tr ng-repeat="plan in plans">
+				<td>{{plan.semester}}&nbsp;{{plan.year}}</td>
+				<td>bearbeiten</td>
+				<td>löschen</td>
+				<td>drucken</td>
+			</tr>
+		</table>
 	</div>
-
-
-
 </body>
 </html>
