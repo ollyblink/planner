@@ -6,34 +6,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Plan {
+	private Integer id;
 	private String semester;
-	private int year;
-	private ArrayList<SimplePlanModule> modules;
+	private Integer year;
+	private ArrayList<Module> modules;
 
 	public Plan() {
 	}
 
- 
-
-	public Plan(String semester, int year, ArrayList<SimplePlanModule> modules) {
+	public Plan(Integer id, String semester, Integer year, ArrayList<Module> modules) {
+		this.id = id;
 		this.semester = semester;
 		this.year = year;
 		this.modules = modules;
 	}
 
-
-
-	public ArrayList<SimplePlanModule> getModules() {
-		return modules;
+	public Integer getId() {
+		return id;
 	}
 
-
-
-	public void setModules(ArrayList<SimplePlanModule> modules) {
-		this.modules = modules;
+	public void setId(Integer id) {
+		this.id = id;
 	}
-
-
 
 	public String getSemester() {
 		return semester;
@@ -43,47 +37,28 @@ public class Plan {
 		this.semester = semester;
 	}
 
-	public int getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(int year) {
+	public void setYear(Integer year) {
 		this.year = year;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((semester == null) ? 0 : semester.hashCode());
-		result = prime * result + year;
-		return result;
+	public ArrayList<Module> getModules() {
+		return modules;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Plan other = (Plan) obj;
-		if (semester == null) {
-			if (other.semester != null)
-				return false;
-		} else if (!semester.equals(other.semester))
-			return false;
-		if (year != other.year)
-			return false;
-		return true;
+	public void setModules(ArrayList<Module> modules) {
+		this.modules = modules;
 	}
 
 	@Override
 	public String toString() {
-		return "Plan [semester=" + semester + ", year=" + year + ", modules=" + modules + "]";
+		return "Plan [id=" + id + ", semester=" + semester + ", year=" + year + ", modules=" + modules + "]";
 	}
-	
-	
+
+ 
+  
 
 }

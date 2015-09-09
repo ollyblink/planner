@@ -1,44 +1,17 @@
 <!DOCTYPE html>
 <html>
- <head>
-  <title>Form to create a new resource</title>
- </head>
+<head>
+<title>Overview</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+
+</head>
 <body>
-  <form action="http://localhost:8081/GGLecturePlanner/rest/employees/addemployee" method="POST">
-  <label for="employeenr">Angestelltennummer</label>
-  <input name="employeenr" />
-  <br/>
-  <label for="firstname">Vornamen</label>
-  <input name="firstname" />
-  <br/>
-  <label for="lastname">Nachnamen</label>
-  <input name="lastname" />
-  <br/>
-  <label for="email">E-Mail</label>
-  <input name="email" />
-  <br/>
-  <label for="internalcostcenter">Kostenstelle (für Interne Mitarbeiter)</label>
-  <input name="internalcostcenter" />
-  <br/>
-  <label for="externalinstitute">Externes Institut (für externe Angestellte, wenn vorhanden)</label>
-  <input name="externalinstitute" />
-  <br/>
-  <label for="isexternal">Ist externer Angestellter?</label>
-  <input name="isexternal" />
-  <br/>
-  <label for="isexternalpaidseparately">Wenn extern: Muss Angestellter separat bezahlt werden?</label>
-  <input name="isexternalpaidseparately" />
-  <br/>
-  <label for="username">Nutzername (für Login, falls benötigt)</label>
-  <input name="username" />
-  <br/>
-  <label for="password">Passwort (für Login, falls benötigt)</label>
-  <input name="password" />
-  <br/>
-  Kommentare (z.B. bezüglich Anstellung, etc.):
-  <TEXTAREA NAME="description" COLS=40 ROWS=6></TEXTAREA>
-  <br/>
-  <input type="submit" value="Submit" />
-  </form>
+	<ul>
+		<li><a href="showPlans.html">Pläne/Module
+				anzeigen/ändern/hinzufügen</a></li>
+		<li><a href="showEmployees.html">Angestellten
+				anzeigen/ändern/hinzufügen</a></li>
+		<li><a href="">Zusätzliche Optionen</a></li>
+	</ul>
 </body>
-</html> 
+</html>

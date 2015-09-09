@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Employee {
+	private int id;
 	private String employeeNr;
 	private String firstName;
 	private String lastName;
@@ -14,10 +15,8 @@ public class Employee {
 	private Integer internalCostCenter;
 	/** for those paid via contracts */
 	private String externalInstitute;
-	/** check if internal or external */
-	private Boolean isExternal;
 	/** x that goes into the other column, for people that are e.g. from another company */
-	private Boolean isExternalPaidSeparately;
+	private Boolean isPaidSeparately;
 	/** for login if needed */
 	private String username;
 	/** for login if needed */
@@ -32,23 +31,18 @@ public class Employee {
 
 	}
 
-  
+	 
 
-
- 
-
-
-	public Employee(String employeeNr, String firstName, String lastName, String email, Integer internalCostCenter, String externalInstitute,
-			Boolean isExternal, Boolean isExternalPaidSeparately, String username, String password, String comments, ArrayList<Role> roles,
-			ArrayList<Course> courses) {
+	public Employee(int id, String employeeNr, String firstName, String lastName, String email, Integer internalCostCenter, String externalInstitute,
+			Boolean isPaidSeparately, String username, String password, String comments, ArrayList<Role> roles, ArrayList<Course> courses) {
+		this.id = id;
 		this.employeeNr = employeeNr;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.internalCostCenter = internalCostCenter;
 		this.externalInstitute = externalInstitute;
-		this.isExternal = isExternal;
-		this.isExternalPaidSeparately = isExternalPaidSeparately;
+		this.isPaidSeparately = isPaidSeparately;
 		this.username = username;
 		this.password = password;
 		this.comments = comments;
@@ -58,77 +52,17 @@ public class Employee {
 
 
 
-
-
-
-
-	public Boolean getIsExternal() {
-		return isExternal;
+	public int getId() {
+		return id;
 	}
 
 
 
-
-
-
-
-	public void setIsExternal(Boolean isExternal) {
-		this.isExternal = isExternal;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 
-
-
-
-
-
-	public Boolean getIsExternalPaidSeparately() {
-		return isExternalPaidSeparately;
-	}
-
-
-
-
-
-
-
-	public void setIsExternalPaidSeparately(Boolean isExternalPaidSeparately) {
-		this.isExternalPaidSeparately = isExternalPaidSeparately;
-	}
-
-
-
-
-
-
-
-	public void setInternalCostCenter(Integer internalCostCenter) {
-		this.internalCostCenter = internalCostCenter;
-	}
-
-
-
-
-
-
-
-	public ArrayList<Course> getCourses() {
-		return courses;
-	}
-
-
-	public void setCourses(ArrayList<Course> courses) {
-		this.courses = courses;
-	}
-
-
-	public ArrayList<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(ArrayList<Role> roles) {
-		this.roles = roles;
-	}
 
 	public String getEmployeeNr() {
 		return employeeNr;
@@ -162,11 +96,11 @@ public class Employee {
 		this.email = email;
 	}
 
-	public int getInternalCostCenter() {
+	public Integer getInternalCostCenter() {
 		return internalCostCenter;
 	}
 
-	public void setInternalCostCenter(int internalCostCenter) {
+	public void setInternalCostCenter(Integer internalCostCenter) {
 		this.internalCostCenter = internalCostCenter;
 	}
 
@@ -178,20 +112,12 @@ public class Employee {
 		this.externalInstitute = externalInstitute;
 	}
 
-	public boolean isExternal() {
-		return isExternal;
+	public Boolean getIsPaidSeparately() {
+		return isPaidSeparately;
 	}
 
-	public void setExternal(boolean isExternal) {
-		this.isExternal = isExternal;
-	}
-
-	public boolean isExternalPaidSeparately() {
-		return isExternalPaidSeparately;
-	}
-
-	public void setExternalPaidSeparately(boolean isExternalPaidSeparately) {
-		this.isExternalPaidSeparately = isExternalPaidSeparately;
+	public void setIsPaidSeparately(Boolean isPaidSeparately) {
+		this.isPaidSeparately = isPaidSeparately;
 	}
 
 	public String getUsername() {
@@ -218,4 +144,32 @@ public class Employee {
 		this.comments = comments;
 	}
 
+	public ArrayList<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(ArrayList<Role> roles) {
+		this.roles = roles;
+	}
+
+	public ArrayList<Course> getCourses() {
+		return courses;
+	}
+
+	public void setCourses(ArrayList<Course> courses) {
+		this.courses = courses;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", employeeNr=" + employeeNr + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", internalCostCenter=" + internalCostCenter + ", externalInstitute=" + externalInstitute + ", isPaidSeparately="
+				+ isPaidSeparately + ", username=" + username + ", password=" + password + ", comments=" + comments + ", roles=" + roles
+				+ ", courses=" + courses + "]";
+	}
+
+	
+	
 }

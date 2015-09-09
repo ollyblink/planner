@@ -4,20 +4,12 @@
 <head>
 <title></title>
 <link rel="stylesheet" type="text/css" href="style.css" />
-<script src="http://d3js.org/d3.v3.min.js"></script>
+
 <script
 	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
 <script
 	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
 <script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
-<script
-	src="http://tombatossals.github.io/angular-leaflet-directive/bower_components/angular/angular.min.js"></script>
-<script
-	src="http://tombatossals.github.io/angular-leaflet-directive/bower_components/leaflet/dist/leaflet.js"></script>
-<script
-	src="http://tombatossals.github.io/angular-leaflet-directive/dist/angular-leaflet-directive.min.js"></script>
-<link rel="stylesheet" 
-	href="http://tombatossals.github.io/angular-leaflet-directive/bower_components/leaflet/dist/leaflet.css" />
 <script type="text/javascript">
 
 
@@ -42,15 +34,23 @@
 
 <body>
 	<div class="container" ng-controller="planCtrl" ng-init="getAllPlans()">
-		<table >
-		<tr>
-		<th colspan="4">Pläne</th> 
-		</tr>
+		<div class="title">Pläne</div>
+		<div>
+			<a href="addPlan.html">(+) Plan hinzufügen</a>
+		</div>
+		<table>
 			<tr ng-repeat="plan in plans">
 				<td>{{plan.semester}}&nbsp;{{plan.year}}</td>
- 				<td><a href="changePlan.html?semester={{plan.semester}}&year={{plan.year}}">bearbeiten</a></td>
-				<td><a href="deletePlan.html?semester={{plan.semester}}&year={{plan.year}}">löschen</a></td>
-				<td><a href="printPlan.html?semester={{plan.semester}}&year={{plan.year}}">drucken</a></td>
+				<td><a
+					href="showModules.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Module anzeigen/ändern/hinzufügen</a></td>
+				<td><a
+					href="changePlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan bearbeiten</a></td>
+				<td><a
+					href="deletePlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan löschen</a></td>
+				<td><a
+					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan drucken</a></td>
+					<td><a
+					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan kopieren</a></td>
 			</tr>
 		</table>
 	</div>

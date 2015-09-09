@@ -6,35 +6,92 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Module {
-	private String primaryNr;
-	private ArrayList<String> secondaryNrs;
+
+	private Integer id;
+	private ArrayList<String> primaryNrs; 
 	private String semesterNr;
 	private AssessmentType assessmentType;
 	private String assessmentDate;
 	private Employee responsibleEmployee;
 	private String comments;
 	private ArrayList<Course> courses;
-	private String moduleType;
-	private ArrayList<String> disciplines;
+	private ArrayList<ModuleType> moduleTypes;
+	private ArrayList<Discipline> disciplines;
 	private Department department;
-	
+
+	public Module() {
+	}
  
 
-	public Module(String primaryNr, ArrayList<String> secondaryNrs, String semesterNr, AssessmentType assessmentType, String assessmentDate,
-			Employee responsibleEmployee, String comments, ArrayList<Course> courses, String moduleType, ArrayList<String> disciplines,
-			Department department) {
-		this.primaryNr = primaryNr;
-		this.secondaryNrs = secondaryNrs;
+
+	public Module(Integer id, ArrayList<String> primaryNrs, String semesterNr, AssessmentType assessmentType, String assessmentDate,
+			Employee responsibleEmployee, String comments, ArrayList<Course> courses, ArrayList<ModuleType> moduleTypes,
+			ArrayList<Discipline> disciplines, Department department) {
+		this.id = id;
+		this.primaryNrs = primaryNrs;
 		this.semesterNr = semesterNr;
 		this.assessmentType = assessmentType;
 		this.assessmentDate = assessmentDate;
 		this.responsibleEmployee = responsibleEmployee;
 		this.comments = comments;
 		this.courses = courses;
-		this.moduleType = moduleType;
+		this.moduleTypes = moduleTypes;
 		this.disciplines = disciplines;
 		this.department = department;
 	}
+
+
+
+	public Integer getId() {
+		return id;
+	}
+
+
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+
+
+	public ArrayList<ModuleType> getModuleTypes() {
+		return moduleTypes;
+	}
+
+
+
+	public void setModuleTypes(ArrayList<ModuleType> moduleTypes) {
+		this.moduleTypes = moduleTypes;
+	}
+
+
+
+	public ArrayList<Discipline> getDisciplines() {
+		return disciplines;
+	}
+
+
+
+	public void setDisciplines(ArrayList<Discipline> disciplines) {
+		this.disciplines = disciplines;
+	}
+
+
+ 
+
+
+
+	public ArrayList<String> getPrimaryNrs() {
+		return primaryNrs;
+	}
+
+
+	public void setPrimaryNrs(ArrayList<String> primaryNrs) {
+		this.primaryNrs = primaryNrs;
+	}
+
+
+	 
 
 	public Department getDepartment() {
 		return department;
@@ -44,41 +101,8 @@ public class Module {
 		this.department = department;
 	}
 
-	public ArrayList<String> getDisciplines() {
-		return disciplines;
-	}
-
-	public void setDisciplines(ArrayList<String> disciplines) {
-		this.disciplines = disciplines;
-	}
-
-	public ArrayList<String> getSecondaryNrs() {
-		return secondaryNrs;
-	}
-
-	public String getModuleType() {
-		return moduleType;
-	}
-
-	public void setModuleType(String moduleType) {
-		this.moduleType = moduleType;
-	}
-
-	public void setSecondaryNrs(ArrayList<String> secondaryNrs) {
-		this.secondaryNrs = secondaryNrs;
-	}
-
-	public Module() {
-	}
-
-	public String getPrimaryNr() {
-		return primaryNr;
-	}
-
-	public void setPrimaryNr(String primaryNr) {
-		this.primaryNr = primaryNr;
-	}
-
+ 
+ 
 	public String getSemesterNr() {
 		return semesterNr;
 	}
@@ -103,13 +127,17 @@ public class Module {
 		this.assessmentDate = assessmentDate;
 	}
 
+ 
+
 	public Employee getResponsibleEmployee() {
 		return responsibleEmployee;
 	}
 
+
 	public void setResponsibleEmployee(Employee responsibleEmployee) {
 		this.responsibleEmployee = responsibleEmployee;
 	}
+
 
 	public String getComments() {
 		return comments;
@@ -127,12 +155,13 @@ public class Module {
 		this.courses = courses;
 	}
 
+
+
 	@Override
 	public String toString() {
-		return "Module [primaryNr=" + primaryNr + ", secondaryNrs=" + secondaryNrs + ", semesterNr=" + semesterNr + ", assessmentType="
-				+ assessmentType + ", assessmentDate=" + assessmentDate + ", responsibleEmployee=" + responsibleEmployee + ", comments=" + comments
-				+ ", courses=" + courses + ", moduleType=" + moduleType + ", disciplines=" + disciplines + ", department=" + department + "]";
+		return "Module [id=" + id + ", primaryNrs=" + primaryNrs + ", semesterNr=" + semesterNr + ", assessmentType=" + assessmentType
+				+ ", assessmentDate=" + assessmentDate + ", responsibleEmployee=" + responsibleEmployee + ", comments=" + comments + ", courses="
+				+ courses + ", moduleTypes=" + moduleTypes + ", disciplines=" + disciplines + ", department=" + department + "]";
 	}
-	
-	
+
 }

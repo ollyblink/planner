@@ -3,14 +3,16 @@ package rest.model.datastructures;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Department {
+public class Department implements Comparable<Department> {
 	private String deptName;
 	private String fieldOfExpertise;
+	private Integer id;
 
 	public Department() {
 	}
 
-	public Department(String deptName, String fieldOfExpertise) {
+	public Department(Integer id, String deptName, String fieldOfExpertise) {
+		this.id = id;
 		this.deptName = deptName;
 		this.fieldOfExpertise = fieldOfExpertise;
 	}
@@ -29,6 +31,19 @@ public class Department {
 
 	public void setFieldOfExpertise(String fieldOfExpertise) {
 		this.fieldOfExpertise = fieldOfExpertise;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	@Override
+	public int compareTo(Department o) {
+		return o.deptName.compareTo(deptName);
 	}
 
 }

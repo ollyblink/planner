@@ -1,34 +1,40 @@
- 
 body {
-    background: rgba(200,200,200,0.25); 
-    font-family: Geneva, Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    color: black;
+	background: rgba(200, 200, 200, 0.25);
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: black;
 }
 
 a:link, a:visited {
-    color: black;
-    text-decoration: none;
+	color: black;
+	text-decoration: none;
 }
 
-.title{
-	font-size:25px;
+.title {
+	font-size: 25px;
 	font-weight: bold;
 }
+
+.optionals {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
 a:active, a:hover {
-    color: #00089b;
-    text-decoration: underline;
+	color: #00089b;
+	text-decoration: underline;
 }
- 
+
 .container {
-    background: white; 
-    box-shadow: 0px 0px 5px #888888; 
-    width:inherit;
-}
-  
-table, th, td {
-    border: 1px solid black;
+	background: white;
+	box-shadow: 0px 0px 5px #888888;
+	width: inherit;
 }
 
- 
+ th, tr, td {
+	border: 1px solid black;
+}
 
+table {
+    border-collapse: collapse       
+}

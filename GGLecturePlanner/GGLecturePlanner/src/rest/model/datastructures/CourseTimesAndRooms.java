@@ -1,15 +1,15 @@
 package rest.model.datastructures;
 
-import java.sql.Time;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class CourseTimesAndRooms {
-	private String courseDescription;
-	private Time startTime;
-	private Time endTime;
-	private String dayAbbreviation;
+
+	private int id;
+	private int courseId;
+	private int moduleId;
+	private Times times;
+	private String dayOfWeek;
 	private int roomCapacity;
 	private String roomLabel;
 	private String comments;
@@ -17,67 +17,77 @@ public class CourseTimesAndRooms {
 	public CourseTimesAndRooms() {
 	}
 
-	public CourseTimesAndRooms(String courseDescription, Time startTime, Time endTime, String dayAbbreviation, int roomCapacity, String roomLabel,
-			String comments) {
-		this.courseDescription = courseDescription;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.dayAbbreviation = dayAbbreviation;
+	public CourseTimesAndRooms(int id, int courseId, int moduleId, Times times, String dayOfWeek, int roomCapacity, String roomLabel, String comments) {
+		this.id = id;
+		this.courseId = courseId;
+		this.moduleId = moduleId;
+		this.times = times;
+		this.dayOfWeek = dayOfWeek;
 		this.roomCapacity = roomCapacity;
 		this.roomLabel = roomLabel;
 		this.comments = comments;
 	}
 
-	public String getCourseDescription() {
-		return courseDescription;
+	public void setId(int id) {
+		this.id = id;
+
 	}
 
-	public void setCourseDescription(String courseDescription) {
-		this.courseDescription = courseDescription;
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
 	}
 
-	public Time getStartTime() {
-		return startTime;
+	public void setModuleId(int moduleId) {
+		this.moduleId = moduleId;
 	}
 
-	public void setStartTime(Time startTime) {
-		this.startTime = startTime;
+	public void setTimes(Times times) {
+		this.times = times;
 	}
 
-	public Time getEndTime() {
-		return endTime;
+	public void setDayOfWeek(String dayOfWeek) {
+		this.dayOfWeek = dayOfWeek;
 	}
 
-	public void setEndTime(Time endTime) {
-		this.endTime = endTime;
+	public int getId() {
+		return id;
 	}
 
-	public String getDayAbbreviation() {
-		return dayAbbreviation;
+	public int getCourseId() {
+		return courseId;
 	}
 
-	public void setDayAbbreviation(String dayAbbreviation) {
-		this.dayAbbreviation = dayAbbreviation;
+	public int getModuleId() {
+		return moduleId;
+	}
+
+	public Times getTimes() {
+		return times;
+	}
+
+	public String getDayOfWeek() {
+		return dayOfWeek;
 	}
 
 	public int getRoomCapacity() {
 		return roomCapacity;
 	}
 
-	public void setRoomCapacity(int roomCapacity) {
-		this.roomCapacity = roomCapacity;
-	}
-
 	public String getRoomLabel() {
 		return roomLabel;
 	}
 
-	public void setRoomLabel(String roomLabel) {
-		this.roomLabel = roomLabel;
-	}
-
 	public String getComments() {
 		return comments;
+	}
+
+	public void setRoomCapacity(int roomCapacity) {
+		this.roomCapacity = roomCapacity;
+	}
+
+	public void setRoomLabel(String roomLabel) {
+		this.roomLabel = roomLabel;
+
 	}
 
 	public void setComments(String comments) {
