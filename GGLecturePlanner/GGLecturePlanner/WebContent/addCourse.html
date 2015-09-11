@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html ng-app="addcoursehandler">
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
+<script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
+<script type="text/javascript">
+
+
+        angular.module('addcoursehandler', ['ngSanitize'])
+
+            .controller('CourseCtrl', function ($scope, $sce, $http) {
+                var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
+                
+                $scope.getCourseTypes = function () {
+                    return $http.get(rest+'staticresources/coursetypes').
+                     success(function (data) {
+                         $scope.courseTypes = data; 
+                     });
+                }; 
+                $scope.getEmployees = function () {
+                    return $http.get(rest+'employees/allemployees').
+                     success(function (data) {
+                         $scope.employees = data; 
+                     });
+                }; 
+                $scope.initLecturers = function(){
+                    $scope.selectedLecturers ="";
+                    }
+                $scope.updateLecturers = function(){
+                    $scope.selectedLecturers += $sce.trustAsHtml("<div>"+$scope.selectedLecturer+" </div><button ng-model=\"selectedLecturers\" ng-click=\"{{$scope.selectedLecturer}}\" >delete</button>");
+                    }
+                 
+                $scope.getModuleId = function() { 
+          			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
+                }
+
+                $scope.getModuleDetails = function (moduleId) {
+                     return $http.get(rest+'modules/moduledetails/'+moduleId).
+                     success(function (data) { 
+                         $scope.moduleDetails = data; 
+                     });
+                }; 
+
+                $scope.getNumbers = function () {
+                    return $http.get(rest+'staticresources/numbers').
+                    success(function (data) { 
+                        $scope.numbers = data; 
+                    });
+               }; 
+            });
+
+
+
+    </script>
+
+
+</head>
+
+<body>
+	<div class="container" ng-controller="CourseCtrl"
+		ng-init="getModuleDetails(getModuleId());getCourseTypes();getEmployees();getNumbers();initLecturers()">
+		<form
+			action="http://localhost:8081/GGLecturePlanner/rest/courses/addcourse"
+			method="POST">
+			<table>
+				<tr>
+					<td>Modul</td>
+					<td><p ng-repeat="pm in moduleDetails.primaryNrs">{{pm}}</p></td>
+				</tr>
+				<tr>
+					<td><label for="coursedescription">Kursbeschreibung</label></td>
+					<td><input name="coursedescription" /></td>
+				</tr>
+				<tr>
+					<td><label for="vvznr">VVZ Nr.</label></td>
+					<td><input name="vvznr" /></td>
+				</tr>
+				<tr>
+					<td><label>Modulteil (nur eine Zahl, z.B. 1,2,3)</label></td>
+					<td><select name="primarynr">
+							<option ng-repeat="pm in moduleDetails.primaryNrs" value="{{pm}}">{{pm}}</option>
+					</select> <select name="modulpart">
+							<option value=""></option>
+							<option ng-repeat="n in numbers" value="{{n}}">{{n}}</option>
+					</select></td>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="nrofgroups">Anzahl Gruppen</label></td>
+					<td><input name="nrofgroups" /></td>
+				</tr>
+				<tr>
+					<td><label for="nrofstudentsexpectedpergroup">Anzahl
+							Studenten erwartet pro Gruppe</label></td>
+					<td><input name="nrofstudentsexpectedpergroup" /></td>
+				</tr>
+				<tr>
+					<td><label for="ismaxnrofstudentsexpectedpergroup">Maximale
+							Anzahl Studenten pro Gruppe?</label></td>
+					<td>
+						<fieldset>
+							<input type="radio" id="yes"
+								name="ismaxnrofstudentsexpectedpergroup" value="true"><label
+								for="yes"> Ja</label><br> <input type="radio" id="no"
+								name="ismaxnrofstudentsexpectedpergroup" value="false"
+								checked="checked"><label for="no"> Nein</label><br>
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<td for="lecturers">Dozierende</td>
+					<td><select name="lecturers" ng-model="selectedLecturer"
+						ng-change="updateLecturers()">
+							<option ng-repeat="e in employees" value="{{e.id}}">{{e.firstName}}
+								{{e.lastName}}</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><div ng-bind-html="selectedLecturers"></div></td>
+				</tr>
+				<tr>
+					<td><label for="comments">Kommentare (z.B. bezüglich
+							Anstellung, etc.):</label></td>
+					<td><textarea NAME="comments" COLS=40 ROWS=6></textarea></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="submit" value="Submit" /></td>
+				</tr>
+			</table>
+			<input type="hidden" name="planid" value="{{getPlanId()}}"> <input
+				type="hidden" name="plansemester" value="{{getSemester()}}">
+			<input type="hidden" name="planyear" value="{{getYear()}}">
+		</form>
+	</div>
+</body>
+</html>

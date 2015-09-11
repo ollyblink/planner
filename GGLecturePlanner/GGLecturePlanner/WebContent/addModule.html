@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html ng-app="addmodulehandler">
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
+<script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
+<script type="text/javascript">
+
+
+        angular.module('addmodulehandler', [])
+
+            .controller('ModuleCtrl', function ($scope, $http) {
+                var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
+                $scope.getAssessmentTypes = function () {
+                    return $http.get(rest+'staticresources/assessmenttypes').
+                     success(function (data) {
+                         $scope.assessmenttypes = data; 
+                     });
+                }; 
+
+                $scope.getModuleTypes = function () {
+                    return $http.get(rest+'staticresources/moduletypes').
+                     success(function (data) {
+                         $scope.moduletypes = data; 
+                     });
+                }; 
+
+                $scope.getDisciplines = function () {
+                    return $http.get(rest+'staticresources/disciplines').
+                     success(function (data) {
+                         $scope.disciplines = data; 
+                     });
+                }; 
+                $scope.getDepartments = function () {
+                    return $http.get(rest+'staticresources/departments').
+                     success(function (data) {
+                         $scope.departments = data; 
+                     });
+                }; 
+                $scope.getEmployees = function () {
+                    return $http.get(rest+'employees/allemployees').
+                     success(function (data) {
+                         $scope.employees = data; 
+                     });
+                }; 
+                $scope.getPlanId = function($scope) { 
+          			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
+                }
+                $scope.getSemester = function($scope) { 
+          			return window.location.search.substring(1).split("&")[1].split("=")[1]; 
+                }
+
+                $scope.getYear = function($scope) {   
+          			return window.location.search.substring(1).split("&")[2].split("=")[1];
+                }
+            });
+
+
+
+    </script>
+
+
+</head>
+
+<body>
+	<div class="container" ng-controller="ModuleCtrl"
+		ng-init="getAssessmentTypes();getEmployees();getModuleTypes();getDepartments();getDisciplines()">
+		<form
+			action="http://localhost:8081/GGLecturePlanner/rest/modules/addmodule"
+			method="POST">
+			<table>
+				<tr>
+					<td>Plan</td>
+					<td>{{getSemester()}} {{getYear()}}</td>
+				</tr>
+				<tr>
+					<td><label for="primarynr">Modul (mehrfache mit ;
+							separieren, z.B. 'GEO 2;PHZH 1')</label></td>
+					<td><input name="primarynr" /></td>
+				</tr>
+				<tr>
+					<td><label for="semesternr">Semester</label></td>
+					<td><input name="semesternr" /></td>
+				</tr>
+				<tr>
+					<td><label for="assessmenttype">Prüfungsart</label></td>
+					<td><select name="assessmenttype">
+							<option ng-repeat="at in assessmenttypes"
+								value="{{at.abbreviation}}">{{at.description}}</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td>Modultyp(en)</td>
+					<td><span ng-repeat="mt in moduletypes" > <input type="checkbox" name="moduletypes"
+						value="{{mt.abbreviation}}">{{mt.description}}<br />
+					</span></td>
+				</tr>
+				<tr>
+					<td>Disziplin(e)</td>
+					<td><span ng-repeat="d in disciplines" > <input type="checkbox" name="disciplines"
+						value="{{d.abbreviation}}">{{d.abbreviation}}<br />
+					</span></td>
+				</tr>
+				<tr>
+					<td><label for="department">Verantwortliche Abteilung</label></td>
+					<td><select name="department">
+							<option ng-repeat="d in departments" value="{{d.deptName}}">{{d.deptName}}: {{d.fieldOfExpertise}}
+							</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td><label for="assessmentdate">Prüfungszeitpunkt</label></td>
+					<td><input name="assessmentdate" /></td>
+				</tr>
+				<tr>
+					<td><label for="responsibleemployee">Modulverantwortlicher</label></td>
+					<td><select name="responsibleemployee">
+							<option ng-repeat="mv in employees" value="{{mv.id}}">{{mv.firstName}}
+								{{mv.lastName}}</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td><label for="comments">Kommentare (z.B. bezüglich
+							Anstellung, etc.):</label></td>
+					<td><textarea NAME="comments" COLS=40 ROWS=6></textarea></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="submit" value="Submit" /></td>
+				</tr>
+			</table>
+			<input type="hidden" name="planid" value="{{getPlanId()}}"> 
+			<input type="hidden" name="plansemester" value="{{getSemester()}}"> 
+			<input type="hidden" name="planyear" value="{{getYear()}}"> 
+		</form>
+	</div>
+</body>
+</html>

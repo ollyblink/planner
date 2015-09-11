@@ -1,0 +1,76 @@
+
+<!doctype html>
+<html ng-app="employeehandler">
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
+<script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
+<script type="text/javascript">
+
+
+        angular.module('employeehandler', [])
+
+            .controller('employeeCtrl', function ($scope, $http) {
+                var rest = 'http://localhost:8081/GGLecturePlanner/rest/employees/';  
+                $scope.getAllEmployees = function () {
+                    return $http.get(rest+"allemployees").
+                     success(function (data) {
+                         $scope.employees = data; 
+                     });
+                };  
+            });
+
+
+
+    </script>
+
+
+</head>
+
+<body>
+	<div class="container" ng-controller="employeeCtrl"
+		ng-init="getAllEmployees()">
+		<div class="title">Angestellte</div>
+		<div class="optionals">
+			<a href="addEmployee.html">(+) Angestellten hinzufügen</a>
+		</div>
+		<table>
+		<tr>
+		<th>Angestellten-Nr.</th>
+		<th>Vorname</th>
+		<th>Nachname</th>
+		<th>Rollen</th>
+		<th>E-Mail</th>
+		<th>Interne Kostenstelle</th>
+		<th>Externes Institut</th>
+		<th>Extern bezahlt?</th>
+		<th>Nutzername</th>
+		<th>Kommentare</th>
+		<th></th>
+		<th></th>
+		</tr>
+			<tr ng-repeat="e in employees">
+				<td>{{e.employeeNr}}</td>
+				<td>{{e.firstName}}</td>
+				<td>{{e.lastName}}</td>
+				<td><span ng-repeat="r in e.roles">{{r.abbreviation}}<br/></span></td> 
+				<td>{{e.email}}</td> 
+				<td ng-if="e.internalCostCenter>0">{{e.internalCostCenter}}</td>
+				<td ng-if="e.internalCostCenter==0">-</td>
+				<td>{{e.externalInstitute}}</td>
+				<td ng-if="e.isPaidSeparately==true">x</td>
+				<td ng-if="e.isPaidSeparately==false">-</td>
+				<td>{{e.username}}</td>
+				<td>{{e.comments}}</td>
+				<td><a href="changeEmployee.html?employee={{e.email}}">bearbeiten</a></td>
+				<td><a href="deleteEmployee.html?employee={{e.email}}">löschen</a></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

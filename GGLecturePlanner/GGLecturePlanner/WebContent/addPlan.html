@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html ng-app="addplanhandler">
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
+<script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
+<script type="text/javascript">
+
+
+        angular.module('addplanhandler', [])
+
+            .controller('PlanCtrl', function ($scope, $http) {
+                var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
+                $scope.getSemesterTypes = function () {
+                    return $http.get(rest+'staticresources/semestertypes').
+                     success(function (data) {
+                         $scope.semestertypes = data; 
+                     });
+                }; 
+                $scope.getYears = function () {
+                    return $http.get(rest+'staticresources/years').
+                     success(function (data) {
+                         $scope.years = data; 
+                     });
+                }; 
+
+                 });
+
+
+
+    </script>
+
+
+</head>
+
+<body>
+	<div class="container" ng-controller="PlanCtrl"
+		ng-init="getSemesterTypes();getYears()">
+		<form
+			action="http://localhost:8081/GGLecturePlanner/rest/plans/addplan"
+			method="POST">
+			<table>
+				<tr>
+					<td><label for="semester">Semester</label></td>
+					<td><select name="semester">
+							<option ng-repeat="s in semestertypes" value="{{s.abbreviation}}">{{s.description}}</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td><label for="year">Jahr</label></td>
+					<td><select name="year">
+							<option ng-repeat="y in years" value="{{y}}">{{y}}</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="submit" value="Submit" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

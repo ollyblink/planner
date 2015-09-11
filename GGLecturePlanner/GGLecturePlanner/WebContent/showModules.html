@@ -1,0 +1,88 @@
+
+<!doctype html>
+<html ng-app="planedithandler">
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
+<script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
+<script type="text/javascript">
+
+
+		
+		angular.module('planedithandler', [])
+		 
+		
+		.controller('planDetailsCtrl', function ($scope, $http) {
+		
+			 var parts = window.location.search.substring(1).split("&");
+			var planId = parts[0].split("=")[1];
+		    var rest = 'http://localhost:8081/GGLecturePlanner/rest/plans/plandetails/'+planId;  
+		    $scope.getPlanDetails = function () {
+		        return $http.get(rest).
+		         success(function (data) {
+		             $scope.planDetails = data; 
+		         });
+		    };  
+
+		    $scope.getPlanId = function($scope) { 
+      			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
+            }
+            $scope.getSemester = function($scope) { 
+      			return window.location.search.substring(1).split("&")[1].split("=")[1]; 
+            }
+
+            $scope.getYear = function($scope) {   
+      			return window.location.search.substring(1).split("&")[2].split("=")[1];
+            }
+		});
+
+ 
+    </script>
+
+
+</head>
+
+<body>
+	<div class="container" ng-controller="planDetailsCtrl"
+		ng-init="getPlanDetails()">
+		<div class="title">{{getSemester()}}&nbsp;{{getYear()}}: Module</div>
+		<div>
+			<a
+				href="addModule.html?planid={{getPlanId()}}&semester={{getSemester()}}&year={{getYear()}}">(+)
+				Modul hinzufügen</a>
+		</div>
+		<table>
+			<th>Modulteil</th>
+			<th>Semester</th> 
+			<th>Modultyp(en)</th>
+			<th>Disziplin(e)</th>
+			<th>Anbietende Abteilung</th>
+			<th>Prüfungstyp</th>
+			<th>Prüfungszeitraum</th>
+			<th>Modulverantwortlicher</th>
+			<th>Kommentare zum Modul</th>
+			
+
+			<tr ng-repeat="module in planDetails.modules">
+				<td><span ng-repeat="p in module.primaryNrs")>{{p}}<br/></span></td>
+				<td>{{module.semesterNr}}</td>
+				<td><span ng-repeat="mt in module.moduleTypes")>{{mt.abbreviation}}<br/></span></td>
+				<td><span ng-repeat="d in module.disciplines")>{{d.abbreviation}}<br/></span></td> 
+				<td>{{module.department.deptName}}:{{module.department.fieldOfExpertise}}</td>
+				<td>{{module.assessmentType.abbreviation}}</td>
+				<td>{{module.assessmentDate}}</td>
+				<td>{{module.responsibleEmployee.firstName}} {{module.responsibleEmployee.lastName}}</td>
+				<td>{{module.comments}}</td>
+				<td><a href="showCourses.html?moduleid={{module.id}}">LVA anzeigen/ändern/hinzufügen</a></td>
+				<td><a
+					href="">bearbeiten</a></td>
+				<td><a href="">löschen</a></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
