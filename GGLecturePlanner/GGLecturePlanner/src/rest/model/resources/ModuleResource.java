@@ -47,74 +47,63 @@ public class ModuleResource {
 
 	@POST
 	@Path("/addmodule/")
-	@Produces(MediaType.TEXT_HTML+";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED+";charset=utf-8")
-	public void addModule(
-			@FormParam("primarynr") String primaryNr,
-			@FormParam("semesternr") String semesterNr, 
-			@FormParam("assessmenttype") String assessmentType,
-			@FormParam("assessmentdate") String assessmentDate, 
-			@FormParam("moduletypes") List<String> moduleTypes,
-			@FormParam("responsibleemployee") int responsibleEmployeeId,
-			@FormParam("comments") String comments, 
-			@FormParam("disciplines") List<String> disciplines, 
-			@FormParam("department") String department,
-			@FormParam("planid") int planId, 
-			@FormParam("plansemester") String planSemester, 
-			@FormParam("planyear") int planYear, 
-			@Context HttpServletResponse servletResponse
+	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
+	public void addModule(@FormParam("moduleprimarynrs") String modulePrimaryNrs, @FormParam("semesternr") String semesterNr,
+			@FormParam("assessmenttype") String assessmentType, @FormParam("assessmentdate") String assessmentDate,
+			@FormParam("moduletypes") List<String> moduleTypes, @FormParam("responsibleemployee") int responsibleEmployeeId,
+			@FormParam("comments") String comments, @FormParam("disciplines") List<String> disciplines, @FormParam("department") String department,
+			@FormParam("planid") int planId, @FormParam("moduleid") Integer moduleId, @Context HttpServletResponse servletResponse
 
-	) throws IOException { 
- 		ArrayList<String> primaryNrs = new ArrayList<>();
-		String[] pNs = primaryNr.split(";");
-		for(String pN: pNs){
+	) throws IOException {
+		ArrayList<String> primaryNrs = new ArrayList<>();
+		String[] pNs = modulePrimaryNrs.split(StaticDataDao.instance.outerSplittingPattern);
+		for (String pN : pNs) {
 			primaryNrs.add(pN);
 		}
 		ArrayList<ModuleType> moduleTypesReal = new ArrayList<>();
-		for(String type: moduleTypes){
+		for (String type : moduleTypes) {
 			moduleTypesReal.add(StaticDataDao.instance.getModuleType(type));
 		}
-		
+
 		ArrayList<Discipline> disciplineReal = new ArrayList<>();
-		for(String type: disciplines){
+		for (String type : disciplines) {
 			disciplineReal.add(StaticDataDao.instance.getDiscipline(type));
 		}
-		 
-		
+
 		try {
 			Employee responsibleEmployee = new Employee();
 			responsibleEmployee.setId(responsibleEmployeeId);
-			
-			Module module = new Module(
-					ModuleDao.instance.getNextModuleId(),
-					primaryNrs, 
-					semesterNr, 
-					StaticDataDao.instance.getAssessmentType(assessmentType), 
-					assessmentDate, 
-					responsibleEmployee,
-					comments, 
-					null, 
-					moduleTypesReal, 
-					disciplineReal, 
-					StaticDataDao.instance.getDepartment(department)
-			);
-			
-			System.out.println("Adding module: " + module);
-			ModuleDao.instance.addModule(planId, module);
-					
-			servletResponse.sendRedirect("../../showModules.html?planid="+planId+"&semester="+planSemester+"&year="+planYear);
+
+			Integer actualModuleId = moduleId;
+			if (actualModuleId == null) {
+				actualModuleId = ModuleDao.instance.getNextModuleId();
+			}
+			Module module = new Module(actualModuleId, primaryNrs, semesterNr, StaticDataDao.instance.getAssessmentType(assessmentType),
+					assessmentDate, responsibleEmployee, comments, null, moduleTypesReal, disciplineReal,
+					StaticDataDao.instance.getDepartment(department));
+
+			if (moduleId == null) {
+				System.out.println("Adding module: " + module);
+				ModuleDao.instance.addModule(planId, module);
+			}else{
+				System.out.println("Updating module: " + module);
+//				ModuleDao.instance.addOrUpdateModule(planId, module, false);
+			}
+
+			servletResponse.sendRedirect("../../showModules.html?planid=" + planId);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			servletResponse.sendRedirect("../../error.html");
 
-		} 
+		}
 	}
-	
+
 	@GET
 	@Path("/moduledetails/{moduleid}")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
-	public Module getModuleDetailsFor(@PathParam("moduleid") int moduleId){
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Module getModuleDetailsFor(@PathParam("moduleid") int moduleId) {
 		try {
 			return ModuleDao.instance.getModuleDetails(moduleId);
 		} catch (SQLException e) {
@@ -122,5 +111,5 @@ public class ModuleResource {
 		}
 		return new Module();
 	}
-	 
+
 }

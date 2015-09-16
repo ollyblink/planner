@@ -50,17 +50,17 @@
 			<tr ng-repeat="plan in plans">
 				<th>{{plan.semester}}&nbsp;{{plan.year}}</th>
 				<td><a
-					href="showModules.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Module
+					href="showModules.html?planid={{plan.id}}">Module
 						anzeigen/ändern/hinzufügen</a></td>
 				<td><a
 					href="changePlan.html?planid={{plan.id}}">Plan
 						bearbeiten</a></td>
 				<td><a   ng-click="deletePlan(plan.id)">Plan löschen</a></td>
 				<td><a
-					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan
+					href="printPlan.html?planid={{plan.id}}">Plan
 						drucken</a></td>
 				<td><a
-					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan
+					href="printPlan.html?planid={{plan.id}}">Plan
 						kopieren</a></td>
 			</tr>
 		</table>

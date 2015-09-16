@@ -20,11 +20,18 @@ public enum ModuleDao {
 	private PreparedStatement insertModuleTypes;
 	private PreparedStatement insertDepartmentsToModules;
 	private PreparedStatement insertModulesToDisciplines;
+	
+	private PreparedStatement updateModule;
+	private PreparedStatement updatePlansToModule;
+	private PreparedStatement updateModuleNrs;
+	private PreparedStatement updateModuleTypes;
+	private PreparedStatement updateDepartmentsToModules;
+	private PreparedStatement updateModulesToDisciplines;
+	
 	private PreparedStatement getDepartmentForModule;
 	private PreparedStatement getDisciplinesForModule;
 	private PreparedStatement getModuleTypesForModule;
-	private PreparedStatement getModuleNrsForModule;
-	private PreparedStatement getModuleNrs;
+	private PreparedStatement getModuleNrsForModule; 
 	private PreparedStatement getModuleDetails;
 
 	private ModuleDao() {
@@ -43,6 +50,23 @@ public enum ModuleDao {
 
 			this.insertModulesToDisciplines = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into modules_to_disciplines values(?,?)");
+			
+			
+			this.updateModule = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("update modules set semester_nr=?, assessment_type_fk=?, assessment_date=?, responsible_employee=?, comments=? where id=?;");
+//			this.updatePlansToModule = DBConnectionProvider.instance.getDataSource().getConnection()
+//					.prepareStatement("update plans_to_modules set plan_id_fk=? where module_id_fk=?;");
+			this.updateModuleNrs = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("update module_nrs set module_nr=? where module_id_fk = ?;");
+			this.updateModuleTypes = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("update modules_to_module_types set where module_id_fk=?");
+
+			this.updateDepartmentsToModules = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("insert into departments_to_modules values(?,?)");
+
+			this.updateModulesToDisciplines = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("insert into modules_to_disciplines values(?,?)");
+			
 			
 			this.getModuleDetails = DBConnectionProvider.instance.prepareStatement("select * from modules where id = ?");
 
@@ -112,6 +136,47 @@ public enum ModuleDao {
 
 	}
 
+	public void updateModule(int planId, Module module) throws SQLException {
+		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(false);
+		int moduleId = module.getId();
+		this.updateModule.setInt(6, moduleId);
+		this.updateModule.setString(1, module.getSemesterNr());
+		this.updateModule.setString(2, module.getAssessmentType().getAbbreviation());
+		this.updateModule.setString(3, module.getAssessmentDate());
+		this.updateModule.setInt(4, module.getResponsibleEmployee().getId());
+		this.updateModule.setString(5, module.getComments());
+
+		this.updateModule.executeUpdate();
+
+		this.updateDepartmentsToModules.setInt(2, moduleId);
+		this.updateDepartmentsToModules.setInt(1, module.getDepartment().getId());
+
+		this.updateDepartmentsToModules.executeUpdate();
+		for (String moduleNr : module.getPrimaryNrs()) {
+			this.updateModuleNrs.setInt(2, moduleId);
+			this.updateModuleNrs.setString(1, moduleNr);
+			this.updateModuleNrs.executeUpdate();
+		}
+
+		for (ModuleType mt : module.getModuleTypes()) {
+			System.out.println(moduleId);
+			this.updateModuleTypes.setInt(2, moduleId);
+			this.updateModuleTypes.setString(1, mt.getAbbreviation());
+			this.updateModuleTypes.executeUpdate();
+		}
+		this.updatePlansToModule.setInt(2, planId);
+		this.updatePlansToModule.setInt(1, moduleId);
+		this.updatePlansToModule.executeUpdate();
+
+		for (Discipline discipline : module.getDisciplines()) {
+			this.updateModulesToDisciplines.setInt(2, moduleId);
+			this.updateModulesToDisciplines.setString(1, discipline.getAbbreviation());
+			this.updateModulesToDisciplines.executeUpdate();
+		}
+		DBConnectionProvider.instance.getDataSource().getConnection().commit();
+		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
+
+	}
 	public int getNextModuleId() {
 
 		int nextId = -1;
@@ -199,5 +264,6 @@ public enum ModuleDao {
 		module.setDisciplines(getDisciplines(moduleId));
 		return module;
 	}
+
 	
 }

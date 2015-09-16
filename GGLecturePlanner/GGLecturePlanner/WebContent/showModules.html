@@ -18,10 +18,11 @@
 		 
 		
 		.controller('planDetailsCtrl', function ($scope, $http) {
-		
-			 var parts = window.location.search.substring(1).split("&");
-			var planId = parts[0].split("=")[1];
-		    var rest = 'http://localhost:8081/GGLecturePlanner/rest/plans/plandetails/'+planId;  
+			$scope.getPlanId = function($scope) { 
+      			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
+            }
+              
+		    var rest = 'http://localhost:8081/GGLecturePlanner/rest/plans/plandetails/'+$scope.getPlanId();  
 		    $scope.getPlanDetails = function () {
 		        return $http.get(rest).
 		         success(function (data) {
@@ -29,16 +30,7 @@
 		         });
 		    };  
 
-		    $scope.getPlanId = function($scope) { 
-      			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
-            }
-            $scope.getSemester = function($scope) { 
-      			return window.location.search.substring(1).split("&")[1].split("=")[1]; 
-            }
-
-            $scope.getYear = function($scope) {   
-      			return window.location.search.substring(1).split("&")[2].split("=")[1];
-            }
+		    
 		});
 
  
@@ -50,10 +42,10 @@
 <body>
 	<div class="container" ng-controller="planDetailsCtrl"
 		ng-init="getPlanDetails()">
-		<div class="title">{{getSemester()}}&nbsp;{{getYear()}}: Module</div>
+		<div class="title">{{planDetails.semester}}&nbsp;{{planDetails.year}}: Module</div>
 		<div>
 			<a
-				href="addModule.html?planid={{getPlanId()}}&semester={{getSemester()}}&year={{getYear()}}">(+)
+				href="addModule.html?planid={{getPlanId()}}">(+)
 				Modul hinzufügen</a>
 		</div>
 		<table>
