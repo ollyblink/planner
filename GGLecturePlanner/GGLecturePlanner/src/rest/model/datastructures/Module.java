@@ -8,16 +8,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Module {
 
 	private Integer id;
-	private ArrayList<String> primaryNrs; 
 	private String semesterNr;
 	private AssessmentType assessmentType;
 	private String assessmentDate;
 	private Employee responsibleEmployee;
 	private String comments;
-	private ArrayList<Course> courses;
+
+	private ArrayList<String> primaryNrs;  
+	private Department department;
 	private ArrayList<ModuleType> moduleTypes;
 	private ArrayList<Discipline> disciplines;
-	private Department department;
+	private ArrayList<Course> courses;
 
 	public Module() {
 	}

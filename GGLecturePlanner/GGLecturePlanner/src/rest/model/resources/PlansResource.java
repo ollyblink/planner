@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,7 +40,7 @@ public class PlansResource {
 
 	@GET
 	@Path("/allplans")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Plan> getEmployees() {
 		try {
 			return PlanDao.instance.getAllPlans();
@@ -51,20 +52,33 @@ public class PlansResource {
 
 	@GET
 	@Path("/plandetails/{planid}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Plan getPlanDetails(@PathParam("planid") int planid) {
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Plan getPlanDetails(@PathParam("planid") int planId) {
 		try {
- 			return PlanDao.instance.getPlanDetailsFor(planid);
+			return PlanDao.instance.getPlanDetailsFor(planId);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return new Plan();
 	}
 
+	@DELETE
+	@Path("/deleteplan/{planid}")
+	public boolean deletePlan(@PathParam("planid") int planId) throws IOException {
+
+		try {
+			System.out.println(planId);
+			return PlanDao.instance.deletePlan(planId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	@POST
 	@Path("/addplan/")
-	@Produces(MediaType.TEXT_HTML)
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
 	public void addPlan(@FormParam("semester") String semester, @FormParam("year") int year, @Context HttpServletResponse servletResponse
 
 	) throws IOException {
@@ -76,6 +90,24 @@ public class PlansResource {
 			e.printStackTrace();
 			servletResponse.sendRedirect("../../error.html");
 		}
-
 	}
+
+	@POST
+	@Path("/changeplan/")
+	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
+	public void changePlan(@FormParam("planid") int planId, @FormParam("semester") String semester, @FormParam("year") int year,
+			@Context HttpServletResponse servletResponse
+
+	) throws IOException {
+
+		try {
+			PlanDao.instance.changePlan(planId, semester, year);
+			servletResponse.sendRedirect("../../showPlans.html");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			servletResponse.sendRedirect("../../error.html");
+		}
+	}
+
 }

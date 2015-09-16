@@ -2,6 +2,7 @@
 <!doctype html>
 <html ng-app="employeehandler">
 <head>
+<meta charset="utf-8">
 <title></title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 
@@ -37,7 +38,7 @@
 		ng-init="getAllEmployees()">
 		<div class="title">Angestellte</div>
 		<div class="optionals">
-			<a href="addEmployee.html">(+) Angestellten hinzufügen</a>
+			<a href="addEmployee.html">(+) Angestellten hinzufÃ¼gen</a>
 		</div>
 		<table>
 		<tr>
@@ -68,7 +69,7 @@
 				<td>{{e.username}}</td>
 				<td>{{e.comments}}</td>
 				<td><a href="changeEmployee.html?employee={{e.email}}">bearbeiten</a></td>
-				<td><a href="deleteEmployee.html?employee={{e.email}}">löschen</a></td>
+				<td><a href="deleteEmployee.html?employee={{e.email}}">lÃ¶schen</a></td>
 			</tr>
 		</table>
 	</div>

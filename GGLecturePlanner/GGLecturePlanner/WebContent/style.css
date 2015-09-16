@@ -19,7 +19,9 @@ a:link, a:visited {
 	margin-top: 20px;
 	margin-bottom: 20px;
 }
-
+a {
+	cursor: pointer;
+}
 a:active, a:hover {
 	color: #00089b;
 	text-decoration: underline;

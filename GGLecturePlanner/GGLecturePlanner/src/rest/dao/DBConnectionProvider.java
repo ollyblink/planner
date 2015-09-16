@@ -1,5 +1,8 @@
 package rest.dao;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import utils.dbconnection.AbstractDBConnector;
 import utils.dbconnection.PGDBConnector;
 
@@ -24,6 +27,12 @@ public enum DBConnectionProvider {
 
 	public void setDataSource(AbstractDBConnector dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	public   PreparedStatement prepareStatement(String sql) throws SQLException {
+		return getDataSource()
+				.getConnection()
+				.prepareStatement(sql);
 	}
 	
 	

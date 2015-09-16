@@ -32,5 +32,10 @@ public class Times {
 	public void setEndTime(Time endTime) {
 		this.endTime = endTime;
 	}
+
+	@Override
+	public String toString() {
+		return "Times [startTime=" + startTime + ", endTime=" + endTime + "]";
+	}
  
 }

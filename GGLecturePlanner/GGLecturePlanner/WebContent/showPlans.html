@@ -2,6 +2,7 @@
 <!doctype html>
 <html ng-app="planhandler">
 <head>
+<meta charset="utf-8">
 <title></title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 
@@ -16,12 +17,19 @@
         angular.module('planhandler', [])
 
             .controller('planCtrl', function ($scope, $http) {
-                var rest = 'http://localhost:8081/GGLecturePlanner/rest/plans/allplans';  
+                var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
                 $scope.getAllPlans = function () {
-                    return $http.get(rest).
+                    return $http.get(rest+'plans/allplans').
                      success(function (data) {
                          $scope.plans = data; 
                      });
+                };  
+
+                $scope.deletePlan = function (planid) {
+                    return $http.delete(rest+'plans/deleteplan/'+planid).
+                    success(function (data) {
+                    	window.location.reload();
+                    });
                 };  
             });
 
@@ -34,23 +42,26 @@
 
 <body>
 	<div class="container" ng-controller="planCtrl" ng-init="getAllPlans()">
-		<div class="title">Pläne</div>
+		<div class="title">PlÃ¤ne</div>
 		<div>
-			<a href="addPlan.html">(+) Plan hinzufügen</a>
+			<a href="addPlan.html">(+) Plan hinzufÃ¼gen</a>
 		</div>
 		<table>
 			<tr ng-repeat="plan in plans">
-				<td>{{plan.semester}}&nbsp;{{plan.year}}</td>
+				<th>{{plan.semester}}&nbsp;{{plan.year}}</th>
 				<td><a
-					href="showModules.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Module anzeigen/ändern/hinzufügen</a></td>
+					href="showModules.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Module
+						anzeigen/Ã¤ndern/hinzufÃ¼gen</a></td>
 				<td><a
-					href="changePlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan bearbeiten</a></td>
+					href="changePlan.html?planid={{plan.id}}">Plan
+						bearbeiten</a></td>
+				<td><a   ng-click="deletePlan(plan.id)">Plan lÃ¶schen</a></td>
 				<td><a
-					href="deletePlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan löschen</a></td>
+					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan
+						drucken</a></td>
 				<td><a
-					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan drucken</a></td>
-					<td><a
-					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan kopieren</a></td>
+					href="printPlan.html?planid={{plan.id}}&semester={{plan.semester}}&year={{plan.year}}">Plan
+						kopieren</a></td>
 			</tr>
 		</table>
 	</div>

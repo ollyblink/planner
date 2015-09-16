@@ -21,7 +21,7 @@ import javax.ws.rs.core.UriInfo;
 import rest.dao.EmployeeDao;
 import rest.dao.ModuleDao;
 import rest.dao.PlanDao;
-import rest.dao.StaticTypesDao;
+import rest.dao.StaticDataDao;
 import rest.model.datastructures.Discipline;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.Module;
@@ -47,8 +47,8 @@ public class ModuleResource {
 
 	@POST
 	@Path("/addmodule/")
-	@Produces(MediaType.TEXT_HTML)
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_HTML+";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED+";charset=utf-8")
 	public void addModule(
 			@FormParam("primarynr") String primaryNr,
 			@FormParam("semesternr") String semesterNr, 
@@ -72,12 +72,12 @@ public class ModuleResource {
 		}
 		ArrayList<ModuleType> moduleTypesReal = new ArrayList<>();
 		for(String type: moduleTypes){
-			moduleTypesReal.add(StaticTypesDao.instance.getModuleType(type));
+			moduleTypesReal.add(StaticDataDao.instance.getModuleType(type));
 		}
 		
 		ArrayList<Discipline> disciplineReal = new ArrayList<>();
 		for(String type: disciplines){
-			disciplineReal.add(StaticTypesDao.instance.getDiscipline(type));
+			disciplineReal.add(StaticDataDao.instance.getDiscipline(type));
 		}
 		 
 		
@@ -89,14 +89,14 @@ public class ModuleResource {
 					ModuleDao.instance.getNextModuleId(),
 					primaryNrs, 
 					semesterNr, 
-					StaticTypesDao.instance.getAssessmentType(assessmentType), 
+					StaticDataDao.instance.getAssessmentType(assessmentType), 
 					assessmentDate, 
 					responsibleEmployee,
 					comments, 
 					null, 
 					moduleTypesReal, 
 					disciplineReal, 
-					StaticTypesDao.instance.getDepartment(department)
+					StaticDataDao.instance.getDepartment(department)
 			);
 			
 			System.out.println("Adding module: " + module);
@@ -113,10 +113,10 @@ public class ModuleResource {
 	
 	@GET
 	@Path("/moduledetails/{moduleid}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
 	public Module getModuleDetailsFor(@PathParam("moduleid") int moduleId){
 		try {
-			return ModuleDao.instance.getModuleDetailsFor(moduleId);
+			return ModuleDao.instance.getModuleDetails(moduleId);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

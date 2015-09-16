@@ -2,6 +2,7 @@
 <html ng-app="addemployeehandler">
 <head>
 <title></title>
+<meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="style.css" />
 <title></title>
 <link rel="stylesheet" type="text/css" href="style.css" />
@@ -37,7 +38,7 @@
 <body>
 	<div class="container" ng-controller="EmployeeCtrl"
 		ng-init="getRoles()">
-		<div class="title">Angestellten Hinzufügen</div>
+		<div class="title">Angestellten HinzufÃ¼gen</div>
 		<div class="optionals"></div>
 		<form
 			action="http://localhost:8081/GGLecturePlanner/rest/employees/addemployee"
@@ -87,7 +88,7 @@
 					</select></td>
 				</tr>
 				<tr>
-					<td><label for="comments">Kommentare (z.B. bezüglich
+					<td><label for="comments">Kommentare (z.B. bezÃ¼glich
 							Anstellung, etc.):</label></td>
 					<td><textarea NAME="comments" COLS=40 ROWS=6></textarea></td>
 				</tr>

@@ -6,21 +6,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import rest.model.datastructures.Department;
-import rest.model.datastructures.Discipline;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.Module;
-import rest.model.datastructures.ModuleType;
 import rest.model.datastructures.Plan;
 
 public enum PlanDao {
 	instance;
 
 	private PreparedStatement getPlanDetails;
-	private PreparedStatement addPlanStatement; 
+	private PreparedStatement addPlanStatement;
+	private PreparedStatement deletePlanStatement;
+	private PreparedStatement updatePlan; 
+	private PreparedStatement getPlan;
 
 	private PlanDao() {
 		try {
+			getPlan = DBConnectionProvider.instance.prepareStatement("select * from plans where id=?");
 			getPlanDetails = DBConnectionProvider.instance
 					.getDataSource()
 					.getConnection()
@@ -30,7 +31,9 @@ public enum PlanDao {
 			this.addPlanStatement = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into plans(semester, year) values (?,?);");
 			
-
+			
+			this.deletePlanStatement = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("delete from plans where id=?;");
+			this.updatePlan = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("update plans set semester=?, year=? where id=?;");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -54,18 +57,22 @@ public enum PlanDao {
 	public Plan getPlanDetailsFor(int planId) throws SQLException {
 
 		Plan plan = null;
+		getPlan.setInt(1, planId);
+		
+		ResultSet planRs = getPlan.executeQuery();
+		while(planRs.next()){
+			plan = new Plan(planRs.getInt("id"), planRs.getString("semester"), planRs.getInt("year"), new ArrayList<>());
+		}
+		planRs.close();
+		
 		getPlanDetails.setInt(1, planId);
 		ResultSet r = getPlanDetails.executeQuery();
-		while (r.next()) {
-
-			if (plan == null) {
-				plan = new Plan(r.getInt("planid"), r.getString("semester"), r.getInt("year"), new ArrayList<>());
-			}
+		while (r.next()) { 
 
 			Employee responsibleEmployee = new Employee();
 			responsibleEmployee.setId(r.getInt("responsible_employee"));
 
-			Module module = new Module(r.getInt("moduleid"), null, r.getString("semester_nr"), StaticTypesDao.instance.getAssessmentType(r
+			Module module = new Module(r.getInt("moduleid"), null, r.getString("semester_nr"), StaticDataDao.instance.getAssessmentType(r
 					.getString("assessment_type_fk")), r.getString("assessment_date"), responsibleEmployee, r.getString("comments"), null, null,
 					null, null);
 
@@ -73,7 +80,7 @@ public enum PlanDao {
 		}
 		r.close();
 
-		System.out.println("Plan: " + plan);
+		System.out.println("PlanDao: getPlanDetailsFor: plan: " + plan);
 		if (plan != null) {
 			ArrayList<Module> modules = plan.getModules();
 
@@ -98,5 +105,21 @@ public enum PlanDao {
 		addPlanStatement.setInt(2, year);
 		addPlanStatement.executeUpdate();
 
+	}
+
+	public boolean deletePlan(int planId) throws SQLException {
+		deletePlanStatement.setInt(1, planId);
+		int update = deletePlanStatement.executeUpdate();
+		return (update > 0);
+	}
+
+	public boolean changePlan(int planId, String semester, int year) throws SQLException {
+		System.out.println("PlanDao:changePlan:planId: "+ planId +",semester:"+semester+",year:"+year);
+		updatePlan.setString(1, semester);
+		updatePlan.setInt(2, year);
+		updatePlan.setInt(3, planId);
+		
+		return (updatePlan.executeUpdate() > 0);
+		
 	}
 }

@@ -10,34 +10,29 @@ public class Course {
 	private String courseDescription;
 	private Integer moduleNr;
 	private String vvzNr;
-	private String modulePart;
 	private Integer nrOfGroups;
 	private Integer nrOfStudentsExpectedPerGroup;
 	private Boolean isMaxNrStudentsExpectedPerGroup;
-	private Float swsTotalPerGroup; 
+	private Float swsTotalPerGroup;
 	private String startDate;
 	private String endDate;
 	private String rythm;
 	private String comments;
 	private CourseType courseType;
-
+	private ArrayList<String> moduleParts;
 	private ArrayList<CourseTimesAndRooms> courseTimesAndRooms;
 	private ArrayList<Employee> lecturers;
-	
+
 	public Course() {
 	}
 
-	
- 
-
-	public Course(Integer id, String courseDescription, Integer moduleNr, String vvzNr, String modulePart, Integer nrOfGroups,
-			Integer nrOfStudentsExpectedPerGroup, Boolean isMaxNrStudentsExpectedPerGroup, Float swsTotalPerGroup, String startDate, String endDate,
-			String rythm, String comments, CourseType courseType, ArrayList<CourseTimesAndRooms> courseTimesAndRooms, ArrayList<Employee> lecturers) {
+	public Course(Integer id, String courseDescription, Integer moduleNr, String vvzNr, Integer nrOfGroups, Integer nrOfStudentsExpectedPerGroup,
+			Boolean isMaxNrStudentsExpectedPerGroup, Float swsTotalPerGroup, String startDate, String endDate, String rythm, String comments,
+			CourseType courseType, ArrayList<String> moduleParts, ArrayList<CourseTimesAndRooms> courseTimesAndRooms, ArrayList<Employee> lecturers) {
 		this.id = id;
 		this.courseDescription = courseDescription;
 		this.moduleNr = moduleNr;
 		this.vvzNr = vvzNr;
-		this.modulePart = modulePart;
 		this.nrOfGroups = nrOfGroups;
 		this.nrOfStudentsExpectedPerGroup = nrOfStudentsExpectedPerGroup;
 		this.isMaxNrStudentsExpectedPerGroup = isMaxNrStudentsExpectedPerGroup;
@@ -47,50 +42,50 @@ public class Course {
 		this.rythm = rythm;
 		this.comments = comments;
 		this.courseType = courseType;
+		this.moduleParts = moduleParts;
 		this.courseTimesAndRooms = courseTimesAndRooms;
 		this.lecturers = lecturers;
 	}
 
+	public ArrayList<String> getModuleParts() {
+		return moduleParts;
+	}
 
+	public void setModuleParts(ArrayList<String> moduleParts) {
+		this.moduleParts = moduleParts;
+	}
 
+	public Integer getNrOfStudentsExpectedPerGroup() {
+		return nrOfStudentsExpectedPerGroup;
+	}
 
 	public Integer getId() {
 		return id;
 	}
 
-
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
 
 	public Boolean getIsMaxNrStudentsExpectedPerGroup() {
 		return isMaxNrStudentsExpectedPerGroup;
 	}
 
-
 	public void setIsMaxNrStudentsExpectedPerGroup(Boolean isMaxNrStudentsExpectedPerGroup) {
 		this.isMaxNrStudentsExpectedPerGroup = isMaxNrStudentsExpectedPerGroup;
 	}
-
 
 	public void setNrOfGroups(Integer nrOfGroups) {
 		this.nrOfGroups = nrOfGroups;
 	}
 
-
 	public void setNrOfStudentsExpectedPerGroup(Integer nrOfStudentsExpectedperGroup) {
 		this.nrOfStudentsExpectedPerGroup = nrOfStudentsExpectedperGroup;
 	}
 
-
 	public void setSwsTotalPerGroup(Float swsTotalPerGroup) {
 		this.swsTotalPerGroup = swsTotalPerGroup;
 	}
-
-
- 
-
 
 	public ArrayList<Employee> getLecturers() {
 		return lecturers;
@@ -132,13 +127,7 @@ public class Course {
 		this.vvzNr = vvzNr;
 	}
 
-	public String getModulePart() {
-		return modulePart;
-	}
-
-	public void setModulePart(String modulePart) {
-		this.modulePart = modulePart;
-	}
+ 
 
 	public int getNrOfGroups() {
 		return nrOfGroups;
@@ -172,8 +161,6 @@ public class Course {
 		this.swsTotalPerGroup = swsTotalPerGroup;
 	}
 
- 
-
 	public String getStartDate() {
 		return startDate;
 	}
@@ -206,30 +193,23 @@ public class Course {
 		this.comments = comments;
 	}
 
- 
-
+	 
 
 	@Override
 	public String toString() {
-		return "Course [id=" + id + ", courseDescription=" + courseDescription + ", moduleNr=" + moduleNr + ", vvzNr=" + vvzNr + ", modulePart="
-				+ modulePart + ", nrOfGroups=" + nrOfGroups + ", nrOfStudentsExpectedPerGroup=" + nrOfStudentsExpectedPerGroup
-				+ ", isMaxNrStudentsExpectedPerGroup=" + isMaxNrStudentsExpectedPerGroup + ", swsTotalPerGroup=" + swsTotalPerGroup + ", startDate="
-				+ startDate + ", endDate=" + endDate + ", rythm=" + rythm + ", comments=" + comments + ", courseType=" + courseType
+		return "Course [id=" + id + ", courseDescription=" + courseDescription + ", moduleNr=" + moduleNr + ", vvzNr=" + vvzNr + ", nrOfGroups="
+				+ nrOfGroups + ", nrOfStudentsExpectedPerGroup=" + nrOfStudentsExpectedPerGroup + ", isMaxNrStudentsExpectedPerGroup="
+				+ isMaxNrStudentsExpectedPerGroup + ", swsTotalPerGroup=" + swsTotalPerGroup + ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", rythm=" + rythm + ", comments=" + comments + ", courseType=" + courseType + ", moduleParts=" + moduleParts
 				+ ", courseTimesAndRooms=" + courseTimesAndRooms + ", lecturers=" + lecturers + "]";
 	}
-
-
-
 
 	public void setCourseType(CourseType courseType) {
 		this.courseType = courseType;
 	}
 
-
 	public CourseType getCourseType() {
 		return courseType;
 	}
-
-	 
 
 }

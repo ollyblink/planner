@@ -86,7 +86,7 @@ public enum EmployeeDao {
 				roles = new ArrayList<>();
 				employeesToRoles.put(eId, roles);
 			}
-			roles.add(StaticTypesDao.instance.getRole(r.getString("role_fk")));
+			roles.add(StaticDataDao.instance.getRole(r.getString("role_fk")));
 		}
 
 		r.close();
@@ -146,6 +146,17 @@ public enum EmployeeDao {
 			employee.setLastName(r.getString("last_name"));
 		}
 		return employee;
+	}
+
+	public ArrayList<Employee> getLecturers() throws SQLException {
+		ArrayList<Employee> lecturers = new ArrayList<>();
+		ArrayList<Employee> employees = getEmployees();
+		for(Employee e: employees) {
+			if(!e.getRoles().contains(new Role("Admin", "Administrator"))){
+				lecturers.add(e);
+			}
+		}
+		return lecturers;
 	}
  
 

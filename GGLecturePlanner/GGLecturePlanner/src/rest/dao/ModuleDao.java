@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import rest.model.datastructures.Department;
 import rest.model.datastructures.Discipline;
-import rest.model.datastructures.Employee;
 import rest.model.datastructures.Module;
 import rest.model.datastructures.ModuleType;
 
@@ -25,6 +24,7 @@ public enum ModuleDao {
 	private PreparedStatement getDisciplinesForModule;
 	private PreparedStatement getModuleTypesForModule;
 	private PreparedStatement getModuleNrsForModule;
+	private PreparedStatement getModuleNrs;
 	private PreparedStatement getModuleDetails;
 
 	private ModuleDao() {
@@ -43,6 +43,8 @@ public enum ModuleDao {
 
 			this.insertModulesToDisciplines = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into modules_to_disciplines values(?,?)");
+			
+			this.getModuleDetails = DBConnectionProvider.instance.prepareStatement("select * from modules where id = ?");
 
 			this.getDepartmentForModule = DBConnectionProvider.instance
 					.getDataSource()
@@ -58,12 +60,10 @@ public enum ModuleDao {
 					.getDataSource()
 					.getConnection()
 					.prepareStatement(
-							"select m.* from modules_to_module_types mm inner join module_types m on mm.module_type_fk = m.abbr where mm.module_id_fk=?;");
+							"select distinct m.* from modules_to_module_types mm inner join module_types m on mm.module_type_fk = m.abbr where mm.module_id_fk=?;");
 			this.getModuleNrsForModule = DBConnectionProvider.instance.getDataSource().getConnection()
-					.prepareStatement("select module_nr from module_nrs where module_id_fk=?;");
-		
-			this.getModuleDetails = DBConnectionProvider.instance.getDataSource().getConnection()
-					.prepareStatement("select * from module_nrs where module_id_fk=?;");
+					.prepareStatement("select distinct module_nr from module_nrs where module_id_fk=?;");
+		 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -175,17 +175,29 @@ public enum ModuleDao {
 		return moduleTypes;
 	}
 
-	public Module getModuleDetailsFor(int moduleId) throws SQLException {
+ 
+	public Module getModuleDetails(int moduleId) throws SQLException{
+
+		Module module = new Module();
+
 		getModuleDetails.setInt(1, moduleId);
 		ResultSet r = getModuleDetails.executeQuery();
-		Module module = new Module();
-		module.setId(moduleId);
-		module.setPrimaryNrs(new ArrayList<>());
-		while(r.next()){ 
-			module.getPrimaryNrs().add(r.getString("module_nr"));
+		
+		while(r.next()){
+			module.setId(r.getInt("id"));
+			module.setSemesterNr(r.getString("semester_nr"));
+			module.setAssessmentType(StaticDataDao.instance.getAssessmentType(r.getString("assessment_type_fk")));
+			module.setAssessmentDate(r.getString("assessment_date"));
+			module.setResponsibleEmployee(EmployeeDao.instance.getEmployeeFirstAndLastNameFor(r.getInt("responsible_employee")));
+			module.setComments(r.getString("comments"));
 		}
+		r.close();
+		
+		module.setDepartment(getDepartments(moduleId));
+		module.setModuleTypes(getModuleTypes(moduleId));
+		module.setPrimaryNrs(getPrimaryNrs(moduleId));
+		module.setDisciplines(getDisciplines(moduleId));
 		return module;
 	}
-	
 	
 }

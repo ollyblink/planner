@@ -94,4 +94,10 @@ public class CourseTimesAndRooms {
 		this.comments = comments;
 	}
 
+	@Override
+	public String toString() {
+		return "CourseTimesAndRooms [id=" + id + ", courseId=" + courseId + ", moduleId=" + moduleId + ", times=" + times + ", dayOfWeek="
+				+ dayOfWeek + ", roomCapacity=" + roomCapacity + ", roomLabel=" + roomLabel + ", comments=" + comments + "]";
+	}
+
 }

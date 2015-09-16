@@ -2,6 +2,8 @@
 <html ng-app="addcoursehandler">
 <head>
 <title></title>
+
+<meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="style.css" />
 <script
 	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
@@ -11,10 +13,80 @@
 <script type="text/javascript">
 
 
-        angular.module('addcoursehandler', ['ngSanitize'])
+        var courseHandler = angular.module('addcoursehandler', ['ngSanitize']);
+        var counter = 0;
 
-            .controller('CourseCtrl', function ($scope, $sce, $http) {
+        courseHandler.factory(
+                "RoomAndTimes",
+                function(  ) {
+                    // Define the constructor function.
+                    var RoomAndTimes = function( dayofWeek, beginTime, endTime, roomLabel, roomCapacity, roomComments ) {
+                        this.id = counter++;
+                        this.dayOfWeek =  dayofWeek  ;
+                        this.beginTime =   beginTime ;
+                        this.endTime =  endTime ;
+                        this.roomLabel =  roomLabel ;
+                        this.roomCapacity =   roomCapacity ;
+                        this.roomComments =  roomComments ; 
+                    }
+                    // Define the "instance" methods using the prototype
+                    // and standard prototypal inheritance.
+                    RoomAndTimes.prototype.getId =  function() {
+                                return( this.id );
+                            };
+                    RoomAndTimes.prototype.getDayOfWeek = function() {
+                            return( this.dayOfWeek );
+                        };
+                    RoomAndTimes.prototype.getBeginTime = function() {
+                            return( this.beginTime );
+                        };
+                    RoomAndTimes.prototype.getEndTime =function() {
+                            return( this.endTime );
+                        };
+                        RoomAndTimes.prototype.getRoomLabel =function() {
+                            return( this.roomLabel );
+                        };
+                        RoomAndTimes.prototype.getRoomCapacity=function() {
+                            return( this.roomCapacity );
+                        };
+                        RoomAndTimes.prototype.getRoomComments =function() {
+                            return( this.roomComments );
+                        };
+                        RoomAndTimes.prototype.showItems = function(){
+                            return (
+                                    this.dayOfWeek.replace("%%%","%")+" %%%"+ 
+                                    this.beginTime.replace("%%%","%")+" %%%"+
+                                    this.endTime.replace("%%%","%")+" %%%"+
+                                    this.roomLabel.replace("%%%","%")+" %%%"+
+                                    this.roomCapacity+" %%%"+
+                                    this.roomComments.replace("%%%","%")+" "
+                                    );
+                        };
+                    
+                     
+                    return( RoomAndTimes );
+                }
+            );
+        courseHandler.controller('CourseCtrl', function ($scope, $sce, $http, RoomAndTimes) {
                 var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
+
+                $scope.contains = function (a, id) {
+                    if(a == null || id == null){return false;}
+                    for (var i = 0; i < a.length; i++) {
+                        if (a[i].id === id) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+
+                $scope.getDayAbbreviations = function(){
+                	
+                	return $http.get(rest+'staticresources/dayabbreviations').
+                    success(function (data) {
+                        $scope.dayAbbreviations = data; 
+                    });
+                };
                 
                 $scope.getCourseTypes = function () {
                     return $http.get(rest+'staticresources/coursetypes').
@@ -23,21 +95,96 @@
                      });
                 }; 
                 $scope.getEmployees = function () {
-                    return $http.get(rest+'employees/allemployees').
+                    return $http.get(rest+'employees/alllecturers').
                      success(function (data) {
                          $scope.employees = data; 
                      });
-                }; 
+                };  
+                
+                $scope.initSelectedModuleParts = function(){
+					$scope.selectedModuleParts = []; 
+	            };
+
                 $scope.initLecturers = function(){
-                    $scope.selectedLecturers ="";
+                    $scope.selectedLecturers = [];
+                };
+
+                $scope.initSelectedPrimaryNr = function(){$scope.selectedPrimaryNr = null};
+                $scope.initSelectedModulePartNr = function(){$scope.selectedModulePartNr = null};
+                
+                $scope.addModulePart = function(){  
+                    if($scope.selectedPrimaryNr == null || $scope.selectedPrimaryNr.length == 0){
+						return;
+                       }
+
+                    if($scope.selectedModulePartNr == null || $scope.selectedModulePartNr.length == 0) {
+                        return;
                     }
-                $scope.updateLecturers = function(){
-                    $scope.selectedLecturers += $sce.trustAsHtml("<div>"+$scope.selectedLecturer+" </div><button ng-model=\"selectedLecturers\" ng-click=\"{{$scope.selectedLecturer}}\" >delete</button>");
+                	var modulePartConcat = $scope.selectedPrimaryNr+"."+$scope.selectedModulePartNr;
+                    var contains = false;
+                    for(var i = 0; i < $scope.selectedModuleParts.length; ++i) {
+						if($scope.selectedModuleParts[i].indexOf(modulePartConcat) >= 0){
+							contains = true;
+						}
                     }
+					if(!contains) {
+                        $scope.selectedModuleParts.push(modulePartConcat);  
+                       }  
+
+            	};
+                $scope.deleteModulePart = function(modulePart){ 
+					var currentlySelectedModulePartNrs = []; 
+					 
+					for(var i=0; i < $scope.selectedModuleParts.length; i++) {
+// 						alert($scope.selectedModuleParts[i]);
+						if($scope.selectedModuleParts[i].indexOf(modulePart) < 0) {
+							currentlySelectedModulePartNrs.push($scope.selectedModuleParts[i]); 
+                        } 
+                    }
+// 					alert("Currently selected module part nrs: " +currentlySelectedModulePartNrs);
+// 					alert("selected Module parts: "+ $scope.selectedModuleParts);
+				 
+	                	$scope.selectedModuleParts = currentlySelectedModulePartNrs;
+				 
+                };
+
+	            
+                
+                $scope.addLecturer = function(){
+					var availableLecturers = [];
+                    for(var i=0; i < $scope.employees.length; ++i ) {
+						if($scope.employees[i].id == $scope.selectedLecturer && !$scope.contains($scope.selectedLecturers, $scope.selectedLecturer)) {
+                        	$scope.selectedLecturers.push($scope.employees[i]);  
+                        }else{ 
+                        	availableLecturers.push($scope.employees[i]);
+                       	}
+
+                    } 
+    	                	$scope.employees = availableLecturers;
+    				 
+             	};
+                $scope.deleteLecturer = function(id){
+					var currentlySelectedEmployees = []; 
+					 
+					for(var i=0; i < $scope.selectedLecturers.length; ++i ) {
+						if($scope.selectedLecturers[i].id != id && !$scope.contains(currentlySelectedEmployees, id)) {
+							if(currentlySelectedEmployees == null){
+								currentlySelectedEmployees=[];
+							}
+							currentlySelectedEmployees.push($scope.selectedLecturers[i]); 
+                        }else{
+                        	$scope.employees.push($scope.selectedLecturers[i]);
+                        }
+                    }
+					  
+	    	             $scope.selectedLecturers = currentlySelectedEmployees;
+	    		 
+                };
+
                  
                 $scope.getModuleId = function() { 
           			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
-                }
+                };
 
                 $scope.getModuleDetails = function (moduleId) {
                      return $http.get(rest+'modules/moduledetails/'+moduleId).
@@ -49,12 +196,126 @@
                 $scope.getNumbers = function () {
                     return $http.get(rest+'staticresources/numbers').
                     success(function (data) { 
-                        $scope.numbers = data; 
+                        $scope.modulePartNrs = data; 
                     });
                }; 
+
+               $scope.initRoomAndTimeModels = function(){
+            	   $scope.dayofweek = "";
+            	   $scope.begintime = "";
+            	   $scope.endtime = "";
+            	   $scope.roomlabel = "";
+            	   $scope.roomcapacity = "";
+            	   $scope.roomcomments = "";
+               };
+
+               $scope.formatRoomsAndTimesForTransfer = function() {
+                   var formattedData = ""
+
+                       if($scope.roomsAndTimes != null ){
+						for(var i = 0; i < $scope.roomsAndTimes.length-1;++i){
+							if($scope.roomsAndTimes[i] != undefined){
+								formattedData += $scope.roomsAndTimes[i].showItems()+";;;";
+							}
+						}
+							if($scope.roomsAndTimes[$scope.roomsAndTimes.length-1] != undefined){
+								formattedData += $scope.roomsAndTimes[$scope.roomsAndTimes.length-1].showItems();
+							}
+	
+                   } 
+					return formattedData;
+               };
+
+               $scope.formatModulePartsForTransfer = function(){
+            	   var formattedData = ""
+
+                       if($scope.selectedModuleParts != null ){
+						for(var i = 0; i < $scope.selectedModuleParts.length-1;++i){
+
+							if($scope.selectedModuleParts[i] != undefined){
+							formattedData += $scope.selectedModuleParts[i].replace(";;;",";")+" ;;;";
+							}
+						}
+
+						if($scope.selectedLecturers[$scope.selectedModuleParts.length-1] != undefined){
+						formattedData += $scope.selectedModuleParts[$scope.selectedModuleParts.length-1]+" ";
+						}
+                   } 
+					return formattedData;
+                   }
+               $scope.formatLecturersForTransfer = function(){
+            	   var formattedData = ""
+
+                   if($scope.selectedLecturers != null){
+						for(var i = 0; i < $scope.selectedLecturers.length-1;++i){
+							if($scope.selectedLecturers[i] != undefined){
+								formattedData += $scope.selectedLecturers[i].id+" ;;;";
+							}
+						}					 
+						if($scope.selectedLecturers[$scope.selectedLecturers.length-1] != undefined){
+							formattedData += $scope.selectedLecturers[$scope.selectedLecturers.length-1].id+" ";
+						}
+                   } 
+				return formattedData;
+              }
+               $scope.addRoomAndTimes = function(){
+				if($scope.roomsAndTimes == null){
+							$scope.roomsAndTimes = [];
+					}
+                   if(($scope.dayofweek == null ||$scope.dayofweek.length==0 )&& 
+                		   ($scope.begintime == null ||$scope.begintime.length==0) &&
+                		   ($scope.endtime == null ||$scope.endtime.length==0) &&
+                		   ($scope.roomlabel == null ||$scope.roomlabel.length==0) &&
+                		   ($scope.roomcapacity == null ||$scope.roomcapacity.length==0) &&
+                		   ($scope.roomcomments == null ||$scope.roomcomments.length==0)  ){
+                       return;
+                   }
+                   var roomAndTimes = new RoomAndTimes($scope.dayofweek, $scope.begintime,$scope.endtime,$scope.roomlabel,$scope.roomcapacity,$scope.roomcomments);
+    
+					$scope.roomsAndTimes.push(roomAndTimes);
+					$scope.initRoomAndTimeModels();
+					$scope.hideRoomtable();
+               };
+
+               $scope.deleteRoomsAndTimes = function(id){
+                   var tmp = [];
+                   for(var i = 0; i < $scope.roomsAndTimes.length;++i){
+                       if(!angular.equals($scope.roomsAndTimes[i].getId(), id)){
+                           tmp.push($scope.roomsAndTimes[i]);
+                       }
+                   }
+                   if(tmp.length == 0){
+                       $scope.roomtableIsVisible = true;
+                  }
+                   alert(tmp + " " +tmp.length +" "+$scope.roomtableIsVisible)
+                   $scope.roomsAndTimes = tmp;
+
+                                  };
+
+               $scope.initIsRoomtableVisible=function(){
+					$scope.roomtableIsVisible = false;
+               }
+
+                $scope.showRoomtable = function(){
+                	$scope.roomtableIsVisible = true;
+                }
+                $scope.hideRoomtable = function(){
+                	$scope.roomtableIsVisible = false;
+                }
+
+               $scope.canShowRoomtable = function(){
+
+                   var canShow = ( !($scope.coursedescription == undefined || $scope.coursedescription == '' || $scope.coursedescription.trim().length == 0) 
+                           || !(  $scope.vvznr == undefined || $scope.vvznr == '' || $scope.vvznr.trim().length == 0 ));
+//                    alert(canShow)
+            	   return canShow;
+  
+                   }
+
+               
             });
 
-
+       
 
     </script>
 
@@ -63,7 +324,7 @@
 
 <body>
 	<div class="container" ng-controller="CourseCtrl"
-		ng-init="getModuleDetails(getModuleId());getCourseTypes();getEmployees();getNumbers();initLecturers()">
+		ng-init="getModuleDetails(getModuleId());getCourseTypes();getEmployees();getNumbers();initLecturers();getDayAbbreviations();initSelectedModuleParts();initSelectedPrimaryNr();initSelectedModulePartNr();initRoomAndTimeModels();initIsRoomtableVisible()">
 		<form
 			action="http://localhost:8081/GGLecturePlanner/rest/courses/addcourse"
 			method="POST">
@@ -73,23 +334,38 @@
 					<td><p ng-repeat="pm in moduleDetails.primaryNrs">{{pm}}</p></td>
 				</tr>
 				<tr>
-					<td><label for="coursedescription">Kursbeschreibung</label></td>
-					<td><input name="coursedescription" /></td>
-				</tr>
-				<tr>
-					<td><label for="vvznr">VVZ Nr.</label></td>
-					<td><input name="vvznr" /></td>
-				</tr>
-				<tr>
-					<td><label>Modulteil (nur eine Zahl, z.B. 1,2,3)</label></td>
-					<td><select name="primarynr">
-							<option ng-repeat="pm in moduleDetails.primaryNrs" value="{{pm}}">{{pm}}</option>
-					</select> <select name="modulpart">
-							<option value=""></option>
-							<option ng-repeat="n in numbers" value="{{n}}">{{n}}</option>
+					<td><label for="coursetype">Art des Kurses</label></td>
+					<td><select name="coursetype">
+							<option ng-repeat="c in courseTypes | orderBy:'abbreviation'"
+								value="{{c.abbreviation}}">{{c.description}}</option>
 					</select></td>
-					</td>
 				</tr>
+				<tr>
+					<td><label for="coursedescription">Kursbeschreibung
+							(E.g. Grundzüge Fernerkundung)</label></td>
+					<td><input name="coursedescription" ng-model="coursedescription"/></td>
+				</tr>
+				<tr>
+					<td><label for="vvznr" >VVZ Nr.</label></td>
+					<td><input name="vvznr" ng-model="vvznr"/></td>
+				</tr>
+				<tr>
+					<td><label>Modulteil </label></td>
+					<td><select name="primarynr" ng-model="selectedPrimaryNr"
+						ng-change="updateSelectedPrimaryNr();addModulePart();">
+							<option ng-repeat="pm in moduleDetails.primaryNrs" value="{{pm}}">{{pm}}</option>
+					</select> <select name="modulpart" ng-model="selectedModulePartNr"
+						ng-change="addModulePart()">
+							<option ng-repeat="n in modulePartNrs" value="{{n}}">{{n}}</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><div ng-repeat="m in selectedModuleParts">
+							{{m}} <a ng-click="deleteModulePart(m)">delete</a>
+						</div></td>
+				</tr>
+
 				<tr>
 					<td><label for="nrofgroups">Anzahl Gruppen</label></td>
 					<td><input name="nrofgroups" /></td>
@@ -113,30 +389,111 @@
 					</td>
 				</tr>
 				<tr>
-					<td for="lecturers">Dozierende</td>
+					<td><label for="lecturers">Dozierende</label></td>
 					<td><select name="lecturers" ng-model="selectedLecturer"
-						ng-change="updateLecturers()">
-							<option ng-repeat="e in employees" value="{{e.id}}">{{e.firstName}}
-								{{e.lastName}}</option>
+						ng-change="addLecturer()">
+							<option ng-repeat="e in employees| orderBy:'lastName'"
+								value="{{e.id}}">{{e.firstName}} {{e.lastName}}</option>
 					</select></td>
 				</tr>
 				<tr>
 					<td></td>
-					<td><div ng-bind-html="selectedLecturers"></div></td>
+					<td><div
+							ng-repeat="l in selectedLecturers | orderBy:'lastName'">
+							{{l.firstName}} {{l.lastName}} <a ng-click="deleteLecturer(l.id)">delete</a>
+						</div></td>
 				</tr>
 				<tr>
-					<td><label for="comments">Kommentare (z.B. bez�glich
-							Anstellung, etc.):</label></td>
-					<td><textarea NAME="comments" COLS=40 ROWS=6></textarea></td>
+					<td><label for="swstotpergroup">SWS total pro Gruppe</label></td>
+					<td><input name="swstotpergroup" /></td>
 				</tr>
 				<tr>
-					<td></td>
+					<td><label for="begindate">Beginn-Datum</label></td>
+					<td><input name="begindate" /></td>
+				</tr>
+				<tr>
+					<td><label for="enddate">End-Datum</label></td>
+					<td><input name="enddate" /></td>
+				</tr>
+				<tr>
+					<td><label for="rythm">Verteilung über Semester /
+							Verantsaltungs-Rhythmus</label></td>
+					<td><input name="rythm" /></td>
+				</tr>
+				<tr>
+					<td><label for="comments">Kommentare zum Modul:</label></td>
+					<td><textarea name="comments" cols=40 rows=6></textarea></td>
+				</tr>
+			</table> 
+			<div   ng-show="canShowRoomtable()&&!roomtableIsVisible">
+				<h1>
+					<a ng-click="showRoomtable()">(+) Add rooms and times</a>
+				</h1>
+			</div>
+			<table name="roomtable" 
+				ng-show="roomtableIsVisible">
+				<tr>
+					<th colspan="2">Zeiten und Räume</th>
+				</tr>
+				<tr>
+					<td><label for="dayofweek">Wochentag</label></td>
+					<td><select name="dayofweek" ng-model="dayofweek">
+							<option ng-repeat="day in dayAbbreviations" value="{{day}}">{{day}}</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td><label for="begintime">Startzeit</label></td>
+					<td><input type="time" name="begintime" ng-model="begintime" /></td>
+				</tr>
+				<tr>
+					<td><label for="endtime">End-Zeit</label></td>
+					<td><input type="time" name="endtime" ng-model="endtime" /></td>
+				</tr>
+				<tr>
+					<td><label for="roomlabel">Gewünschter Hörsaal</label></td>
+					<td><input name="roomlabel" ng-model="roomlabel" /></td>
+				</tr>
+				<tr>
+					<td><label for="roomcapacity">Kapazität des
+							gewünschten Raums</label></td>
+					<td><input name="roomcapacity" type="number" ng-model="roomcapacity" /></td>
+				</tr>
+				<tr>
+					<td><label for="roomcomments">Kommentare zum Raum oder
+							zu Zeiten:</label></td>
+					<td><textarea name="roomcomments" cols=40 rows=6
+							ng-model="roomcomments"></textarea></td>
+				</tr>
+				<tr>
+					<td>
+					<td><a name="addroomandtimes" ng-click="addRoomAndTimes()">Raum
+							und Zeiten hinzufügen</a></td>
+				</tr>
+				<table ng-show="canShowRoomtable()">
+					<tr ng-repeat="r in roomsAndTimes">
+						<td>{{r.getDayOfWeek()}}</td>
+						<td>{{r.getBeginTime()}}</td>
+						<td>{{r.getEndTime()}}</td>
+						<td>{{r.getRoomLabel()}}</td>
+						<td>{{r.getRoomCapacity()}}</td>
+						<td>{{r.getRoomComments()}}</td>
+						<td><a ng-click="deleteRoomsAndTimes(r.getId())">delete</a></td>
+					</tr>
+				</table>
+			</table>
+
+			<input type="hidden" name="moduleid" value="{{getModuleId()}}">
+			<input type="hidden" name="roomsandtimesdata"
+				value="{{formatRoomsAndTimesForTransfer()}}"> <input
+				type="hidden" name="modulepartsdata"
+				value="{{formatModulePartsForTransfer()}}"> <input
+				type="hidden" name="lecturersdata"
+				value="{{formatLecturersForTransfer()}}">
+			<table>
+				<tr>
 					<td><input type="submit" value="Submit" /></td>
 				</tr>
 			</table>
-			<input type="hidden" name="planid" value="{{getPlanId()}}"> <input
-				type="hidden" name="plansemester" value="{{getSemester()}}">
-			<input type="hidden" name="planyear" value="{{getYear()}}">
 		</form>
 	</div>
 </body>

@@ -3,6 +3,7 @@
 <html ng-app="planedithandler">
 <head>
 <title></title>
+<meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="style.css" />
 <script
 	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
@@ -53,7 +54,7 @@
 		<div>
 			<a
 				href="addModule.html?planid={{getPlanId()}}&semester={{getSemester()}}&year={{getYear()}}">(+)
-				Modul hinzufügen</a>
+				Modul hinzufÃ¼gen</a>
 		</div>
 		<table>
 			<th>Modulteil</th>
@@ -61,8 +62,8 @@
 			<th>Modultyp(en)</th>
 			<th>Disziplin(e)</th>
 			<th>Anbietende Abteilung</th>
-			<th>Prüfungstyp</th>
-			<th>Prüfungszeitraum</th>
+			<th>PrÃ¼fungstyp</th>
+			<th>PrÃ¼fungszeitraum</th>
 			<th>Modulverantwortlicher</th>
 			<th>Kommentare zum Modul</th>
 			
@@ -77,10 +78,10 @@
 				<td>{{module.assessmentDate}}</td>
 				<td>{{module.responsibleEmployee.firstName}} {{module.responsibleEmployee.lastName}}</td>
 				<td>{{module.comments}}</td>
-				<td><a href="showCourses.html?moduleid={{module.id}}">LVA anzeigen/ändern/hinzufügen</a></td>
+				<td><a href="showCourses.html?moduleid={{module.id}}">LVA anzeigen/Ã¤ndern/hinzufÃ¼gen</a></td>
 				<td><a
-					href="">bearbeiten</a></td>
-				<td><a href="">löschen</a></td>
+					href="changeModule.html?moduleid={{module.id}}">Modul bearbeiten</a></td>
+				<td><a href="">Modul lÃ¶schen</a></td>
 			</tr>
 		</table>
 	</div>

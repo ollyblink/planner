@@ -20,6 +20,8 @@ public enum CourseDao {
 	private PreparedStatement insertIntoCourse;
 	private PreparedStatement insertCourseTimesRooms;
 	private PreparedStatement insertLecturersToCourses;
+	private PreparedStatement insertCourseModuleParts;
+	private PreparedStatement getCourseModuleParts;
 
 	private CourseDao() {
 		try {
@@ -31,13 +33,15 @@ public enum CourseDao {
 
 			this.getLecturersForCourse = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("Select distinct lecturer_fk from lecturers_to_courses where course_id_fk=? and module_id_fk=?;");
+			this.getCourseModuleParts = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("select distinct module_part from course_module_parts where course_id_fk=? and module_id_fk = ?;");
 
 			this.insertIntoCourse = DBConnectionProvider.instance.getDataSource().getConnection()
-					.prepareStatement("insert into courses values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
+					.prepareStatement("insert into courses values (?,?,?,?,?,?,?,?,?,?,?,?,?);");
 			this.insertCourseTimesRooms = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into courses_times_and_rooms values(?,?,?,?,?,?,?,?,?);");
 			this.insertLecturersToCourses = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into lecturers_to_courses values (?,?,?)");
+			this.insertCourseModuleParts = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("insert into course_module_parts values(?,?,?);");
 
 		} catch (SQLException e) { 
 			e.printStackTrace();
@@ -52,21 +56,21 @@ public enum CourseDao {
 		this.insertIntoCourse.setInt(1, course.getId());
 		this.insertIntoCourse.setString(2, course.getCourseDescription());
 		this.insertIntoCourse.setInt(3, course.getModuleNr());
-		this.insertIntoCourse.setString(4, course.getVvzNr());
-		this.insertIntoCourse.setString(5, course.getModulePart());
-		this.insertIntoCourse.setInt(6, course.getNrOfGroups());
-		this.insertIntoCourse.setInt(7, course.getNrOfStudentsExpectedperGroup());
-		this.insertIntoCourse.setBoolean(8, course.isMaxNrStudentsExpectedPerGroup());
-		this.insertIntoCourse.setFloat(9, course.getSwsTotalPerGroup()); 
-		this.insertIntoCourse.setString(10, course.getStartDate());
-		this.insertIntoCourse.setString(11, course.getEndDate());
-		this.insertIntoCourse.setString(12, course.getRythm());
-		this.insertIntoCourse.setString(13, course.getComments());
-		this.insertIntoCourse.setString(14, course.getCourseType().getAbbreviation());
+		this.insertIntoCourse.setString(4, course.getVvzNr()); 
+		this.insertIntoCourse.setInt(5, course.getNrOfGroups());
+		this.insertIntoCourse.setInt(6, course.getNrOfStudentsExpectedperGroup());
+		this.insertIntoCourse.setBoolean(7, course.isMaxNrStudentsExpectedPerGroup());
+		this.insertIntoCourse.setFloat(8, course.getSwsTotalPerGroup()); 
+		this.insertIntoCourse.setString(9, course.getStartDate());
+		this.insertIntoCourse.setString(10, course.getEndDate());
+		this.insertIntoCourse.setString(11, course.getRythm());
+		this.insertIntoCourse.setString(12, course.getComments());
+		this.insertIntoCourse.setString(13, course.getCourseType().getAbbreviation());
 		
 		this.insertIntoCourse.executeUpdate();
 
 		for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) {
+			System.out.println(cTR);
 			this.insertCourseTimesRooms.setInt(1, cTR.getId());
 			this.insertCourseTimesRooms.setInt(2, cTR.getCourseId());
 			this.insertCourseTimesRooms.setInt(3, cTR.getModuleId());
@@ -86,6 +90,14 @@ public enum CourseDao {
 			this.insertLecturersToCourses.setInt(3, empl.getId());
 			
 			this.insertLecturersToCourses.executeUpdate();
+		}
+		
+		for(String modulePart: course.getModuleParts()){
+			this.insertCourseModuleParts.setInt(1, course.getId());
+			this.insertCourseModuleParts.setInt(2, course.getModuleNr());
+			this.insertCourseModuleParts.setString(3, modulePart);
+			
+			this.insertCourseModuleParts.executeUpdate();
 		}
 
 		DBConnectionProvider.instance.getDataSource().getConnection().commit();
@@ -136,8 +148,7 @@ public enum CourseDao {
 		ResultSet r = getCoursesForModule.executeQuery();
 		while (r.next()) {
 			Course course = new Course();
-			course.setId(r.getInt("id"));
-			course.setModulePart(r.getString("module_part"));
+			course.setId(r.getInt("id")); 
 			course.setCourseDescription(r.getString("course_description"));
 			course.setModuleNr(r.getInt("module_id_fk"));
 			course.setVvzNr(r.getString("vvznr"));
@@ -149,7 +160,7 @@ public enum CourseDao {
 			course.setEndDate(r.getString("end_date"));
 			course.setRythm(r.getString("rythm"));
 			course.setComments(r.getString("comments"));
-			course.setCourseType(StaticTypesDao.instance.getCourseType(r.getString("course_type_fk")));
+			course.setCourseType(StaticDataDao.instance.getCourseType(r.getString("course_type_fk")));
 			courses.add(course);
 		}
 		r.close();
@@ -159,8 +170,25 @@ public enum CourseDao {
 			course.setCourseTimesAndRooms(getCourseTimesAndRooms(moduleId, course.getId()));
 			// Get all lecturers for each course
 			course.setLecturers(getLecturersForCourse(moduleId, course.getId()));
+			//Get all the course module parts for each course
+			course.setModuleParts(getModuleParts(moduleId, course.getId()));
 		}
 		return courses;
+	}
+
+	private ArrayList<String> getModuleParts(int moduleId, Integer courseId) throws SQLException {
+		ArrayList<String> moduleParts = new ArrayList<String>();
+		getCourseModuleParts.setInt(1, courseId);
+		getCourseModuleParts.setInt(2, moduleId);
+
+		ResultSet r = getCourseModuleParts.executeQuery();
+		while (r.next()) { 
+
+			moduleParts.add(r.getString(1));
+		}
+		r.close();
+
+		return moduleParts;
 	}
 
 	private ArrayList<CourseTimesAndRooms> getCourseTimesAndRooms(Integer moduleId, Integer courseId) throws SQLException {
