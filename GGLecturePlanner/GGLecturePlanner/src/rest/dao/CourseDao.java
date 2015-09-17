@@ -243,4 +243,15 @@ public enum CourseDao {
 		return (update > 0);
 	}
 
+	public Course getCourseDetails(int moduleId, int courseId) throws SQLException {
+		ArrayList<Course> courses = getCoursesForModule(moduleId);
+ 		for(Course course:courses){
+			if(course.getId().equals(courseId)){
+				return course;
+			}
+		}
+		
+		return null;
+	}
+
 }

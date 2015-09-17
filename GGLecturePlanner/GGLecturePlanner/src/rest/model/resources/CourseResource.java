@@ -20,7 +20,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import rest.dao.CourseDao;
-import rest.dao.ModuleDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Course;
 import rest.model.datastructures.CourseTimesAndRooms;
@@ -215,12 +214,35 @@ public class CourseResource {
 		return new ArrayList<>();
 	}
 
+	@GET
+	@Path("/coursedetails/{moduleid}/{courseid}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Course getCourseDetails(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId) {
+		System.out.println("CourseResource::getCourseDetails: moduleId : " + moduleId + ", courseid: " + courseId);
+		Course course = null;
+		try {
+			course = CourseDao.instance.getCourseDetails(moduleId, courseId);
+			if (course != null) {
+				System.out.println("==========================================");
+				System.out.println("CourseResource::getCourseDetails::found course:");
+				System.out.println(course);
+				System.out.println("==========================================");
+			} else {
+				System.out.println("Could not find course with moduleId " + moduleId + " & course id " + courseId);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return course;
+	}
+
 	@DELETE
 	@Path("/deletecourse/{moduleid}/{courseid}")
 	public boolean deletePlan(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId) throws IOException {
 
 		try {
-			System.out.println("Delete course: moduleid "+moduleId + ", courseid: " + courseId);
+			System.out.println("Delete course: moduleid " + moduleId + ", courseid: " + courseId);
 			return CourseDao.instance.deleteCourse(moduleId, courseId);
 		} catch (SQLException e) {
 			e.printStackTrace();

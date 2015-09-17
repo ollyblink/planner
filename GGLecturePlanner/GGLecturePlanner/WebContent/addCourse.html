@@ -53,6 +53,7 @@
                             return( this.roomComments );
                         };
                         RoomAndTimes.prototype.showItems = function(){
+                            
                             return (
                                     this.dayOfWeek.replace("%%%","%")+" %%%"+ 
                                     this.beginTime.replace("%%%","%")+" %%%"+
@@ -70,7 +71,66 @@
         courseHandler.controller('CourseCtrl', function ($scope, $sce, $http, RoomAndTimes) {
                 var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
 
+                $scope.containsEmployee = function(selectedLecturers, lecturer){
 
+                	 for (var i = 0; i < selectedLecturers.length; i++) {
+                         if (selectedLecturers[i].id === lecturer.id) {
+                             return true;
+                         }
+                     }
+                     return false;
+				}
+				
+                $scope.getModuleId = function() { 
+          			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
+                };
+
+                $scope.getCourseDetails = function (moduleId, courseId) {
+					if((typeof courseId !== "undefined")&&(typeof moduleId !== "undefined")) {
+                    
+	                    $http.get(rest+'courses/coursedetails/'+moduleId+'/'+courseId).
+		                     success(function (data) {
+		                          $scope.courseDetails = data;
+		                          $scope.courseid = data.id;
+		                          $scope.coursedescription = data.courseDescription;
+		                          $scope.coursetype = data.courseType.abbreviation
+		                          $scope.vvznr = data.vvzNr;
+		                          $scope.selectedModuleParts = data.moduleParts;
+		                          $scope.nrofgroups = parseInt(data.nrOfGroups);
+		                          $scope.nrofstudentsexpectedpergroup = data.nrOfStudentsExpectedPerGroup;
+		                          $scope.ismaxnrofstudentsexpectedpergroup = ''+data.isMaxNrStudentsExpectedPerGroup;
+		                          $scope.swstotpergroup = parseFloat(data.swsTotalPerGroup);
+		                          $scope.begintime = data.startDate;
+		                          $scope.enddate = data.endDate;
+		                          $scope.rythm = data.rythm;
+		                          $scope.selectedLecturers = data.lecturers;
+		                          $scope.comments = data.comments;
+		                          
+		                          $scope.roomsAndTimes = []; 
+		                          var r = data.courseTimesAndRooms; //sorry too long ...
+		                          for(var i = 0; i < r.length;++i){ 
+		                          var roomAndTimes = new RoomAndTimes(
+				                          (typeof r[i].dayOfWeek === "undefined"?"":r[i].dayOfWeek), 
+				                          (typeof r[i].startTime === "undefined"?"":r[i].startTime),
+				                          (typeof r[i].endTime === "undefined"?"":r[i].endTime),
+				             		      (typeof r[i].roomLabel === "undefined"?"":r[i].roomLabel),
+				             		      (typeof r[i].roomCapacity === "undefined"?0:r[i].roomCapacity),
+				             			  (typeof r[i].comments === "undefined"?"":r[i].comments)
+				                          );
+ 		      						$scope.roomsAndTimes.push(roomAndTimes);
+		                          }
+
+		                          var tmp = [];
+		                          for(var i = 0; i < $scope.employees.length;++i) {
+										if(!$scope.containsEmployee($scope.selectedLecturers, $scope.employees[i])) {
+											tmp.push($scope.employees[i]);
+										}
+			                      }
+			                      $scope.employees = tmp;
+		                     });
+					}
+                }; 
+                
                 $scope.getCourseId = function() {
                 	var query = window.location.search.substring(1).split("&")[1];
                 	if(typeof query !== "undefined") {
@@ -78,7 +138,7 @@
                 		if((typeof queryParts !== "undefined") && queryParts.length == 2){
                 			if(queryParts[0] === "courseid" && (typeof queryParts[1] !== undefined) && !isNaN(queryParts[1])) {
 								$scope.courseId = queryParts[1];
-								$scope.getCourseDetails($scope.courseId);
+								$scope.getCourseDetails($scope.getModuleId(), $scope.courseId);
 								return;
                     		}
                     	}
@@ -198,9 +258,6 @@
                 };
 
                  
-                $scope.getModuleId = function() { 
-          			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
-                };
 
                 $scope.getModuleDetails = function (moduleId) {
                      return $http.get(rest+'modules/moduledetails/'+moduleId).
@@ -225,22 +282,23 @@
             	   $scope.roomcomments = "";
                };
 
-               $scope.formatRoomsAndTimesForTransfer = function() {
-                   var formattedData = ""
-
-                       if($scope.roomsAndTimes != null ){
+               $scope.formatRoomsAndTimesForTransfer = function() { 
+                   var formattedData = "" 
+	               if(typeof $scope.roomsAndTimes !== "undefined" ){
+//                        alert( $scope.roomsAndTimes[0].getDayOfWeek() +" " +$scope.roomsAndTimes[0].getBeginTime() +" "+$scope.roomsAndTimes[0].getEndTime() +" "+$scope.roomsAndTimes[0].getRoomLabel() +" "+$scope.roomsAndTimes[0].getRoomCapacity() +" "+$scope.roomsAndTimes[0].getRoomComments() +" ");
 						for(var i = 0; i < $scope.roomsAndTimes.length-1;++i){
-							if($scope.roomsAndTimes[i] != undefined){
+							if(typeof $scope.roomsAndTimes[i] !== "undefined"){
+								
 								formattedData += $scope.roomsAndTimes[i].showItems()+";;;";
 							}
 						}
-							if($scope.roomsAndTimes[$scope.roomsAndTimes.length-1] != undefined){
-								formattedData += $scope.roomsAndTimes[$scope.roomsAndTimes.length-1].showItems();
-							}
-	
-                   } 
+						if(typeof $scope.roomsAndTimes[$scope.roomsAndTimes.length-1] !== "undefined"){
+							formattedData += $scope.roomsAndTimes[$scope.roomsAndTimes.length-1].showItems();
+						}
+		
+	            	} 
 					return formattedData;
-               };
+              	};
 
                $scope.formatModulePartsForTransfer = function(){
             	   var formattedData = ""
@@ -249,7 +307,7 @@
 						for(var i = 0; i < $scope.selectedModuleParts.length-1;++i){
 
 							if($scope.selectedModuleParts[i] != undefined){
-							formattedData += $scope.selectedModuleParts[i].replace(";;;",";")+" ;;;";
+								formattedData += $scope.selectedModuleParts[i].replace(";;;",";")+" ;;;";
 							}
 						}
 
@@ -303,7 +361,7 @@
                    if(tmp.length == 0){
                        $scope.roomtableIsVisible = true;
                   }
-                   alert(tmp + " " +tmp.length +" "+$scope.roomtableIsVisible)
+                   //alert(tmp + " " +tmp.length +" "+$scope.roomtableIsVisible)
                    $scope.roomsAndTimes = tmp;
 
                                   };
@@ -340,20 +398,20 @@
 
 <body>
 	<div class="container" ng-controller="CourseCtrl"
-		ng-init="getModuleDetails(getModuleId());getCourseTypes();getEmployees();getNumbers();initLecturers();getDayAbbreviations();initSelectedModuleParts();initSelectedPrimaryNr();initSelectedModulePartNr();initRoomAndTimeModels();initIsRoomtableVisible()">
+		ng-init="getModuleDetails(getModuleId());getCourseTypes();getEmployees();getNumbers();initLecturers();getDayAbbreviations();initSelectedModuleParts();initSelectedPrimaryNr();initSelectedModulePartNr();initRoomAndTimeModels();initIsRoomtableVisible();getCourseId()">
 		<form
 			action="http://localhost:8081/GGLecturePlanner/rest/courses/addcourse"
 			method="POST">
 			<table>
 				<tr>
-					<td>Modul</td>
+					<td>LVA des Moduls</td>
 					<td><p ng-repeat="pm in moduleDetails.primaryNrs">{{pm}}</p></td>
 				</tr>
 				<tr>
 					<td><label for="coursetype">Art des Kurses</label></td>
-					<td><select name="coursetype">
+					<td><select name="coursetype" ng-model="coursetype">
 							<option ng-repeat="c in courseTypes | orderBy:'abbreviation'"
-								value="{{c.abbreviation}}">{{c.description}}</option>
+								value="{{c.abbreviation}}">{{c.abbreviation}}: {{c.description}}</option>
 					</select></td>
 				</tr>
 				<tr>
@@ -384,23 +442,22 @@
 
 				<tr>
 					<td><label for="nrofgroups">Anzahl Gruppen</label></td>
-					<td><input name="nrofgroups" /></td>
+					<td><input type="number" ng-model="nrofgroups" name="nrofgroups" /></td>
 				</tr>
 				<tr>
 					<td><label for="nrofstudentsexpectedpergroup">Anzahl
 							Studenten erwartet pro Gruppe</label></td>
-					<td><input name="nrofstudentsexpectedpergroup" /></td>
+					<td><input type="Number" ng-model="nrofstudentsexpectedpergroup" name="nrofstudentsexpectedpergroup" /></td>
 				</tr>
 				<tr>
 					<td><label for="ismaxnrofstudentsexpectedpergroup">Maximale
 							Anzahl Studenten pro Gruppe?</label></td>
 					<td>
-						<fieldset>
+						<fieldset  >
 							<input type="radio" id="yes"
-								name="ismaxnrofstudentsexpectedpergroup" value="true"><label
+								ng-model="ismaxnrofstudentsexpectedpergroup" name="ismaxnrofstudentsexpectedpergroup" value="true"><label
 								for="yes"> Ja</label><br> <input type="radio" id="no"
-								name="ismaxnrofstudentsexpectedpergroup" value="false"
-								checked="checked"><label for="no"> Nein</label><br>
+								ng-model="ismaxnrofstudentsexpectedpergroup" name="ismaxnrofstudentsexpectedpergroup" value="false" ><label for="no"> Nein</label><br>
 						</fieldset>
 					</td>
 				</tr>
@@ -421,24 +478,24 @@
 				</tr>
 				<tr>
 					<td><label for="swstotpergroup">SWS total pro Gruppe</label></td>
-					<td><input name="swstotpergroup" /></td>
+					<td><input type="number" ng-model="swstotpergroup" name="swstotpergroup" /></td>
 				</tr>
 				<tr>
 					<td><label for="begindate">Beginn-Datum</label></td>
-					<td><input name="begindate" /></td>
+					<td><input ng-model="begintime" name="begindate" /></td>
 				</tr>
 				<tr>
 					<td><label for="enddate">End-Datum</label></td>
-					<td><input name="enddate" /></td>
+					<td><input ng-model="enddate" name="enddate" /></td>
 				</tr>
 				<tr>
 					<td><label for="rythm">Verteilung über Semester /
 							Verantsaltungs-Rhythmus</label></td>
-					<td><input name="rythm" /></td>
+					<td><input ng-model="rythm" name="rythm" /></td>
 				</tr>
 				<tr>
 					<td><label for="comments">Kommentare zum Modul:</label></td>
-					<td><textarea name="comments" cols=40 rows=6></textarea></td>
+					<td><textarea ng-model="comments" name="comments" cols=40 rows=6></textarea></td>
 				</tr>
 			</table> 
 			<div   ng-show="canShowRoomtable()&&!roomtableIsVisible">
