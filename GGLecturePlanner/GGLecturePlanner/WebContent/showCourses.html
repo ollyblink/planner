@@ -19,25 +19,30 @@
 		
 		.controller('courseCtrl', function ($scope, $http) {
 		
-			 var parts = window.location.search.substring(1).split("&");
-			var moduleId = parts[0].split("=")[1];
+			$scope.getModuleId = function() { 
+      			$scope.moduleId =  window.location.search.substring(1).split("&")[0].split("=")[1]; 
+            } 
 		    var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
 		    $scope.getCourseDetails = function () {
-		        return $http.get(rest+'courses/coursedetails/'+moduleId).
+		        return $http.get(rest+'courses/coursedetails/'+$scope.moduleId).
 		         success(function (data) {
 		             $scope.courses = data; 
 		         });
 		    };  
 		    $scope.getModuleDetails = function () {
-		        return $http.get(rest+'modules/moduledetails/'+moduleId).
+		        return $http.get(rest+'modules/moduledetails/'+$scope.moduleId).
 		         success(function (data) {
 		             $scope.moduleDetails = data; 
 		         });
 		    };  
+		    $scope.deleteCourse = function(moduleId, courseId) {
+		    	return $http.delete(rest+'courses/deletecourse/'+moduleId +'/'+courseId).
+		         success(function (data) {
+		        	 window.location.reload();
+		         })
+			};
 
-		    $scope.getModuleId = function($scope) { 
-      			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
-            }
+		    
              
 		});
 
@@ -49,12 +54,11 @@
 
 <body>
 	<div class="container" ng-controller="courseCtrl"
-		ng-init="getCourseDetails();getModuleDetails()">
+		ng-init="getModuleId();getCourseDetails();getModuleDetails()">
 		<div class="title">{{moduleDetails.primaryNrs[0]}}:
 			Lernveranstaltungen</div>
 		<div>
-			<a href="addCourse.html?moduleid={{moduleDetails.id}}">(+) LVA
-				hinzufügen</a>
+			<a href="addCourse.html?moduleid={{moduleId}}">(+) LVA hinzufügen</a>
 		</div>
 		<table>
 			<tr>
@@ -86,7 +90,7 @@
 			<tr ng-repeat="course in courses">
 				<td>{{course.courseDescription}}</td>
 				<td>{{course.vvzNr}}</td>
-				<td>{{course.modulePart}}</td>
+				<td><label ng-repeat="mp in course.moduleParts">{{mp}}</label></td>
 				<td>{{course.nrOfGroups}}</td>
 				<td>{{course.nrOfStudentsExpectedperGroup}} <label
 					ng-show="{{course.maxNrStudentsExpectedPerGroup}}">(max)</label></td>
@@ -112,8 +116,8 @@
 						</tr>
 					</table>
 				</td>
-				<td><a href="">bearbeiten</a></td>
-				<td><a href="">löschen</a></td>
+				<td><a href="addCourse.html?moduleid={{moduleId}}&courseid={{course.id}}">bearbeiten</a></td>
+				<td><a ng-click="deleteCourse(moduleId, course.id)">löschen</a></td>
 			</tr>
 		</table>
 	</div>

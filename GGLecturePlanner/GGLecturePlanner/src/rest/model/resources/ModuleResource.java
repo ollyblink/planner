@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -88,7 +89,7 @@ public class ModuleResource {
 				ModuleDao.instance.addModule(planId, module);
 			}else{
 				System.out.println("Updating module: " + module);
-//				ModuleDao.instance.addOrUpdateModule(planId, module, false);
+				ModuleDao.instance.updateModule(planId, module);
 			}
 
 			servletResponse.sendRedirect("../../showModules.html?planid=" + planId);
@@ -110,6 +111,19 @@ public class ModuleResource {
 			e.printStackTrace();
 		}
 		return new Module();
+	}
+	
+	@DELETE
+	@Path("/deletemodule/{moduleid}")
+	public boolean deletePlan(@PathParam("moduleid") int moduleId) throws IOException {
+
+		try {
+			System.out.println("Delete module: " + moduleId);
+			return ModuleDao.instance.deleteModule(moduleId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }

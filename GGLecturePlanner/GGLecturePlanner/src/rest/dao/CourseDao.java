@@ -14,14 +14,17 @@ import rest.model.datastructures.Times;
 public enum CourseDao {
 	instance;
 
-	private PreparedStatement getCoursesForModule;
-	private PreparedStatement getTimesAndRoomsForCourse;
-	private PreparedStatement getLecturersForCourse;
 	private PreparedStatement insertIntoCourse;
 	private PreparedStatement insertCourseTimesRooms;
 	private PreparedStatement insertLecturersToCourses;
 	private PreparedStatement insertCourseModuleParts;
+	
+	private PreparedStatement getCoursesForModule;
+	private PreparedStatement getTimesAndRoomsForCourse;
+	private PreparedStatement getLecturersForCourse;
 	private PreparedStatement getCourseModuleParts;
+	
+	private PreparedStatement deleteCourse;
 
 	private CourseDao() {
 		try {
@@ -33,7 +36,8 @@ public enum CourseDao {
 
 			this.getLecturersForCourse = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("Select distinct lecturer_fk from lecturers_to_courses where course_id_fk=? and module_id_fk=?;");
-			this.getCourseModuleParts = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("select distinct module_part from course_module_parts where course_id_fk=? and module_id_fk = ?;");
+			this.getCourseModuleParts = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("select distinct module_part from course_module_parts where course_id_fk=? and module_id_fk = ?;");
 
 			this.insertIntoCourse = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into courses values (?,?,?,?,?,?,?,?,?,?,?,?,?);");
@@ -41,9 +45,12 @@ public enum CourseDao {
 					.prepareStatement("insert into courses_times_and_rooms values(?,?,?,?,?,?,?,?,?);");
 			this.insertLecturersToCourses = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into lecturers_to_courses values (?,?,?)");
-			this.insertCourseModuleParts = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("insert into course_module_parts values(?,?,?);");
+			this.insertCourseModuleParts = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("insert into course_module_parts values(?,?,?);");
 
-		} catch (SQLException e) { 
+			this.deleteCourse = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("delete from courses where module_id_fk=? and id = ?;");
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -56,17 +63,17 @@ public enum CourseDao {
 		this.insertIntoCourse.setInt(1, course.getId());
 		this.insertIntoCourse.setString(2, course.getCourseDescription());
 		this.insertIntoCourse.setInt(3, course.getModuleNr());
-		this.insertIntoCourse.setString(4, course.getVvzNr()); 
+		this.insertIntoCourse.setString(4, course.getVvzNr());
 		this.insertIntoCourse.setInt(5, course.getNrOfGroups());
 		this.insertIntoCourse.setInt(6, course.getNrOfStudentsExpectedperGroup());
 		this.insertIntoCourse.setBoolean(7, course.isMaxNrStudentsExpectedPerGroup());
-		this.insertIntoCourse.setFloat(8, course.getSwsTotalPerGroup()); 
+		this.insertIntoCourse.setFloat(8, course.getSwsTotalPerGroup());
 		this.insertIntoCourse.setString(9, course.getStartDate());
 		this.insertIntoCourse.setString(10, course.getEndDate());
 		this.insertIntoCourse.setString(11, course.getRythm());
 		this.insertIntoCourse.setString(12, course.getComments());
 		this.insertIntoCourse.setString(13, course.getCourseType().getAbbreviation());
-		
+
 		this.insertIntoCourse.executeUpdate();
 
 		for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) {
@@ -88,15 +95,15 @@ public enum CourseDao {
 			this.insertLecturersToCourses.setInt(1, course.getId());
 			this.insertLecturersToCourses.setInt(2, course.getModuleNr());
 			this.insertLecturersToCourses.setInt(3, empl.getId());
-			
+
 			this.insertLecturersToCourses.executeUpdate();
 		}
-		
-		for(String modulePart: course.getModuleParts()){
+
+		for (String modulePart : course.getModuleParts()) {
 			this.insertCourseModuleParts.setInt(1, course.getId());
 			this.insertCourseModuleParts.setInt(2, course.getModuleNr());
 			this.insertCourseModuleParts.setString(3, modulePart);
-			
+
 			this.insertCourseModuleParts.executeUpdate();
 		}
 
@@ -148,14 +155,14 @@ public enum CourseDao {
 		ResultSet r = getCoursesForModule.executeQuery();
 		while (r.next()) {
 			Course course = new Course();
-			course.setId(r.getInt("id")); 
+			course.setId(r.getInt("id"));
 			course.setCourseDescription(r.getString("course_description"));
 			course.setModuleNr(r.getInt("module_id_fk"));
 			course.setVvzNr(r.getString("vvznr"));
 			course.setNrOfGroups(r.getInt("nr_of_groups"));
 			course.setNrOfStudentsExpectedPerGroup(r.getInt("nr_of_students_expected_per_group"));
 			course.setIsMaxNrStudentsExpectedPerGroup(r.getBoolean("is_max_nr_students_expected_per_group"));
-			course.setSwsTotalPerGroup(r.getFloat("sws_tot_per_group")); 
+			course.setSwsTotalPerGroup(r.getFloat("sws_tot_per_group"));
 			course.setStartDate(r.getString("start_date"));
 			course.setEndDate(r.getString("end_date"));
 			course.setRythm(r.getString("rythm"));
@@ -170,7 +177,7 @@ public enum CourseDao {
 			course.setCourseTimesAndRooms(getCourseTimesAndRooms(moduleId, course.getId()));
 			// Get all lecturers for each course
 			course.setLecturers(getLecturersForCourse(moduleId, course.getId()));
-			//Get all the course module parts for each course
+			// Get all the course module parts for each course
 			course.setModuleParts(getModuleParts(moduleId, course.getId()));
 		}
 		return courses;
@@ -182,7 +189,7 @@ public enum CourseDao {
 		getCourseModuleParts.setInt(2, moduleId);
 
 		ResultSet r = getCourseModuleParts.executeQuery();
-		while (r.next()) { 
+		while (r.next()) {
 
 			moduleParts.add(r.getString(1));
 		}
@@ -227,6 +234,13 @@ public enum CourseDao {
 		r.close();
 
 		return employees;
+	}
+
+	public boolean deleteCourse(int moduleId, int courseId) throws SQLException {
+		deleteCourse.setInt(1, moduleId);
+		deleteCourse.setInt(2, courseId);
+		int update = deleteCourse.executeUpdate();
+		return (update > 0);
 	}
 
 }

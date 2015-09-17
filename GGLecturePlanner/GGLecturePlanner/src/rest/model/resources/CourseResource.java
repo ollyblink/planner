@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import rest.dao.CourseDao;
+import rest.dao.ModuleDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Course;
 import rest.model.datastructures.CourseTimesAndRooms;
@@ -44,10 +46,10 @@ public class CourseResource {
 
 	@POST
 	@Path("/addcourse/")
-	@Produces(MediaType.TEXT_HTML+";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED+";charset=utf-8")
+	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
 	public void addCourse(@FormParam("moduleid") int moduleId, @FormParam("modulepartsdata") String modulePartsData,
-			@FormParam("coursedescription") String courseDescription, @FormParam("nrofgroups") int nrOfGroups,
+			@FormParam("coursedescription") String courseDescription, @FormParam("vvznr") String vvzNr, @FormParam("nrofgroups") int nrOfGroups,
 			@FormParam("nrofstudentsexpectedpergroup") int nrOfStudentsExpectedPerGroup,
 			@FormParam("ismaxnrofstudentsexpectedpergroup") boolean isMaxNrOfStudentsExpectedPerGroup,
 			@FormParam("lecturersdata") String lecturersData, @FormParam("swstotpergroup") float swsTotalPerGroup,
@@ -58,25 +60,26 @@ public class CourseResource {
 	) throws SQLException, IOException {
 		try {
 			Course course = new Course();
-//			System.out.println(moduleId);
-//			System.out.println(modulePartsData);
-//			System.out.println(courseDescription);
-//			System.out.println(nrOfGroups);
-//			System.out.println(nrOfStudentsExpectedPerGroup);
-//			System.out.println(isMaxNrOfStudentsExpectedPerGroup);
-//			System.out.println(lecturersData); 
-//			System.out.println(swsTotalPerGroup);
-//			System.out.println(beginDate);
-//			System.out.println(endDate);
-//			System.out.println(rythm);
-//			System.out.println(comments);
-//			System.out.println(isMaxNrOfStudentsExpectedPerGroup);
-//			System.out.println(roomsAndTimesData);
-//			System.out.println(courseTypeData); 
-//			
+			// System.out.println(moduleId);
+			// System.out.println(modulePartsData);
+			// System.out.println(courseDescription);
+			// System.out.println(nrOfGroups);
+			// System.out.println(nrOfStudentsExpectedPerGroup);
+			// System.out.println(isMaxNrOfStudentsExpectedPerGroup);
+			// System.out.println(lecturersData);
+			// System.out.println(swsTotalPerGroup);
+			// System.out.println(beginDate);
+			// System.out.println(endDate);
+			// System.out.println(rythm);
+			// System.out.println(comments);
+			// System.out.println(isMaxNrOfStudentsExpectedPerGroup);
+			// System.out.println(roomsAndTimesData);
+			// System.out.println(courseTypeData);
+			//
 			course.setId(CourseDao.instance.getNextCourseId());
 			course.setModuleNr(moduleId);
 			// TODO course.setModuleParts();
+			course.setVvzNr(vvzNr);
 			course.setNrOfGroups(nrOfGroups);
 			course.setNrOfStudentsExpectedPerGroup(nrOfStudentsExpectedPerGroup);
 			course.setIsMaxNrStudentsExpectedPerGroup(isMaxNrOfStudentsExpectedPerGroup);
@@ -105,10 +108,9 @@ public class CourseResource {
 			System.out.println("Times and Rooms: " + timesAndRoomsData.length);
 			for (String timesAndRoom : timesAndRoomsData) {
 				System.out.println(timesAndRoom);
-				
+
 			}
 			for (String timesAndRoom : timesAndRoomsData) {
-				 
 
 				if (timesAndRoom.length() > 0) {
 
@@ -140,7 +142,7 @@ public class CourseResource {
 						}
 					}
 					Time endTime = null;
-					System.out.println("CourseResource:addCourse:endTime: " +items[2]);
+					System.out.println("CourseResource:addCourse:endTime: " + items[2]);
 					if (items[2].trim().length() > 0) {
 						String[] endTimes = items[2].trim().split(":");
 						if (endTimes.length > 1) {
@@ -149,14 +151,14 @@ public class CourseResource {
 								endHour = Integer.parseInt(endTimes[0]);
 							} catch (NumberFormatException e) {
 
-//								e.printStackTrace();
+								// e.printStackTrace();
 							}
 							int endMin = 0;
 							try {
 								endMin = Integer.parseInt(endTimes[1]);
 							} catch (NumberFormatException e) {
 
-//								e.printStackTrace(); 
+								// e.printStackTrace();
 							}
 							endTime = new Time(endHour, endMin, 0);
 						}
@@ -169,8 +171,8 @@ public class CourseResource {
 					if (items[4].trim().length() > 0) {
 						try {
 							cTR.setRoomCapacity(Integer.parseInt(items[4].trim()));
-						}catch(NumberFormatException e){
-//							e.printStackTrace(); 
+						} catch (NumberFormatException e) {
+							// e.printStackTrace();
 							cTR.setRoomCapacity(-1);
 						}
 					}
@@ -182,17 +184,16 @@ public class CourseResource {
 				}
 
 			}
-			course.setCourseTimesAndRooms(timesAndRooms); 
-			
-			
+			course.setCourseTimesAndRooms(timesAndRooms);
+
 			ArrayList<String> moduleParts = new ArrayList<>();
 			String[] splittedModuleParts = modulePartsData.split(StaticDataDao.instance.outerSplittingPattern);
-			for(String mP: splittedModuleParts){
+			for (String mP : splittedModuleParts) {
 				moduleParts.add(mP);
 			}
 			course.setModuleParts(moduleParts);
 			CourseDao.instance.addCourse(course);
-			servletResponse.sendRedirect("../../addCourse.html?moduleid="+moduleId);
+			servletResponse.sendRedirect("../../showCourses.html?moduleid=" + moduleId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			servletResponse.sendRedirect("../../error.html");
@@ -201,7 +202,7 @@ public class CourseResource {
 
 	@GET
 	@Path("/coursedetails/{moduleid}")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Course> getCoursesForModule(@PathParam("moduleid") int moduleId) {
 		System.out.println("Module id in getCoursesForModule: " + moduleId);
 		try {
@@ -213,4 +214,18 @@ public class CourseResource {
 		}
 		return new ArrayList<>();
 	}
+
+	@DELETE
+	@Path("/deletecourse/{moduleid}/{courseid}")
+	public boolean deletePlan(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId) throws IOException {
+
+		try {
+			System.out.println("Delete course: moduleid "+moduleId + ", courseid: " + courseId);
+			return CourseDao.instance.deleteCourse(moduleId, courseId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 }

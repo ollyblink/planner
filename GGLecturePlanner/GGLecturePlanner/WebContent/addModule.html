@@ -15,7 +15,13 @@
         angular.module('addmodulehandler', [])
 
             .controller('ModuleCtrl', function ($scope, $http) {
-                var rest = 'http://localhost:8081/GGLecturePlanner/rest/';
+            	$scope.getRest= function() {
+                	return 'http://localhost:8081/GGLecturePlanner/rest/';
+            	}
+            	$scope.getInsert= function() {
+                	return  $scope.getRest() +"modules/addmodule"; 
+            	}
+            	 
 
                 $scope.getPlanId = function($scope) { 
           			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
@@ -24,11 +30,12 @@
                 $scope.getModuleDetails = function (moduleId) {
 					if(typeof moduleId !== "undefined") {
                     
-	                    $http.get(rest+'modules/moduledetails/'+moduleId).
+	                    $http.get($scope.getRest()+'modules/moduledetails/'+moduleId).
 		                     success(function (data) {
 		                         $scope.moduleDetails = data; 
-		                         $scope.modulePrimaryNrs = data.primaryNrs;
-		                         $scope.semesternr = data.semesterNr;
+// 		                         alert(data.primaryNrs.length);
+		                         $scope.modulePrimaryNrs = ( data.primaryNrs);
+		                         $scope.semesternr = parseInt(data.semesterNr);
 		                         $scope.assessmenttype = data.assessmentType.abbreviation;
 		                         $scope.department = data.department.deptName;  
 		                         $scope.assessmentdate = data.assessmentDate;
@@ -56,7 +63,7 @@
                 	$scope.moduleId = undefined;
                 }
                 $scope.getAssessmentTypes = function () {
-                    return $http.get(rest+'staticresources/assessmenttypes').
+                    return $http.get($scope.getRest()+'staticresources/assessmenttypes').
                      success(function (data) {
                          $scope.allassessmenttypes = data; 
                      });
@@ -97,32 +104,32 @@
                 };
                 
                 $scope.getModuleTypes = function () {
-                    return $http.get(rest+'staticresources/moduletypes').
+                    return $http.get($scope.getRest()+'staticresources/moduletypes').
                      success(function (data) {
                          $scope.allmoduletypes = data; 
                      });
                 }; 
 
                 $scope.getDisciplines = function () {
-                    return $http.get(rest+'staticresources/disciplines').
+                    return $http.get($scope.getRest()+'staticresources/disciplines').
                      success(function (data) {
                          $scope.alldisciplines = data; 
                      });
                 }; 
                 $scope.getDepartments = function () {
-                    return $http.get(rest+'staticresources/departments').
+                    return $http.get($scope.getRest()+'staticresources/departments').
                      success(function (data) {
                          $scope.alldepartments = data; 
                      });
                 }; 
                 $scope.getEmployees = function () {
-                    return $http.get(rest+'employees/allemployees').
+                    return $http.get($scope.getRest()+'employees/allemployees').
                      success(function (data) {
                          $scope.allemployees = data; 
                      });
                 }; 
                 $scope.getPlanDetails = function () {
-                    return $http.get(rest+'plans/plandetails/'+$scope.getPlanId()).
+                    return $http.get($scope.getRest()+'plans/plandetails/'+$scope.getPlanId()).
                      success(function (data) {
                          $scope.planDetails = data; 
                          $scope.plantitle = data.semester + " " +data.year;
@@ -172,9 +179,7 @@
 <body>
 	<div class="container" ng-controller="ModuleCtrl"
 		ng-init="init();getPlanDetails();getAssessmentTypes();getEmployees();getModuleTypes();getDepartments();getDisciplines();getModuleId()">
-		<form
-			action="http://localhost:8081/GGLecturePlanner/rest/modules/addmodule"
-			method="POST">
+		<form action="{{getInsert()}}" method="POST">
 			<table>
 				<tr>
 					<td>Plan</td>
@@ -195,20 +200,22 @@
 				</tr>
 				<tr>
 					<td><label for="semesternr">Semester</label></td>
-					<td><input name="semesternr" ng-model="semesternr" /></td>
+					<td><input type="number" name="semesternr"
+						ng-model="semesternr" min="0" max="30" value="{{semesternr}}" /></td>
 				</tr>
 				<tr>
 					<td>Modultyp(en)</td>
 					<td><label ng-repeat="mt in allmoduletypes"> <input
-							type="checkbox" name="moduletypes" value="{{mt.abbreviation}}" ng-checked="containsType(moduletypes, mt)">{{mt.description}}<br />
-					 
-					</label>
-					</td>
+							type="checkbox" name="moduletypes" value="{{mt.abbreviation}}"
+							ng-checked="containsType(moduletypes, mt)">{{mt.description}}<br />
+
+					</label></td>
 				</tr>
 				<tr>
 					<td>Disziplin(e)</td>
-					<td><span ng-repeat="d in alldisciplines" > <input
-							type="checkbox" name="disciplines" value="{{d.abbreviation}}" ng-checked="containsType(disciplines, d)">{{d.abbreviation}}<br />
+					<td><span ng-repeat="d in alldisciplines"> <input
+							type="checkbox" name="disciplines" value="{{d.abbreviation}}"
+							ng-checked="containsType(disciplines, d)">{{d.abbreviation}}<br />
 					</span></td>
 				</tr>
 				<tr>
@@ -220,13 +227,13 @@
 				</tr>
 				<tr>
 					<td><label for="assessmenttype">Prüfungsart</label></td>
-<!-- 					<td><select name="assessmenttype" -->
-<!-- 						ng-options="a.abbreviation a.description for a in assessmenttypes track by a.abbreviation" -->
-<!-- 						ng-model="assessmenttype"> -->
-<!-- 					</select></td> -->
+					<!-- 					<td><select name="assessmenttype" -->
+					<!-- 						ng-options="a.abbreviation a.description for a in assessmenttypes track by a.abbreviation" -->
+					<!-- 						ng-model="assessmenttype"> -->
+					<!-- 					</select></td> -->
 
 					<td><select name="assessmenttype" ng-model="assessmenttype">
-							<option  ng-repeat="at in allassessmenttypes"
+							<option ng-repeat="at in allassessmenttypes"
 								value="{{at.abbreviation}}">{{at.description}}</option>
 					</select></td>
 				</tr>
@@ -236,14 +243,14 @@
 				</tr>
 				<tr>
 					<td><label for="responsibleemployee">Modulverantwortlicher</label></td>
-<!-- 					<td><select name="responsibleemployee" -->
-<!-- 						ng-options="mv.lastName for mv in employees track by mv.id" -->
-<!-- 						ng-model="responsibleemployee"></select> 					 -->
-						<td><select ng-model="responsibleemployee" name="responsibleemployee">
-													<option ng-repeat="mv in allemployees" value="{{mv.id}}">{{mv.firstName}}
-														{{mv.lastName}}</option> 					</select>
-
-					</td>
+					<!-- 					<td><select name="responsibleemployee" -->
+					<!-- 						ng-options="mv.lastName for mv in employees track by mv.id" -->
+					<!-- 						ng-model="responsibleemployee"></select> 					 -->
+					<td><select ng-model="responsibleemployee"
+						name="responsibleemployee">
+							<option ng-repeat="mv in allemployees" value="{{mv.id}}">{{mv.firstName}}
+								{{mv.lastName}}</option>
+					</select></td>
 				</tr>
 				<tr>
 					<td><label for="comments">Kommentare (z.B. bezüglich
@@ -258,8 +265,8 @@
 			</table>
 			<input type="hidden" name="planid" value="{{getPlanId()}}" /> <input
 				type="hidden" name="moduleprimarynrs"
-				value="{{formatModulePrimaryNrsForTranser()}}" />
-				<input type="hidden" name="moduleid" value="{{moduleDetails.id}}" />
+				value="{{formatModulePrimaryNrsForTranser()}}" /> <input
+				type="hidden" name="moduleid" value="{{moduleDetails.id}}" />
 		</form>
 	</div>
 </body>

@@ -22,13 +22,20 @@
       			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
             }
               
-		    var rest = 'http://localhost:8081/GGLecturePlanner/rest/plans/plandetails/'+$scope.getPlanId();  
+		    var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
 		    $scope.getPlanDetails = function () {
-		        return $http.get(rest).
+		        return $http.get(rest+'plans/plandetails/'+$scope.getPlanId()).
 		         success(function (data) {
 		             $scope.planDetails = data; 
 		         });
 		    };  
+
+		    $scope.deleteModule = function (moduleId) {
+                return $http.delete(rest+'modules/deletemodule/'+moduleId).
+                success(function (data) {
+                	window.location.reload();
+                });
+            };
 
 		    
 		});
@@ -72,8 +79,8 @@
 				<td>{{module.comments}}</td>
 				<td><a href="showCourses.html?moduleid={{module.id}}">LVA anzeigen/ändern/hinzufügen</a></td>
 				<td><a
-					href="changeModule.html?moduleid={{module.id}}">Modul bearbeiten</a></td>
-				<td><a href="">Modul löschen</a></td>
+					href="addModule.html?planid={{getPlanId()}}&moduleid={{module.id}}">Modul bearbeiten</a></td>
+				<td><a ng-click="deleteModule(module.id)">Modul löschen</a></td>
 			</tr>
 		</table>
 	</div>

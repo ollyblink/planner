@@ -70,6 +70,22 @@
         courseHandler.controller('CourseCtrl', function ($scope, $sce, $http, RoomAndTimes) {
                 var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
 
+
+                $scope.getCourseId = function() {
+                	var query = window.location.search.substring(1).split("&")[1];
+                	if(typeof query !== "undefined") {
+                		var queryParts = query.split("=");
+                		if((typeof queryParts !== "undefined") && queryParts.length == 2){
+                			if(queryParts[0] === "courseid" && (typeof queryParts[1] !== undefined) && !isNaN(queryParts[1])) {
+								$scope.courseId = queryParts[1];
+								$scope.getCourseDetails($scope.courseId);
+								return;
+                    		}
+                    	}
+                	} 
+                	$scope.courseId = undefined;
+                }
+                
                 $scope.contains = function (a, id) {
                     if(a == null || id == null){return false;}
                     for (var i = 0; i < a.length; i++) {
