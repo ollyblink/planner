@@ -19,15 +19,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-import rest.dao.EmployeeDao;
 import rest.dao.ModuleDao;
-import rest.dao.PlanDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Discipline;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.Module;
 import rest.model.datastructures.ModuleType;
-import rest.model.datastructures.Plan;
 
 // Plain old Java Object it does not extend as class or implements 
 // an interface

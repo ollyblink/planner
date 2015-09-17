@@ -20,8 +20,8 @@
                 "RoomAndTimes",
                 function(  ) {
                     // Define the constructor function.
-                    var RoomAndTimes = function( dayofWeek, beginTime, endTime, roomLabel, roomCapacity, roomComments ) {
-                        this.id = counter++;
+                    var RoomAndTimes = function( id, dayofWeek, beginTime, endTime, roomLabel, roomCapacity, roomComments ) {
+                        this.id = id;
                         this.dayOfWeek =  dayofWeek  ;
                         this.beginTime =   beginTime ;
                         this.endTime =  endTime ;
@@ -55,6 +55,7 @@
                         RoomAndTimes.prototype.showItems = function(){
                             
                             return (
+                                    this.id +" %%%"+
                                     this.dayOfWeek.replace("%%%","%")+" %%%"+ 
                                     this.beginTime.replace("%%%","%")+" %%%"+
                                     this.endTime.replace("%%%","%")+" %%%"+
@@ -71,6 +72,13 @@
         courseHandler.controller('CourseCtrl', function ($scope, $sce, $http, RoomAndTimes) {
                 var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
 
+                $scope.updateRoomId = function() {
+                	return $http.get(rest+'courses/nextroomid').
+                    success(function (id) {
+                        $scope.nextRoomId = id; 
+                    });
+                }
+                
                 $scope.containsEmployee = function(selectedLecturers, lecturer){
 
                 	 for (var i = 0; i < selectedLecturers.length; i++) {
@@ -110,6 +118,7 @@
 		                          var r = data.courseTimesAndRooms; //sorry too long ...
 		                          for(var i = 0; i < r.length;++i){ 
 		                          var roomAndTimes = new RoomAndTimes(
+		                        		  (typeof r[i].id === "undefined"?"":r[i].id),
 				                          (typeof r[i].dayOfWeek === "undefined"?"":r[i].dayOfWeek), 
 				                          (typeof r[i].startTime === "undefined"?"":r[i].startTime),
 				                          (typeof r[i].endTime === "undefined"?"":r[i].endTime),
@@ -274,6 +283,7 @@
                }; 
 
                $scope.initRoomAndTimeModels = function(){
+                   $scope.id ="";
             	   $scope.dayofweek = "";
             	   $scope.begintime = "";
             	   $scope.endtime = "";
@@ -344,8 +354,11 @@
                 		   ($scope.roomcomments == null ||$scope.roomcomments.length==0)  ){
                        return;
                    }
-                   var roomAndTimes = new RoomAndTimes($scope.dayofweek, $scope.begintime,$scope.endtime,$scope.roomlabel,$scope.roomcapacity,$scope.roomcomments);
-    
+                   var nextId = $scope.nextRoomId;
+                   $scope.updateRoomId();
+ 
+                   var roomAndTimes = new RoomAndTimes(nextId, $scope.dayofweek, $scope.begintime,$scope.endtime,$scope.roomlabel,$scope.roomcapacity,$scope.roomcomments);
+//     				alert(nextId);
 					$scope.roomsAndTimes.push(roomAndTimes);
 					$scope.initRoomAndTimeModels();
 					$scope.hideRoomtable();
@@ -398,7 +411,7 @@
 
 <body>
 	<div class="container" ng-controller="CourseCtrl"
-		ng-init="getModuleDetails(getModuleId());getCourseTypes();getEmployees();getNumbers();initLecturers();getDayAbbreviations();initSelectedModuleParts();initSelectedPrimaryNr();initSelectedModulePartNr();initRoomAndTimeModels();initIsRoomtableVisible();getCourseId()">
+		ng-init="updateRoomId();getModuleDetails(getModuleId());getCourseTypes();getEmployees();getNumbers();initLecturers();getDayAbbreviations();initSelectedModuleParts();initSelectedPrimaryNr();initSelectedModulePartNr();initRoomAndTimeModels();initIsRoomtableVisible();getCourseId()">
 		<form
 			action="http://localhost:8081/GGLecturePlanner/rest/courses/addcourse"
 			method="POST">
@@ -556,6 +569,7 @@
 			</table>
 
 			<input type="hidden" name="moduleid" value="{{getModuleId()}}">
+			<input type="hidden" name="courseid" value="{{courseid}}">
 			<input type="hidden" name="roomsandtimesdata"
 				value="{{formatRoomsAndTimesForTransfer()}}"> <input
 				type="hidden" name="modulepartsdata"

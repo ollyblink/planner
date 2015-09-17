@@ -47,17 +47,8 @@ public class Course {
 		this.lecturers = lecturers;
 	}
 
-	public ArrayList<String> getModuleParts() {
-		return moduleParts;
-	}
-
-	public void setModuleParts(ArrayList<String> moduleParts) {
-		this.moduleParts = moduleParts;
-	}
-
-	public Integer getNrOfStudentsExpectedPerGroup() {
-		return nrOfStudentsExpectedPerGroup;
-	}
+	 
+	 
 
 	public Integer getId() {
 		return id;
@@ -65,42 +56,6 @@ public class Course {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Boolean getIsMaxNrStudentsExpectedPerGroup() {
-		return isMaxNrStudentsExpectedPerGroup;
-	}
-
-	public void setIsMaxNrStudentsExpectedPerGroup(Boolean isMaxNrStudentsExpectedPerGroup) {
-		this.isMaxNrStudentsExpectedPerGroup = isMaxNrStudentsExpectedPerGroup;
-	}
-
-	public void setNrOfGroups(Integer nrOfGroups) {
-		this.nrOfGroups = nrOfGroups;
-	}
-
-	public void setNrOfStudentsExpectedPerGroup(Integer nrOfStudentsExpectedperGroup) {
-		this.nrOfStudentsExpectedPerGroup = nrOfStudentsExpectedperGroup;
-	}
-
-	public void setSwsTotalPerGroup(Float swsTotalPerGroup) {
-		this.swsTotalPerGroup = swsTotalPerGroup;
-	}
-
-	public ArrayList<Employee> getLecturers() {
-		return lecturers;
-	}
-
-	public void setLecturers(ArrayList<Employee> lecturers) {
-		this.lecturers = lecturers;
-	}
-
-	public ArrayList<CourseTimesAndRooms> getCourseTimesAndRooms() {
-		return courseTimesAndRooms;
-	}
-
-	public void setCourseTimesAndRooms(ArrayList<CourseTimesAndRooms> courseTimesAndRooms) {
-		this.courseTimesAndRooms = courseTimesAndRooms;
 	}
 
 	public String getCourseDescription() {
@@ -127,37 +82,35 @@ public class Course {
 		this.vvzNr = vvzNr;
 	}
 
- 
-
-	public int getNrOfGroups() {
+	public Integer getNrOfGroups() {
 		return nrOfGroups;
 	}
 
-	public void setNrOfGroups(int nrOfGroups) {
+	public void setNrOfGroups(Integer nrOfGroups) {
 		this.nrOfGroups = nrOfGroups;
 	}
 
-	public int getNrOfStudentsExpectedperGroup() {
+	public Integer getNrOfStudentsExpectedPerGroup() {
 		return nrOfStudentsExpectedPerGroup;
 	}
 
-	public void setNrOfStudentsExpectedPerGroup(int nrOfStudentsExpectedperGroup) {
-		this.nrOfStudentsExpectedPerGroup = nrOfStudentsExpectedperGroup;
+	public void setNrOfStudentsExpectedPerGroup(Integer nrOfStudentsExpectedPerGroup) {
+		this.nrOfStudentsExpectedPerGroup = nrOfStudentsExpectedPerGroup;
 	}
 
-	public boolean isMaxNrStudentsExpectedPerGroup() {
+	public Boolean getIsMaxNrStudentsExpectedPerGroup() {
 		return isMaxNrStudentsExpectedPerGroup;
 	}
 
-	public void setMaxNrStudentsExpectedPerGroup(boolean isMaxNrStudentsExpectedPerGroup) {
+	public void setIsMaxNrStudentsExpectedPerGroup(Boolean isMaxNrStudentsExpectedPerGroup) {
 		this.isMaxNrStudentsExpectedPerGroup = isMaxNrStudentsExpectedPerGroup;
 	}
 
-	public float getSwsTotalPerGroup() {
+	public Float getSwsTotalPerGroup() {
 		return swsTotalPerGroup;
 	}
 
-	public void setSwsTotalPerGroup(float swsTotalPerGroup) {
+	public void setSwsTotalPerGroup(Float swsTotalPerGroup) {
 		this.swsTotalPerGroup = swsTotalPerGroup;
 	}
 
@@ -193,7 +146,37 @@ public class Course {
 		this.comments = comments;
 	}
 
-	 
+	public CourseType getCourseType() {
+		return courseType;
+	}
+
+	public void setCourseType(CourseType courseType) {
+		this.courseType = courseType;
+	}
+
+	public ArrayList<String> getModuleParts() {
+		return moduleParts;
+	}
+
+	public void setModuleParts(ArrayList<String> moduleParts) {
+		this.moduleParts = moduleParts;
+	}
+
+	public ArrayList<CourseTimesAndRooms> getCourseTimesAndRooms() {
+		return courseTimesAndRooms;
+	}
+
+	public void setCourseTimesAndRooms(ArrayList<CourseTimesAndRooms> courseTimesAndRooms) {
+		this.courseTimesAndRooms = courseTimesAndRooms;
+	}
+
+	public ArrayList<Employee> getLecturers() {
+		return lecturers;
+	}
+
+	public void setLecturers(ArrayList<Employee> lecturers) {
+		this.lecturers = lecturers;
+	}
 
 	@Override
 	public String toString() {
@@ -204,12 +187,6 @@ public class Course {
 				+ ", courseTimesAndRooms=" + courseTimesAndRooms + ", lecturers=" + lecturers + "]";
 	}
 
-	public void setCourseType(CourseType courseType) {
-		this.courseType = courseType;
-	}
-
-	public CourseType getCourseType() {
-		return courseType;
-	}
+	 
 
 }

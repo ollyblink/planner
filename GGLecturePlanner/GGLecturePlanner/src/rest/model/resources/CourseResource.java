@@ -20,6 +20,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import rest.dao.CourseDao;
+import rest.dao.ModuleDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Course;
 import rest.model.datastructures.CourseTimesAndRooms;
@@ -47,7 +48,7 @@ public class CourseResource {
 	@Path("/addcourse/")
 	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
-	public void addCourse(@FormParam("moduleid") int moduleId, @FormParam("modulepartsdata") String modulePartsData,
+	public void addCourse(@FormParam("moduleid") int moduleId, @FormParam("courseid") Integer courseId,  @FormParam("modulepartsdata") String modulePartsData,
 			@FormParam("coursedescription") String courseDescription, @FormParam("vvznr") String vvzNr, @FormParam("nrofgroups") int nrOfGroups,
 			@FormParam("nrofstudentsexpectedpergroup") int nrOfStudentsExpectedPerGroup,
 			@FormParam("ismaxnrofstudentsexpectedpergroup") boolean isMaxNrOfStudentsExpectedPerGroup,
@@ -75,10 +76,17 @@ public class CourseResource {
 			// System.out.println(roomsAndTimesData);
 			// System.out.println(courseTypeData);
 			//
-			course.setId(CourseDao.instance.getNextCourseId());
+			
+			Integer actualCourseId = courseId;
+			if (actualCourseId == null) {
+				System.out.println(CourseDao.instance.getNextCourseId());
+				actualCourseId = CourseDao.instance.getNextCourseId();
+			}
+			System.out.println("Course id as param: " +courseId);
+			System.out.println("Actual course id: " + actualCourseId);
+			course.setId(actualCourseId);
 			course.setModuleNr(moduleId);
-			// TODO course.setModuleParts();
-			course.setVvzNr(vvzNr);
+ 			course.setVvzNr(vvzNr);
 			course.setNrOfGroups(nrOfGroups);
 			course.setNrOfStudentsExpectedPerGroup(nrOfStudentsExpectedPerGroup);
 			course.setIsMaxNrStudentsExpectedPerGroup(isMaxNrOfStudentsExpectedPerGroup);
@@ -116,14 +124,20 @@ public class CourseResource {
 					String[] items = timesAndRoom.split(StaticDataDao.instance.innerSplittingPattern);
 					CourseTimesAndRooms cTR = new CourseTimesAndRooms();
 
-					cTR.setId(CourseDao.instance.getNextCourseRoomsAndTimesId());
+					if(items[0].trim().length() > 0) {
+						try{
+							cTR.setId(Integer.parseInt(items[0].trim()));
+						}catch(NumberFormatException e){
+							cTR.setId(CourseDao.instance.getNextCourseRoomsAndTimesId());
+						}
+					}
 					cTR.setCourseId(course.getId());
-					if (items[0].trim().length() > 0) {
-						cTR.setDayOfWeek(items[0].trim());
+					if (items[1].trim().length() > 0) {
+						cTR.setDayOfWeek(items[1].trim());
 					}
 					Time startTime = null;
-					if (items[1].trim().length() > 0) {
-						String[] startTimes = items[1].trim().split(":");
+					if (items[2].trim().length() > 0) {
+						String[] startTimes = items[2].trim().split(":");
 						if (startTimes.length > 1) {
 							int startHour = 0;
 							try {
@@ -142,8 +156,8 @@ public class CourseResource {
 					}
 					Time endTime = null;
 					System.out.println("CourseResource:addCourse:endTime: " + items[2]);
-					if (items[2].trim().length() > 0) {
-						String[] endTimes = items[2].trim().split(":");
+					if (items[3].trim().length() > 0) {
+						String[] endTimes = items[3].trim().split(":");
 						if (endTimes.length > 1) {
 							int endHour = 0;
 							try {
@@ -164,19 +178,19 @@ public class CourseResource {
 					}
 
 					cTR.setTimes(new Times(startTime, endTime));
-					if (items[3].trim().length() > 0) {
-						cTR.setRoomLabel(items[3].trim());
-					}
 					if (items[4].trim().length() > 0) {
+						cTR.setRoomLabel(items[4].trim());
+					}
+					if (items[5].trim().length() > 0) {
 						try {
-							cTR.setRoomCapacity(Integer.parseInt(items[4].trim()));
+							cTR.setRoomCapacity(Integer.parseInt(items[5].trim()));
 						} catch (NumberFormatException e) {
 							// e.printStackTrace();
 							cTR.setRoomCapacity(-1);
 						}
 					}
-					if (items[5].trim().length() > 0) {
-						cTR.setComments(items[5]);
+					if (items[6].trim().length() > 0) {
+						cTR.setComments(items[6]);
 					}
 					cTR.setModuleId(moduleId);
 					timesAndRooms.add(cTR);
@@ -191,7 +205,12 @@ public class CourseResource {
 				moduleParts.add(mP);
 			}
 			course.setModuleParts(moduleParts);
-			CourseDao.instance.addCourse(course);
+			
+			if(courseId == null) {
+				CourseDao.instance.addCourse(course);
+			}else{
+				CourseDao.instance.updateCourse(course);
+			}
 			servletResponse.sendRedirect("../../showCourses.html?moduleid=" + moduleId);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -248,6 +267,13 @@ public class CourseResource {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	@GET
+	@Path("/nextroomid")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public int nextRoomId() { 
+		 return CourseDao.instance.getNextCourseRoomsAndTimesId();
 	}
 
 }

@@ -18,13 +18,17 @@ public enum CourseDao {
 	private PreparedStatement insertCourseTimesRooms;
 	private PreparedStatement insertLecturersToCourses;
 	private PreparedStatement insertCourseModuleParts;
-	
+
 	private PreparedStatement getCoursesForModule;
 	private PreparedStatement getTimesAndRoomsForCourse;
 	private PreparedStatement getLecturersForCourse;
 	private PreparedStatement getCourseModuleParts;
-	
+
 	private PreparedStatement deleteCourse;
+	private PreparedStatement updateCourse;
+	private PreparedStatement deleteCoursesTimesAndRooms;
+	private PreparedStatement deleteLecturersToCourses;
+	private PreparedStatement deleteCourseModuleParts;
 
 	private CourseDao() {
 		try {
@@ -48,8 +52,27 @@ public enum CourseDao {
 			this.insertCourseModuleParts = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into course_module_parts values(?,?,?);");
 
+			this.updateCourse = DBConnectionProvider.instance
+					.getDataSource()
+					.getConnection()
+					.prepareStatement(
+							"update courses set " + "course_description=?, " + "vvznr = ?, " + "nr_of_groups = ?, "
+									+ "nr_of_students_expected_per_group = ?, " + "is_max_nr_students_expected_per_group = ?, "
+									+ "sws_tot_per_group = ?, " + "start_date = ?, " + "end_date = ?, " + "rythm = ?, " + "comments = ?, "
+									+ "course_type_fk = ?" + "where " + "id = ? " + "and " + "module_id_fk=?" + ";");
+
 			this.deleteCourse = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("delete from courses where module_id_fk=? and id = ?;");
+			
+			this.deleteCoursesTimesAndRooms = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("delete from courses_times_and_rooms where id=? and course_id_fk=? and module_id_fk=?;"); 
+			
+			this.deleteLecturersToCourses =  DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("delete from lecturers_to_courses where course_id_fk=? and module_id_fk=? and lecturer_fk = ?;"); 
+			
+			this.deleteCourseModuleParts =  DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("delete from course_module_parts where course_id_fk=? and module_id_fk=? and module_part = ?;"); 
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -60,24 +83,123 @@ public enum CourseDao {
 
 		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(false);
 
-		this.insertIntoCourse.setInt(1, course.getId());
-		this.insertIntoCourse.setString(2, course.getCourseDescription());
-		this.insertIntoCourse.setInt(3, course.getModuleNr());
-		this.insertIntoCourse.setString(4, course.getVvzNr());
-		this.insertIntoCourse.setInt(5, course.getNrOfGroups());
-		this.insertIntoCourse.setInt(6, course.getNrOfStudentsExpectedperGroup());
-		this.insertIntoCourse.setBoolean(7, course.isMaxNrStudentsExpectedPerGroup());
-		this.insertIntoCourse.setFloat(8, course.getSwsTotalPerGroup());
-		this.insertIntoCourse.setString(9, course.getStartDate());
-		this.insertIntoCourse.setString(10, course.getEndDate());
-		this.insertIntoCourse.setString(11, course.getRythm());
-		this.insertIntoCourse.setString(12, course.getComments());
-		this.insertIntoCourse.setString(13, course.getCourseType().getAbbreviation());
+		insertIntoCourses(course);
+		insertIntoTimesAndRooms(course);
+		insertIntoLecturersToCourses(course);
+		insertIntoCourseModuleParts(course);
 
-		this.insertIntoCourse.executeUpdate();
+		DBConnectionProvider.instance.getDataSource().getConnection().commit();
+		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
 
+	}
+
+	public void updateCourse(Course updatedCourse) throws SQLException {
+		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(false);
+		Course oldCourse = getCourseDetails(updatedCourse.getModuleNr(), updatedCourse.getId());
+		
+		
+		
+		updateCourses(updatedCourse);
+
+		updateTimesAndRooms(updatedCourse,oldCourse);
+		updateLecturersToCourses(updatedCourse ,oldCourse);
+		updateCourseModuleParts(updatedCourse ,oldCourse);
+
+		DBConnectionProvider.instance.getDataSource().getConnection().commit();
+		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
+	}
+
+	private void updateCourses(Course course) throws SQLException {
+		updateCourse.setString(1, course.getCourseDescription());
+		updateCourse.setString(2, course.getVvzNr());
+		updateCourse.setInt(3, course.getNrOfGroups());
+		updateCourse.setInt(4, course.getNrOfStudentsExpectedPerGroup());
+		updateCourse.setBoolean(5, course.getIsMaxNrStudentsExpectedPerGroup());
+		updateCourse.setFloat(6, course.getSwsTotalPerGroup());
+		updateCourse.setString(7, course.getStartDate());
+		updateCourse.setString(8, course.getEndDate());
+		updateCourse.setString(9, course.getRythm());
+		updateCourse.setString(10, course.getComments());
+		String courseType = null;
+		if (course.getCourseType() != null) {
+			courseType = course.getCourseType().getAbbreviation();
+		}
+		updateCourse.setString(11, courseType);
+
+		updateCourse.setInt(12, course.getId());
+		updateCourse.setInt(13, course.getModuleNr());
+
+		updateCourse.executeUpdate();
+	}
+
+	private void updateTimesAndRooms(Course updatedCourse, Course oldCourse) throws SQLException {
+		deleteFromTimesAndRooms(oldCourse);
+		insertIntoTimesAndRooms(updatedCourse);
+	}
+
+	private void deleteFromTimesAndRooms(Course oldCourse) throws SQLException {
+		ArrayList<CourseTimesAndRooms> timesAndRooms = oldCourse.getCourseTimesAndRooms();
+		for(CourseTimesAndRooms t: timesAndRooms){
+			deleteCoursesTimesAndRooms.setInt(1, t.getId());
+			deleteCoursesTimesAndRooms.setInt(2, t.getCourseId());
+			deleteCoursesTimesAndRooms.setInt(3, t.getModuleId());
+			deleteCoursesTimesAndRooms.executeUpdate();
+		}
+	}
+
+	private void updateLecturersToCourses(Course updatedCourse, Course oldCourse) throws SQLException {
+		deleteLecturersToCourses(oldCourse);
+		insertIntoLecturersToCourses(updatedCourse);
+	}
+
+	private void deleteLecturersToCourses(Course oldCourse) throws SQLException {
+		ArrayList<Employee> lecturers = oldCourse.getLecturers();
+		for(Employee e: lecturers){
+ 			this.deleteLecturersToCourses.setInt(1, oldCourse.getId());
+			this.deleteLecturersToCourses.setInt(2, oldCourse.getModuleNr());
+			this.deleteLecturersToCourses.setInt(3, e.getId());
+			this.deleteLecturersToCourses.executeUpdate();
+		}
+	}
+
+	private void updateCourseModuleParts(Course updatedCourse, Course oldCourse) throws SQLException {
+		deleteCourseModuleParts(oldCourse);
+		insertIntoCourseModuleParts(updatedCourse);
+	}
+
+	private void deleteCourseModuleParts(Course oldCourse) throws SQLException {
+		ArrayList<String> moduleParts = oldCourse.getModuleParts();
+		for(String m: moduleParts){
+			this.deleteCourseModuleParts.setInt(1, oldCourse.getId());
+			this.deleteCourseModuleParts.setInt(2, oldCourse.getModuleNr());
+			this.deleteCourseModuleParts.setString(3, m);
+			this.deleteCourseModuleParts.executeUpdate();
+		}
+		
+	}
+
+	private void insertIntoCourseModuleParts(Course course) throws SQLException {
+		for (String modulePart : course.getModuleParts()) {
+			this.insertCourseModuleParts.setInt(1, course.getId());
+			this.insertCourseModuleParts.setInt(2, course.getModuleNr());
+			this.insertCourseModuleParts.setString(3, modulePart);
+
+			this.insertCourseModuleParts.executeUpdate();
+		}
+	}
+
+	private void insertIntoLecturersToCourses(Course course) throws SQLException {
+		for (Employee empl : course.getLecturers()) {
+			this.insertLecturersToCourses.setInt(1, course.getId());
+			this.insertLecturersToCourses.setInt(2, course.getModuleNr());
+			this.insertLecturersToCourses.setInt(3, empl.getId());
+
+			this.insertLecturersToCourses.executeUpdate();
+		}
+	}
+
+	private void insertIntoTimesAndRooms(Course course) throws SQLException {
 		for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) {
-			System.out.println(cTR);
 			this.insertCourseTimesRooms.setInt(1, cTR.getId());
 			this.insertCourseTimesRooms.setInt(2, cTR.getCourseId());
 			this.insertCourseTimesRooms.setInt(3, cTR.getModuleId());
@@ -87,29 +209,31 @@ public enum CourseDao {
 			this.insertCourseTimesRooms.setInt(7, cTR.getRoomCapacity());
 			this.insertCourseTimesRooms.setString(8, cTR.getRoomLabel());
 			this.insertCourseTimesRooms.setString(9, cTR.getComments());
-
 			this.insertCourseTimesRooms.executeUpdate();
 		}
+	}
 
-		for (Employee empl : course.getLecturers()) {
-			this.insertLecturersToCourses.setInt(1, course.getId());
-			this.insertLecturersToCourses.setInt(2, course.getModuleNr());
-			this.insertLecturersToCourses.setInt(3, empl.getId());
-
-			this.insertLecturersToCourses.executeUpdate();
+	private void insertIntoCourses(Course course) throws SQLException {
+		this.insertIntoCourse.setInt(1, course.getId());
+		this.insertIntoCourse.setString(2, course.getCourseDescription());
+		this.insertIntoCourse.setInt(3, course.getModuleNr());
+		this.insertIntoCourse.setString(4, course.getVvzNr());
+		this.insertIntoCourse.setInt(5, course.getNrOfGroups());
+		this.insertIntoCourse.setInt(6, course.getNrOfStudentsExpectedPerGroup());
+		this.insertIntoCourse.setBoolean(7, course.getIsMaxNrStudentsExpectedPerGroup());
+		this.insertIntoCourse.setFloat(8, course.getSwsTotalPerGroup());
+		this.insertIntoCourse.setString(9, course.getStartDate());
+		this.insertIntoCourse.setString(10, course.getEndDate());
+		this.insertIntoCourse.setString(11, course.getRythm());
+		this.insertIntoCourse.setString(12, course.getComments());
+		if (course.getCourseType() != null) {
+			this.insertIntoCourse.setString(13, course.getCourseType().getAbbreviation());
+		} else {
+			this.insertIntoCourse.setString(13, null);
 		}
 
-		for (String modulePart : course.getModuleParts()) {
-			this.insertCourseModuleParts.setInt(1, course.getId());
-			this.insertCourseModuleParts.setInt(2, course.getModuleNr());
-			this.insertCourseModuleParts.setString(3, modulePart);
-
-			this.insertCourseModuleParts.executeUpdate();
-		}
-
-		DBConnectionProvider.instance.getDataSource().getConnection().commit();
-		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
-
+		this.insertIntoCourse.executeUpdate();
+		System.out.println("Executed insertIntoCourse");
 	}
 
 	public int getNextCourseId() {
@@ -167,7 +291,9 @@ public enum CourseDao {
 			course.setEndDate(r.getString("end_date"));
 			course.setRythm(r.getString("rythm"));
 			course.setComments(r.getString("comments"));
-			course.setCourseType(StaticDataDao.instance.getCourseType(r.getString("course_type_fk")));
+			if (r.getString("course_type_fk") != null) {
+				course.setCourseType(StaticDataDao.instance.getCourseType(r.getString("course_type_fk")));
+			}
 			courses.add(course);
 		}
 		r.close();
@@ -245,12 +371,12 @@ public enum CourseDao {
 
 	public Course getCourseDetails(int moduleId, int courseId) throws SQLException {
 		ArrayList<Course> courses = getCoursesForModule(moduleId);
- 		for(Course course:courses){
-			if(course.getId().equals(courseId)){
+		for (Course course : courses) {
+			if (course.getId().equals(courseId)) {
 				return course;
 			}
 		}
-		
+
 		return null;
 	}
 
