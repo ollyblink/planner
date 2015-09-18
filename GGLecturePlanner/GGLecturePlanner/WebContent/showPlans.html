@@ -31,6 +31,13 @@
                     	window.location.reload();
                     });
                 };  
+
+				$scope.copyPlan =function(planId) {
+					 return $http.get(rest+'plans/copyplan/'+planId).
+	                    success(function (data) {
+	                    	window.location.reload();
+	                    });
+				}
             });
 
 
@@ -60,7 +67,7 @@
 					href="printPlan.html?planid={{plan.id}}">Plan
 						drucken</a></td>
 				<td><a
-					href="printPlan.html?planid={{plan.id}}">Plan
+					ng-click="copyPlan(plan.id)">Plan
 						kopieren</a></td>
 			</tr>
 		</table>

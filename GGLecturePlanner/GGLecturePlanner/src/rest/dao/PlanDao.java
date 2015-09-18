@@ -6,34 +6,35 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import rest.model.datastructures.Course;
+import rest.model.datastructures.CourseTimesAndRooms;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.Module;
 import rest.model.datastructures.Plan;
+import rest.model.datastructures.Role;
 
 public enum PlanDao {
 	instance;
 
-	private PreparedStatement getPlanDetails;
+	private PreparedStatement getModulesForPlan;
 	private PreparedStatement addPlanStatement;
 	private PreparedStatement deletePlanStatement;
-	private PreparedStatement updatePlan; 
+	private PreparedStatement updatePlan;
 	private PreparedStatement getPlan;
 
 	private PlanDao() {
 		try {
 			getPlan = DBConnectionProvider.instance.prepareStatement("select * from plans where id=?");
-			getPlanDetails = DBConnectionProvider.instance
-					.getDataSource()
-					.getConnection()
-					.prepareStatement(
-							"select p.id as planid, p.semester, p.year, m.id as moduleid, m.* from plans p inner join plans_to_modules pm on p.id = pm.plan_id_fk inner join modules m on pm.module_id_fk = m.id where p.id = ?;");
+			getModulesForPlan = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("select distinct module_id_fk as moduleid from plans_to_modules p where p.plan_id_fk =  ?;");
 
 			this.addPlanStatement = DBConnectionProvider.instance.getDataSource().getConnection()
-					.prepareStatement("insert into plans(semester, year) values (?,?);");
-			
-			
-			this.deletePlanStatement = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("delete from plans where id=?;");
-			this.updatePlan = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("update plans set semester=?, year=? where id=?;");
+					.prepareStatement("insert into plans(id, semester, year) values (?,?,?);");
+
+			this.deletePlanStatement = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("delete from plans where id=?;");
+			this.updatePlan = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("update plans set semester=?, year=? where id=?;");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -55,56 +56,64 @@ public enum PlanDao {
 	}
 
 	public Plan getPlanDetailsFor(int planId) throws SQLException {
+		return createPlanFromDBEntries(planId);
+	}
 
+	private Plan createPlanFromDBEntries(int planId) throws SQLException {
+		Plan plan = getPlanFromDB(planId);
+		getModulesForPlanFromDB(plan);
+		return plan;
+	}
+
+	private void getModulesForPlanFromDB(Plan plan) throws SQLException {
+		getModulesForPlan.setInt(1, plan.getId());
+
+		ResultSet r = getModulesForPlan.executeQuery();
+
+		while (r.next()) {
+			Module module = ModuleDao.instance.getModuleDetails(r.getInt("moduleid"));
+			plan.getModules().add(module);
+		}
+
+		r.close();
+	}
+
+	private Plan getPlanFromDB(int planId) throws SQLException {
 		Plan plan = null;
 		getPlan.setInt(1, planId);
-		
+
 		ResultSet planRs = getPlan.executeQuery();
-		while(planRs.next()){
+		while (planRs.next()) {
 			plan = new Plan(planRs.getInt("id"), planRs.getString("semester"), planRs.getInt("year"), new ArrayList<>());
 		}
 		planRs.close();
-		
-		getPlanDetails.setInt(1, planId);
-		ResultSet r = getPlanDetails.executeQuery();
-		while (r.next()) { 
-
-			Employee responsibleEmployee = new Employee();
-			responsibleEmployee.setId(r.getInt("responsible_employee"));
-
-			Module module = new Module(r.getInt("moduleid"), null, r.getString("semester_nr"), StaticDataDao.instance.getAssessmentType(r
-					.getString("assessment_type_fk")), r.getString("assessment_date"), responsibleEmployee, r.getString("comments"), null, null,
-					null, null);
-
-			plan.getModules().add(module);
-		}
-		r.close();
-
-		System.out.println("PlanDao: getPlanDetailsFor: plan: " + plan);
-		if (plan != null) {
-			ArrayList<Module> modules = plan.getModules();
-
-			for (Module m : modules) {
-				m.setModuleTypes(ModuleDao.instance.getModuleTypes(m.getId()));
-				m.setPrimaryNrs(ModuleDao.instance.getPrimaryNrs(m.getId()));
-				m.setDisciplines(ModuleDao.instance.getDisciplines(m.getId()));
-				m.setDepartment(ModuleDao.instance.getDepartments(m.getId()));
-				m.setResponsibleEmployee(EmployeeDao.instance.getEmployeeFirstAndLastNameFor(m.getResponsibleEmployee().getId()));
-				System.out.println("Modules for plan: " + plan.getId() + ": " + m);
-			}
-
-		}
 		return plan;
-
 	}
 
-	 
-
-	public void addPlan(String semester, int year) throws SQLException {
-		addPlanStatement.setString(1, semester);
-		addPlanStatement.setInt(2, year);
+	public int addPlan(String semester, int year) throws SQLException {
+		int nextPlanId = getNextPlanId();
+		addPlanStatement.setInt(1, nextPlanId);
+		addPlanStatement.setString(2, semester);
+		addPlanStatement.setInt(3, year);
 		addPlanStatement.executeUpdate();
+		return nextPlanId;
+	}
 
+	public int getNextPlanId() {
+
+		int nextId = -1;
+		try {
+			Statement s = DBConnectionProvider.instance.getDataSource().getConnection().createStatement();
+			ResultSet r = s.executeQuery("select nextval('plans_id_seq');");
+			while (r.next()) {
+				nextId = r.getInt("nextval");
+			}
+			r.close();
+			s.close();
+		} catch (SQLException s) {
+			s.getStackTrace();
+		}
+		return nextId;
 	}
 
 	public boolean deletePlan(int planId) throws SQLException {
@@ -114,12 +123,164 @@ public enum PlanDao {
 	}
 
 	public boolean changePlan(int planId, String semester, int year) throws SQLException {
-		System.out.println("PlanDao:changePlan:planId: "+ planId +",semester:"+semester+",year:"+year);
+		System.out.println("PlanDao:changePlan:planId: " + planId + ",semester:" + semester + ",year:" + year);
 		updatePlan.setString(1, semester);
 		updatePlan.setInt(2, year);
 		updatePlan.setInt(3, planId);
-		
+
 		return (updatePlan.executeUpdate() > 0);
-		
+
 	}
+
+	public void copyPlan(int planIdOfPlanToCopy) throws SQLException {
+		Plan fullPlan = retrieveFullPlan(planIdOfPlanToCopy);
+
+		fullPlan.setYear(fullPlan.getYear() + 1); // Simply add one as it probably is one year later anyways...
+		System.out.println("FULL PLAN\n" + fullPlan);
+
+		int newPlanId = addPlan(fullPlan.getSemester(), fullPlan.getYear());
+
+		for (Module module : fullPlan.getModules()) {
+			System.out.println("Module: " + module);
+			module.setId(ModuleDao.instance.getNextModuleId());
+			ModuleDao.instance.addModule(newPlanId, module);
+
+			for (Course course : module.getCourses()) {
+
+				course.setId(CourseDao.instance.getNextCourseId());
+				course.setModuleNr(module.getId());
+
+				for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) {
+					cTR.setId(CourseDao.instance.getNextCourseRoomsAndTimesId());
+					cTR.setCourseId(course.getId());
+					cTR.setModuleId(module.getId());
+				}
+				CourseDao.instance.addCourse(course);
+			}
+		}
+	}
+
+	public String createHTMLPage(int planId) throws SQLException {
+		Plan plan = retrieveFullPlan(planId);
+		
+		
+		String content = "<h1>Lehraufträge "+plan.getSemester()+" "+ plan.getYear()+"</h1>"
+				+ "<table>"
+				+ "<tr>"
+				+ "<th>VVZNr</th>"
+				+ "<th>Modul</th>"
+				+ "<th>Modulteil</th>"
+				+ "<th>Semester</th>"
+				+ "<th>Disziplin</th>"
+				+ "<th>Bezeichnung der Veranstaltung</th>"
+				+ "<th>Vorname Nachname</th>"
+				+ "<th>Funktion an der Uni bei internen DozentInnen (Prof, PD, OA, Wimi)</th>"
+				+ "<th>externe DozentInnen (ETH, PSI, WSL, ...)</th>"
+				+ "<th>externe DozentInnen (x)</th>"
+				+ "<th>Anz. Gruppen</th>"
+				+ "<th>Wochentag</th>"
+				+ "<th>Zeit</th>"
+				+ "<th>Verteilung über Semester / Veranstaltung-rhytmus</th>"
+				+ "<th>Beginn-Datum</th>"
+				+ "<th>End-Datum falls nicht ganzes Semester</th>"
+				+ "<th>Typ Veranstaltung (VL, UE, Exkursion, Blockkurs, ...)</th>"
+				+ "<th>Anzahl Studenten erwartet pro Gruppe</th>"
+				+ "<th>Gewünschter Hörsaal / Semnarraum</th>"
+				+ "<th>Kapazität des gew. Raumes</th>"
+				+ "<th>SWS tot. pro Gruppe</th>"
+				+ "<th>Anz. Dozenten (inkl. Profs.)</th>"
+				+ "<th>SWS/Doz. Präsenzzeit</th>"
+				+ "<th>Kostenstelle Abt.? - nicht MNF?</th>"
+				+ "<th>Bemerkungen (o.k. = keine Änderungen, aktualisiert, nicht mehr gültig)</th>"
+				+ "<th>Prüfungen</th>"
+				+ "<th>Eintrag von (Kürzel)</th>"
+				+ "</tr>";
+		
+		for (Module module : plan.getModules()) {   
+			for (Course course : module.getCourses()) { 
+				content += "<tr>"
+						+ "<td>"+course.getVvzNr()+"</td>"
+						+ "<td>"+formatList(module.getPrimaryNrs())+"</td>"
+						+ "<td>"+formatList(course.getModuleParts())+"</td>"
+						+ "<td>"+module.getSemesterNr()+"</td>"
+						+ "<td>"+formatList(module.getDisciplines())+"</td>"
+						+ "<td>"+course.getCourseDescription()+"</td>"
+						+ formatLecturers(course.getLecturers())
+//						+ "<td>"++"</td>"
+//						+ "<td>"++"</td>"
+//						+ "<td>"++"</td>"
+//						+ "<td>"++"</td>"
+//						+ "<td>"++"</td>"
+//						+ "<td>"++"</td>"
+						+ "<td></td>"
+						+ "<td></td>"
+						+ "<td></td>"
+						+ "<td></td>"
+						+ "<td></td>"
+						+ "<td></td>"
+						+ "</tr>";
+				for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) { 
+				} 
+			}
+		}
+		
+		content +="</table>";
+		String html = getHTMLBasics(planId, content);
+		return html;
+	}
+
+	private String formatLecturers(ArrayList<Employee> lecturers) {
+		String formattedLecturers = "";
+		for(Employee l:lecturers){
+			formattedLecturers += "<td>"+l.getFirstName() + " " +l.getLastName()+"</td>";
+			formattedLecturers += "<td>"+formatRoles(l.getRoles()) +"</td>"; 
+			formattedLecturers += "<td>"+l.getExternalInstitute() +"</td>"; 
+			formattedLecturers += "<td>"+(l.getIsPaidSeparately()?"x":"") +"</td>"; 
+			formattedLecturers += "<td>"+(l.getInternalCostCenter()==null?"":l.getInternalCostCenter()) +"</td>"; 
+ 		}
+		return formattedLecturers;
+	}
+
+	private String formatRoles(ArrayList<Role> roles) {
+		String roleString = "";
+		for(int i = 0; i < roles.size()-1;++i){
+			roleString += roles.get(i).getAbbreviation()+",";
+		}
+		roleString += roles.get(roles.size()-1).getAbbreviation();
+		return roleString;
+	}
+
+	private <T> String  formatList(ArrayList<T> list) {
+		String formattedData = "";
+		for(int i = 0; i < list.size()-1;++i){
+			formattedData += list.get(i).toString() + "\n";
+		}
+		formattedData += list.get(list.size()-1).toString();
+		return formattedData;
+	}
+
+	private String getHTMLBasics(int planId, String content) {
+		return "<html>" + "<head><title>Plan " + planId + "</title></head>" + "<body>" + content + "</body>" + "</html>";
+	}
+
+	private Plan retrieveFullPlan(int planId) throws SQLException {
+		Plan plan = getPlanDetailsFor(planId);
+		ArrayList<Module> modules = plan.getModules();
+		for (Module module : modules) {
+			module.setCourses(CourseDao.instance.getCoursesForModule(module.getId()));
+			for(Course course: module.getCourses()){
+				ArrayList<Employee> lecturers = course.getLecturers();
+				if(lecturers != null){
+					for(Employee e: lecturers){
+						e = EmployeeDao.instance.getEmployeeDetails(e.getId());
+					}
+				}else{
+					course.setLecturers(new ArrayList<>());
+				}
+			}
+		}
+		return plan;
+	}
+
+	
 }

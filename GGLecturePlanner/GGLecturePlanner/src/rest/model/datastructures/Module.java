@@ -160,9 +160,9 @@ public class Module {
 
 	@Override
 	public String toString() {
-		return "Module [id=" + id + ", primaryNrs=" + primaryNrs + ", semesterNr=" + semesterNr + ", assessmentType=" + assessmentType
-				+ ", assessmentDate=" + assessmentDate + ", responsibleEmployee=" + responsibleEmployee + ", comments=" + comments + ", courses="
-				+ courses + ", moduleTypes=" + moduleTypes + ", disciplines=" + disciplines + ", department=" + department + "]";
+		return "\nModule [id=" + id + ", semesterNr=" + semesterNr + ", assessmentType=" + assessmentType + ", assessmentDate=" + assessmentDate
+				+ ", responsibleEmployee=" + responsibleEmployee + ", comments=" + comments + ", primaryNrs=" + primaryNrs + ", department="
+				+ department + ", moduleTypes=" + moduleTypes + ", disciplines=" + disciplines + ", courses=" + courses + "]";
 	}
 
 }

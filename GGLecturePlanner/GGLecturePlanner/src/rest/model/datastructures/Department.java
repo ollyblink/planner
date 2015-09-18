@@ -40,6 +40,13 @@ public class Department implements Comparable<Department> {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
+	
+
+	@Override
+	public String toString() {
+		return "Department [deptName=" + deptName + ", fieldOfExpertise=" + fieldOfExpertise + ", id=" + id + "]";
+	}
 
 	@Override
 	public int compareTo(Department o) {

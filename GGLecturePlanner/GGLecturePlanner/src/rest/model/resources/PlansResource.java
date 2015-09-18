@@ -110,4 +110,31 @@ public class PlansResource {
 		}
 	}
 
+	@GET
+	@Path("/copyplan/{planid}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public void copyPlan(@PathParam("planid") int planId, @Context HttpServletResponse servletResponse) throws IOException {
+		try {
+			PlanDao.instance.copyPlan(planId);
+			servletResponse.sendRedirect("../../../showPlans.html");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			servletResponse.sendRedirect("../../../error.html");
+		} 
+	}
+	
+	@GET
+	@Path("/printplan/{planid}")
+	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
+	public String printPlan(@PathParam("planid") int planId, @Context HttpServletResponse servletResponse) throws IOException {
+		 
+			try {
+				return PlanDao.instance.createHTMLPage(planId);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			return "<html><head></head><body><p>Something went wrong! :(</p></body></html>";
+		 
+	}
 }

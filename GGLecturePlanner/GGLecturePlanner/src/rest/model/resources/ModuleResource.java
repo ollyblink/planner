@@ -44,7 +44,7 @@ public class ModuleResource {
 	Request request;
 
 	@POST
-	@Path("/addmodule/")
+	@Path("/addmodule")
 	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
 	public void addModule(@FormParam("moduleprimarynrs") String modulePrimaryNrs, @FormParam("semesternr") String semesterNr,
@@ -54,6 +54,7 @@ public class ModuleResource {
 			@FormParam("planid") int planId, @FormParam("moduleid") Integer moduleId, @Context HttpServletResponse servletResponse
 
 	) throws IOException {
+		System.out.println("addModule");
 		ArrayList<String> primaryNrs = new ArrayList<>();
 		String[] pNs = modulePrimaryNrs.split(StaticDataDao.instance.outerSplittingPattern);
 		for (String pN : pNs) {

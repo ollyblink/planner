@@ -96,9 +96,7 @@ public enum CourseDao {
 	public void updateCourse(Course updatedCourse) throws SQLException {
 		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(false);
 		Course oldCourse = getCourseDetails(updatedCourse.getModuleNr(), updatedCourse.getId());
-		
-		
-		
+		 
 		updateCourses(updatedCourse);
 
 		updateTimesAndRooms(updatedCourse,oldCourse);
@@ -232,8 +230,7 @@ public enum CourseDao {
 			this.insertIntoCourse.setString(13, null);
 		}
 
-		this.insertIntoCourse.executeUpdate();
-		System.out.println("Executed insertIntoCourse");
+		this.insertIntoCourse.executeUpdate(); 
 	}
 
 	public int getNextCourseId() {
@@ -293,6 +290,8 @@ public enum CourseDao {
 			course.setComments(r.getString("comments"));
 			if (r.getString("course_type_fk") != null) {
 				course.setCourseType(StaticDataDao.instance.getCourseType(r.getString("course_type_fk")));
+			}else{
+				course.setCourseType(null);
 			}
 			courses.add(course);
 		}

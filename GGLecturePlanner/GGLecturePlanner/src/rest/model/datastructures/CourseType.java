@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class CourseType {
+	@Override
+	public String toString() {
+		return "CourseType [abbreviation=" + abbreviation + ", description=" + description + "]";
+	}
+
 	private String abbreviation;
 	private String description;
 

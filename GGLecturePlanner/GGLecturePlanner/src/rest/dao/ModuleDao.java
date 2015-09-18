@@ -136,6 +136,7 @@ public enum ModuleDao {
 		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
 
 	}
+	
 	public void updateModule(int planId, Module module) throws SQLException {
 
 		int moduleId = module.getId();
@@ -169,9 +170,14 @@ public enum ModuleDao {
 	}
 
 	private void insertDepartmentsToModules(Module module, int moduleId) throws SQLException {
-		this.insertDepartmentsToModules.setInt(1, moduleId);
-		this.insertDepartmentsToModules.setInt(2, module.getDepartment().getId()); 
-		this.insertDepartmentsToModules.executeUpdate();
+		
+		Department dept = module.getDepartment();
+		if(dept != null){
+			this.insertDepartmentsToModules.setInt(1, moduleId);
+			this.insertDepartmentsToModules.setInt(2, dept.getId()); 
+			this.insertDepartmentsToModules.executeUpdate();
+		}
+		 
 	}
 
 	private void insertPlansToModules(int planId, int moduleId) throws SQLException {
@@ -361,6 +367,7 @@ public enum ModuleDao {
 		module.setModuleTypes(getModuleTypes(moduleId));
 		module.setPrimaryNrs(getPrimaryNrs(moduleId));
 		module.setDisciplines(getDisciplines(moduleId));
+		module.setCourses(new ArrayList<>());
 		return module;
 	}
 

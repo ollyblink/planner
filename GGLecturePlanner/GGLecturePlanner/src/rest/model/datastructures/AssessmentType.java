@@ -4,6 +4,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class AssessmentType {
+	@Override
+	public String toString() {
+		return "AssessmentType [abbreviation=" + abbreviation + ", description=" + description + "]";
+	}
 	private String abbreviation;
 	private String description;
 	public AssessmentType(String abbreviation, String description) {

@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Discipline {
+	@Override
+	public String toString() {
+		return abbreviation;
+	}
+
 	private String abbreviation;
 	private String description;
 

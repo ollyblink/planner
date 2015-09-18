@@ -17,6 +17,8 @@ public enum EmployeeDao {
 	private PreparedStatement addEmployeeStatement;
 	private PreparedStatement addEmployeeRolesStatement;
 	private PreparedStatement getEmployeeFirstAndLastName;
+	private PreparedStatement getEmployeeById;
+	private PreparedStatement getRoles;
 
 	private EmployeeDao() {
 		try {
@@ -31,6 +33,12 @@ public enum EmployeeDao {
 
 			this.getEmployeeFirstAndLastName = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("select e.first_name, e.last_name from employees e where e.id= ?;");
+			
+			this.getEmployeeById =  DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("select e.* from employees e where e.id= ?;");
+			
+			this.getRoles = DBConnectionProvider.instance.getDataSource().getConnection()
+					.prepareStatement("select role_fk as role from employees_to_roles where employee_fk=?;");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -157,6 +165,39 @@ public enum EmployeeDao {
 			}
 		}
 		return lecturers;
+	}
+
+	public Employee getEmployeeDetails(int id) throws SQLException {
+		getEmployeeById.setInt(1, id);
+		ResultSet r = getEmployeeById.executeQuery();
+		Employee employee = new Employee();
+		while(r.next()){
+			employee.setId(r.getInt("id"));
+			employee.setEmployeeNr(r.getString("employee_nr"));
+			employee.setFirstName(r.getString("first_name"));
+			employee.setLastName(r.getString("last_name"));
+			employee.setEmail(r.getString("email"));
+			employee.setInternalCostCenter(r.getInt("internal_cost_center"));
+			employee.setExternalInstitute(r.getString("external_institute"));
+			employee.setIsPaidSeparately(r.getBoolean("is_external_paid_separately"));
+			employee.setUsername(r.getString("username"));
+			employee.setPassword(r.getString("password"));
+			employee.setComments(r.getString("comments"));
+		}
+		
+		employee.setRoles(getRoles(id));
+		r.close();
+		return employee;
+	}
+
+	private ArrayList<Role> getRoles(int id) throws SQLException {
+		ArrayList<Role> roles = new ArrayList<>();
+		getRoles.setInt(1, id);
+		ResultSet r = getRoles.executeQuery();
+		while(r.next()){
+			roles .add(StaticDataDao.instance.getRole(r.getString("role")));
+		}
+		return roles;
 	}
  
 

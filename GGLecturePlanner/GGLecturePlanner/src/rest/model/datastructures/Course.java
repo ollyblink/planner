@@ -180,7 +180,7 @@ public class Course {
 
 	@Override
 	public String toString() {
-		return "Course [id=" + id + ", courseDescription=" + courseDescription + ", moduleNr=" + moduleNr + ", vvzNr=" + vvzNr + ", nrOfGroups="
+		return "\nCourse [id=" + id + ", courseDescription=" + courseDescription + ", moduleNr=" + moduleNr + ", vvzNr=" + vvzNr + ", nrOfGroups="
 				+ nrOfGroups + ", nrOfStudentsExpectedPerGroup=" + nrOfStudentsExpectedPerGroup + ", isMaxNrStudentsExpectedPerGroup="
 				+ isMaxNrStudentsExpectedPerGroup + ", swsTotalPerGroup=" + swsTotalPerGroup + ", startDate=" + startDate + ", endDate=" + endDate
 				+ ", rythm=" + rythm + ", comments=" + comments + ", courseType=" + courseType + ", moduleParts=" + moduleParts

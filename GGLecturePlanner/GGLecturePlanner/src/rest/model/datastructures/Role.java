@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Role {
+	@Override
+	public String toString() {
+		return "Role [abbreviation=" + abbreviation + ", description=" + description + "]";
+	}
+
 	private String abbreviation;
 	private String description;
 
