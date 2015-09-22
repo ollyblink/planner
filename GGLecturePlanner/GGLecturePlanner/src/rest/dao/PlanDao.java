@@ -21,6 +21,7 @@ public enum PlanDao {
 	private PreparedStatement deletePlanStatement;
 	private PreparedStatement updatePlan;
 	private PreparedStatement getPlan;
+	private PreparedStatement existsPlanId;
 
 	private PlanDao() {
 		try {
@@ -35,6 +36,8 @@ public enum PlanDao {
 					.prepareStatement("delete from plans where id=?;");
 			this.updatePlan = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("update plans set semester=?, year=? where id=?;");
+
+			this.existsPlanId = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("select * from plans where id=?");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -56,7 +59,20 @@ public enum PlanDao {
 	}
 
 	public Plan getPlanDetailsFor(int planId) throws SQLException {
-		return createPlanFromDBEntries(planId);
+		if (existsPlanId(planId)) {
+			return createPlanFromDBEntries(planId);
+		} else {
+			return null;
+		}
+	}
+
+	private boolean existsPlanId(int planId) throws SQLException {
+		existsPlanId.setInt(1, planId);
+		ResultSet r = existsPlanId.executeQuery();
+		while(r.next()){
+			return true;
+		}
+		return false;
 	}
 
 	private Plan createPlanFromDBEntries(int planId) throws SQLException {
@@ -229,7 +245,8 @@ public enum PlanDao {
 	}
 
 	private String getHTMLBasics(int planId, String content) {
-		return "<html>" + "<head><title>Plan " + planId + "</title><link rel=\"stylesheet\" type=\"text/css\" href=\"../../../style.css\" /></head>" + "<body><div class=\"container\" >" + content + "</div></body>" + "</html>";
+		return "<html>" + "<head><title>Plan " + planId + "</title><link rel=\"stylesheet\" type=\"text/css\" href=\"../../../style.css\" /></head>"
+				+ "<body><div class=\"container\" >" + content + "</div></body>" + "</html>";
 	}
 
 	private Plan retrieveFullPlan(int planId) throws SQLException {

@@ -23,7 +23,28 @@ public class RestAuthenticationFilter implements javax.servlet.Filter {
 
 		if (request instanceof HttpServletRequest) {
 			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append(" [");
+			sb.append("\n\t request.getContextPath(): ").append(httpServletRequest.getContextPath());
+			sb.append("\n\t request.getLocalAddr(): ").append(httpServletRequest.getLocalAddr());
+			sb.append("\n\t request.getLocalName(): ").append(httpServletRequest.getLocalName());
+			sb.append("\n\t request.getLocalPort(): ").append(httpServletRequest.getLocalPort());
+			sb.append("\n\t request.getPathInfo(): ").append(httpServletRequest.getPathInfo());
+			sb.append("\n\t request.getPathTranslated(): ").append(httpServletRequest.getPathTranslated());
+			sb.append("\n\t request.getProtocol(): ").append(httpServletRequest.getProtocol());
+			sb.append("\n\t request.getRemoteAddr(): ").append(httpServletRequest.getRemoteAddr());
+			sb.append("\n\t request.getRemoteHost(): ").append(httpServletRequest.getRemoteHost());
+			sb.append("\n\t request.getRemotePort(): ").append(httpServletRequest.getRemotePort());
+			sb.append("\n\t request.getRequestURI(): ").append(httpServletRequest.getRequestURI());
+			sb.append("\n\t request.getRequestURL(): ").append(httpServletRequest.getRequestURL());
+			sb.append("\n\t request.getScheme(): " ).append(httpServletRequest.getScheme());
+			sb.append("\n\t request.getServerName(): ").append(httpServletRequest.getServerName());
+			sb.append("\n\t request.getServerPort(): ").append(httpServletRequest.getServerPort());
+			sb.append("\n\t request.getServletPath(): ").append(httpServletRequest.getServletPath());
+			sb.append("\n]");
+			
+			System.out.println(sb.toString());
 			String authCredentials = httpServletRequest.getHeader(AUTHENTICATION_HEADER);
  
 			System.out.println("Auth credentials: "+ authCredentials);
@@ -41,9 +62,8 @@ public class RestAuthenticationFilter implements javax.servlet.Filter {
 				if (response instanceof HttpServletResponse) { 
 					HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 					httpServletResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
-				}
-				System.out.println("here2");
-//				filter.doFilter(request, response);
+				} 
+				filter.doFilter(request, response);
 			} else {
 				if (response instanceof HttpServletResponse) {
 					HttpServletResponse httpServletResponse = (HttpServletResponse) response;					

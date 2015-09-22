@@ -255,7 +255,7 @@ public enum EmployeeDao {
 	public boolean authenticate(String username, String password) {
 		try {
 			return userExistsWithPassword(username, password);
-		} catch (SQLException e) {
+		} catch (SQLException e) { 
 			e.printStackTrace();
 			return false;
 		}
@@ -287,7 +287,7 @@ public enum EmployeeDao {
 			Employee employee = getEmployeeDetails(r.getInt("id"));
 			return employee;
 		}
-		r.close();
+		r.close(); 
 		return null;
 	}
 

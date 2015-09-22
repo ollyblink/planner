@@ -3,6 +3,7 @@ package rest.model.resources;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -16,10 +17,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import rest.dao.PlanDao;
 import rest.model.datastructures.Plan;
+import rest.model.datastructures.ResponseMessage;
 
 // Plain old Java Object it does not extend as class or implements 
 // an interface
@@ -59,82 +63,86 @@ public class PlansResource {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return new Plan();
+		return null;
 	}
 
 	@DELETE
 	@Path("/deleteplan/{planid}")
-	public boolean deletePlan(@PathParam("planid") int planId) throws IOException {
+	public Response deletePlan(@PathParam("planid") int planId) throws IOException {
 
 		try {
-			System.out.println(planId);
-			return PlanDao.instance.deletePlan(planId);
+			PlanDao.instance.deletePlan(planId);
+			return Response.ok(new ResponseMessage("deleted plan: " + planId, "ok")).build();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
+
+			return Response.status(Status.NOT_MODIFIED).build();
 		}
 	}
 
 	@POST
-	@Path("/addplan/")
-	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
-	public void addPlan(@FormParam("semester") String semester, @FormParam("year") int year, @Context HttpServletResponse servletResponse
+	@Path("/addplan")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addPlan(Map<String, String> plans, @Context HttpServletResponse servletResponse
 
 	) throws IOException {
-
 		try {
-			PlanDao.instance.addPlan(semester, year);
-			servletResponse.sendRedirect("../../showPlans.html");
+			System.out.println("Adding plan: " + plans.get("semester") + ", " + Integer.parseInt(plans.get("year")));
+			int id = PlanDao.instance.addPlan(plans.get("semester"), Integer.parseInt(plans.get("year")));
+			return Response.ok(
+					new ResponseMessage("Created new plan with id: " + id + ", semester: " + plans.get("semester") + ", year "
+							+ Integer.parseInt(plans.get("year")), "ok")).build();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			servletResponse.sendRedirect("../../error.html");
+			return Response.status(Status.NOT_MODIFIED).build();
+
 		}
 	}
 
 	@POST
-	@Path("/changeplan/")
-	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
-	public void changePlan(@FormParam("planid") int planId, @FormParam("semester") String semester, @FormParam("year") int year,
-			@Context HttpServletResponse servletResponse
+	@Path("/changeplan")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response changePlan(Map<String, String> plans, @Context HttpServletResponse servletResponse
 
 	) throws IOException {
 
 		try {
-			PlanDao.instance.changePlan(planId, semester, year);
-			servletResponse.sendRedirect("../../showPlans.html");
+			PlanDao.instance.changePlan(Integer.parseInt(plans.get("id")), plans.get("semester"), Integer.parseInt(plans.get("year")));
+			return Response.ok(
+					new ResponseMessage("Changed plan with id: " + plans.get("id") + ", semester: " + plans.get("semester") + ", year "
+							+ Integer.parseInt(plans.get("year")), "ok")).build();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			servletResponse.sendRedirect("../../error.html");
+			return Response.status(Status.NOT_MODIFIED).build();
 		}
 	}
 
 	@GET
 	@Path("/copyplan/{planid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public void copyPlan(@PathParam("planid") int planId, @Context HttpServletResponse servletResponse) throws IOException {
+	public Response copyPlan(@PathParam("planid") int planId, @Context HttpServletResponse servletResponse) throws IOException {
 		try {
 			PlanDao.instance.copyPlan(planId);
-			servletResponse.sendRedirect("../../../showPlans.html");
+			return Response.ok(new ResponseMessage("copied plan: " + planId, "ok")).build();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			servletResponse.sendRedirect("../../../error.html");
-		} 
+			return Response.status(Status.NOT_MODIFIED).build();
+		}
 	}
-	
-	
+
 	@GET
 	@Path("/printplan/{planid}")
 	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
 	public String printPlan(@PathParam("planid") int planId, @Context HttpServletResponse servletResponse) throws IOException {
-		 
-			try {
-				return PlanDao.instance.createHTMLPage(planId); //TODO
-			} catch (SQLException e) { 
-				e.printStackTrace();
-			} 
-			return "<html><head></head><body><p>Something went wrong! :(</p></body></html>";
-		 
+
+		try {
+			return PlanDao.instance.createHTMLPage(planId); // TODO
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "<html><head></head><body><p>Something went wrong! :(</p></body></html>";
+
 	}
 }

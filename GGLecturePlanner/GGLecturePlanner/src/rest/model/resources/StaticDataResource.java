@@ -20,7 +20,7 @@ import rest.model.datastructures.ModuleType;
 import rest.model.datastructures.Role;
 import rest.model.datastructures.SemesterType;
 
-@Path("/staticresources")
+@Path("/staticresources") 
 public class StaticDataResource {
 
 	@Context
