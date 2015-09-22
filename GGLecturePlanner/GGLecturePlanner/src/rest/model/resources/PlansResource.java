@@ -123,15 +123,15 @@ public class PlansResource {
 		} 
 	}
 	
+	
 	@GET
 	@Path("/printplan/{planid}")
 	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
 	public String printPlan(@PathParam("planid") int planId, @Context HttpServletResponse servletResponse) throws IOException {
 		 
 			try {
-				return PlanDao.instance.createHTMLPage(planId);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				return PlanDao.instance.createHTMLPage(planId); //TODO
+			} catch (SQLException e) { 
 				e.printStackTrace();
 			} 
 			return "<html><head></head><body><p>Something went wrong! :(</p></body></html>";

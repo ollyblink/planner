@@ -3,21 +3,28 @@ package rest.model.resources;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import rest.dao.EmployeeDao;
+import rest.dao.MessageDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.Role;
@@ -41,7 +48,7 @@ public class EmployeesResource {
 
 	@GET
 	@Path("/allemployees")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Employee> getEmployees() {
 		try {
 			return EmployeeDao.instance.getEmployees();
@@ -50,9 +57,10 @@ public class EmployeesResource {
 		}
 		return new ArrayList<>();
 	}
+
 	@GET
 	@Path("/alllecturers")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Employee> getLecturers() {
 		try {
 			return EmployeeDao.instance.getLecturers();
@@ -61,15 +69,30 @@ public class EmployeesResource {
 		}
 		return new ArrayList<>();
 	}
-	@POST
+
+	@GET
+	@Path("/employeedetails/{employeeid}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Employee getLecturers(@PathParam("employeeid") int employeeId) {
+		try {
+			return EmployeeDao.instance.getEmployeeDetails(employeeId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return new Employee();
+	}
+
+
+
+	@POST 
 	@Path("/addemployee/")
-	@Produces(MediaType.TEXT_HTML+";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED+";charset=utf-8")
+	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
 	public void addEmployee(@FormParam("employeenr") String employeeNr, @FormParam("firstname") String firstName,
 			@FormParam("lastname") String lastName, @FormParam("email") String email, @FormParam("internalcostcenter") Integer internalCostCenter,
 			@FormParam("externalinstitute") String externalInstitute, @FormParam("ispaidseparately") Boolean isPaidSeparately,
 			@FormParam("username") String username, @FormParam("comments") String comments, @FormParam("roles") List<String> roles,
-			@Context HttpServletResponse servletResponse) throws IOException {
+			@FormParam("employeeid") Integer employeeId, @Context HttpServletResponse servletResponse) throws IOException {
 
 		try {
 			if (internalCostCenter == null) {
@@ -77,16 +100,36 @@ public class EmployeesResource {
 			}
 
 			ArrayList<Role> realRoles = getRealRoles(roles);
-			int id = EmployeeDao.instance.getNextEmployeeId();
-			Employee employee = new Employee(id, employeeNr, firstName, lastName, email, internalCostCenter, externalInstitute, isPaidSeparately,
-					username, null, comments, realRoles, null);
+			Employee employee = new Employee(employeeId, employeeNr, firstName, lastName, email, internalCostCenter, externalInstitute,
+					isPaidSeparately, username, null, comments, realRoles, null);
 
-			EmployeeDao.instance.addEmployee(employee);
-			servletResponse.sendRedirect("../../showEmployees.html");
+			if (employeeId == null) {
+
+				int id = EmployeeDao.instance.getNextEmployeeId();
+				employee.setId(id);
+				String pw = EmployeeDao.instance.addEmployee(employee);
+				MessageDao.instance.sendMessage(employee, pw);
+			} else {
+				EmployeeDao.instance.updateEmployee(employee);
+
+			}
+			servletResponse.sendRedirect("GGLecturePlaner/web/showEmployees.html");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			servletResponse.sendRedirect("../../error.html");
+			servletResponse.sendRedirect("GGLecturePlaner/web/error.html");
+		}
+	}
+
+	@DELETE
+	@Path("/deleteemployee/{employeeid}")
+	public boolean deletePlan(@PathParam("employeeid") int employeeId) throws IOException {
+
+		try {
+			return EmployeeDao.instance.deleteEmployee(employeeId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false; 
 		}
 	}
 

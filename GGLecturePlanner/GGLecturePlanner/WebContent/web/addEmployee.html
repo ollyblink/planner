@@ -1,0 +1,154 @@
+<!DOCTYPE html >
+<html ng-app="addemployeehandler">
+<head>
+<title></title>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="style.css" />
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-resource.js"></script>
+<script src="https://code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
+<script type="text/javascript">
+
+ 
+        angular.module('addemployeehandler', [])
+
+            .controller('EmployeeCtrl', function ($scope, $http) {
+                var rest = 'http://localhost:8081/GGLecturePlanner/rest/';  
+                $scope.getRoles = function () {
+                    return $http.get(rest+'staticresources/roles').
+                     success(function (data) {
+                         $scope.roles = data; 
+                     });
+                }; 
+
+                 
+
+        $scope.getEmployeeDetails = function (employeeId) {
+			if(typeof employeeId !== "undefined") { 
+                $http.get(rest+'employees/employeedetails/'+employeeId).
+                     success(function (data) {
+                         $scope.employeeDetails = data; 
+                          $scope.employeeNr = data.employeeNr;
+                         $scope.firstName = data.firstName;
+                         $scope.lastName = data.lastName;
+                         $scope.email = data.email;
+                         $scope.internalCostCenter = parseInt(data.internalCostCenter);
+                         $scope.externalInstitute = data.externalInstitute;
+                         $scope.isPaidSeparately = data.isPaidSeparately;
+                         $scope.username = data.username; 
+                         $scope.comments = data.comments;
+                         $scope.employeeRoles = data.roles;
+                     });
+			}
+        }; 
+        
+        $scope.getEmployeeId = function() {
+        	var query = window.location.search.substring(1);                       
+         	if(typeof query !== "undefined") {
+        		var queryParts = query.split("=");
+        		if((typeof queryParts !== "undefined") && queryParts.length == 2){
+        			if(queryParts[0] === "employeeid" && (typeof queryParts[1] !== undefined) && !isNaN(queryParts[1])) {
+						$scope.employeeId = queryParts[1];
+						$scope.getEmployeeDetails($scope.employeeId);
+						return;
+            		}
+            	}
+        	} 
+        	$scope.employeeId = undefined;
+        }
+
+        $scope.employeeHasRole = function(roleAbbr) {
+            if(typeof $scope.employeeRoles === "undefined") {
+                return false;
+			}
+			for(var i = 0; i < $scope.employeeRoles.length;++i) {
+ 				if($scope.employeeRoles[i].abbreviation === roleAbbr){
+					return true;
+				}
+			}
+			return false;
+        }
+
+            });
+
+    </script>
+
+
+</head>
+
+<body>
+	<div class="container" ng-controller="EmployeeCtrl"
+		ng-init="getEmployeeId();getRoles()">
+		<div class="title">Angestellten Hinzufügen</div>
+		<div class="optionals"></div>
+		<form
+			action="http://localhost:8081/GGLecturePlanner/rest/employees/addemployee"
+			method="POST">
+			<table>
+				</tr>
+				<tr>
+					<td><label for="employeenr">Angestelltennummer</label></td>
+					<td><input ng-model="employeeNr" name="employeenr" /></td>
+				</tr>
+				<tr>
+					<td><label for="firstname">Vorname</label></td>
+					<td><input ng-model="firstName" name="firstname" /></td>
+				</tr>
+				<tr>
+					<td><label for="lastname">Nachname</label></td>
+					<td><input ng-model="lastName" name="lastname" /></td>
+				</tr>
+				<tr>
+					<td>Rolle(n)</td>
+					<td><label ng-repeat="r in roles"> <input
+							type="checkbox" name="roles" value="{{r.abbreviation}}"
+							ng-checked="employeeHasRole(r.abbreviation)">{{r.description}}<br />
+					</label></td>
+				</tr>
+				<tr>
+					<td><label for="email">E-Mail</label></td>
+					<td><input ng-model="email" name="email" /></td>
+				</tr>
+				<tr>
+					<td><label for="internalcostcenter">Interne
+							Kostenstelle</label></td>
+					<td><input ng-model="internalCostCenter" value="{{internalCostCenter}}" type="number"
+						name="internalcostcenter" /></td>
+				</tr>
+				<tr>
+					<td><label for="externalinstitute">Externes Institut</label></td>
+					<td><input ng-model="externalInstitute"
+						name="externalinstitute" /></td>
+				</tr>
+				<tr>
+					<td><label for="username">Nutzername</label></td>
+					<td><input ng-model="username" name="username" /></td>
+				</tr>
+				<tr>
+					<td><label for=""ispaidseparately"">Separat bezahlt?</label></td>
+					<td><select name="ispaidseparately"
+						ng-model="isPaidSeparately">
+							<option ng-checked="isPaidSeparately" value="true">ja</option>
+							<option ng-checked="!isPaidSeparately" value="false">nein</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td><label for="comments">Kommentare (z.B. bezüglich
+							Anstellung, etc.):</label></td>
+					<td><textarea ng-model="comments" NAME="comments" COLS=40
+							ROWS=6></textarea></td>
+				</tr>
+				<input type="hidden" name="employeeid" value="{{employeeDetails.id}}" />
+				<tr>
+					<td></td>
+					<td><input type="submit" value="Submit" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

@@ -13,7 +13,7 @@ public class HTTPBasicAuthenticationClient {
 	public static void main(String[] args) {
 		try {
 
-			String webPage = "http://localhost:8081/GGLecturePlanner/rest/helloworld";
+			String webPage = "http://localhost:8081/GGLecturePlanner/rest/modules/moduledetails/1";
 			String name = "Oliver";
 			String password = "pw1";
 

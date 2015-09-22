@@ -255,7 +255,7 @@ public class CourseResource {
 		}
 		return course;
 	}
-
+ 
 	@DELETE
 	@Path("/deletecourse/{moduleid}/{courseid}")
 	public boolean deletePlan(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId) throws IOException {

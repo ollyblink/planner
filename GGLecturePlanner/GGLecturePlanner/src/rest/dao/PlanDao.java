@@ -162,105 +162,74 @@ public enum PlanDao {
 
 	public String createHTMLPage(int planId) throws SQLException {
 		Plan plan = retrieveFullPlan(planId);
-		
-		
-		String content = "<h1>Lehraufträge "+plan.getSemester()+" "+ plan.getYear()+"</h1>"
-				+ "<table>"
-				+ "<tr>"
-				+ "<th>VVZNr</th>"
-				+ "<th>Modul</th>"
-				+ "<th>Modulteil</th>"
-				+ "<th>Semester</th>"
-				+ "<th>Disziplin</th>"
-				+ "<th>Bezeichnung der Veranstaltung</th>"
-				+ "<th>Vorname Nachname</th>"
-				+ "<th>Funktion an der Uni bei internen DozentInnen (Prof, PD, OA, Wimi)</th>"
-				+ "<th>externe DozentInnen (ETH, PSI, WSL, ...)</th>"
-				+ "<th>externe DozentInnen (x)</th>"
-				+ "<th>Anz. Gruppen</th>"
-				+ "<th>Wochentag</th>"
-				+ "<th>Zeit</th>"
-				+ "<th>Verteilung über Semester / Veranstaltung-rhytmus</th>"
-				+ "<th>Beginn-Datum</th>"
-				+ "<th>End-Datum falls nicht ganzes Semester</th>"
-				+ "<th>Typ Veranstaltung (VL, UE, Exkursion, Blockkurs, ...)</th>"
-				+ "<th>Anzahl Studenten erwartet pro Gruppe</th>"
-				+ "<th>Gewünschter Hörsaal / Semnarraum</th>"
-				+ "<th>Kapazität des gew. Raumes</th>"
-				+ "<th>SWS tot. pro Gruppe</th>"
-				+ "<th>Anz. Dozenten (inkl. Profs.)</th>"
-				+ "<th>SWS/Doz. Präsenzzeit</th>"
-				+ "<th>Kostenstelle Abt.? - nicht MNF?</th>"
-				+ "<th>Bemerkungen (o.k. = keine Änderungen, aktualisiert, nicht mehr gültig)</th>"
-				+ "<th>Prüfungen</th>"
-				+ "<th>Eintrag von (Kürzel)</th>"
-				+ "</tr>";
-		
-		for (Module module : plan.getModules()) {   
-			for (Course course : module.getCourses()) { 
-				content += "<tr>"
-						+ "<td>"+course.getVvzNr()+"</td>"
-						+ "<td>"+formatList(module.getPrimaryNrs())+"</td>"
-						+ "<td>"+formatList(course.getModuleParts())+"</td>"
-						+ "<td>"+module.getSemesterNr()+"</td>"
-						+ "<td>"+formatList(module.getDisciplines())+"</td>"
-						+ "<td>"+course.getCourseDescription()+"</td>"
+
+		String content = "<h1>Lehraufträge " + plan.getSemester() + " " + plan.getYear() + "</h1>" + "<table>" + "<tr>" + "<th>VVZNr</th>"
+				+ "<th>Modul</th>" + "<th>Modulteil</th>" + "<th>Semester</th>" + "<th>Disziplin</th>" + "<th>Bezeichnung der Veranstaltung</th>"
+				+ "<th>Vorname Nachname</th>" + "<th>Funktion an der Uni bei internen DozentInnen (Prof, PD, OA, Wimi)</th>"
+				+ "<th>externe DozentInnen (ETH, PSI, WSL, ...)</th>" + "<th>externe DozentInnen (x)</th>" + "<th>Anz. Gruppen</th>"
+				+ "<th>Wochentag</th>" + "<th>Zeit</th>" + "<th>Verteilung über Semester / Veranstaltung-rhytmus</th>" + "<th>Beginn-Datum</th>"
+				+ "<th>End-Datum falls nicht ganzes Semester</th>" + "<th>Typ Veranstaltung (VL, UE, Exkursion, Blockkurs, ...)</th>"
+				+ "<th>Anzahl Studenten erwartet pro Gruppe</th>" + "<th>Gewünschter Hörsaal / Semnarraum</th>"
+				+ "<th>Kapazität des gew. Raumes</th>" + "<th>SWS tot. pro Gruppe</th>" + "<th>Anz. Dozenten (inkl. Profs.)</th>"
+				+ "<th>SWS/Doz. Präsenzzeit</th>" + "<th>Kostenstelle Abt.? - nicht MNF?</th>"
+				+ "<th>Bemerkungen (o.k. = keine Änderungen, aktualisiert, nicht mehr gültig)</th>" + "<th>Prüfungen</th>"
+				+ "<th>Eintrag von (Kürzel)</th>" + "</tr>";
+
+		for (Module module : plan.getModules()) {
+			for (Course course : module.getCourses()) {
+				content += "<tr>" + "<td>" + course.getVvzNr() + "</td>" + "<td>" + formatList(module.getPrimaryNrs()) + "</td>" + "<td>"
+						+ formatList(course.getModuleParts()) + "</td>" + "<td>" + module.getSemesterNr() + "</td>" + "<td>"
+						+ formatList(module.getDisciplines()) + "</td>" + "<td>" + course.getCourseDescription() + "</td>"
 						+ formatLecturers(course.getLecturers())
-//						+ "<td>"++"</td>"
-//						+ "<td>"++"</td>"
-//						+ "<td>"++"</td>"
-//						+ "<td>"++"</td>"
-//						+ "<td>"++"</td>"
-//						+ "<td>"++"</td>"
-						+ "<td></td>"
-						+ "<td></td>"
-						+ "<td></td>"
-						+ "<td></td>"
-						+ "<td></td>"
-						+ "<td></td>"
-						+ "</tr>";
-				for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) { 
-				} 
+						// + "<td>"++"</td>"
+						// + "<td>"++"</td>"
+						// + "<td>"++"</td>"
+						// + "<td>"++"</td>"
+						// + "<td>"++"</td>"
+						// + "<td>"++"</td>"
+						+ "<td></td>" + "<td></td>" + "<td></td>" + "<td></td>" + "<td></td>" + "<td></td>" + "</tr>";
+				for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) {
+				}
 			}
 		}
-		
-		content +="</table>";
+
+		content += "</table>";
 		String html = getHTMLBasics(planId, content);
 		return html;
 	}
 
 	private String formatLecturers(ArrayList<Employee> lecturers) {
 		String formattedLecturers = "";
-		for(Employee l:lecturers){
-			formattedLecturers += "<td>"+l.getFirstName() + " " +l.getLastName()+"</td>";
-			formattedLecturers += "<td>"+formatRoles(l.getRoles()) +"</td>"; 
-			formattedLecturers += "<td>"+l.getExternalInstitute() +"</td>"; 
-			formattedLecturers += "<td>"+(l.getIsPaidSeparately()?"x":"") +"</td>"; 
-			formattedLecturers += "<td>"+(l.getInternalCostCenter()==null?"":l.getInternalCostCenter()) +"</td>"; 
- 		}
+		for (Employee l : lecturers) {
+			formattedLecturers += "<td>" + l.getFirstName() + " " + l.getLastName() + "</td>";
+			formattedLecturers += "<td>" + formatRoles(l.getRoles()) + "</td>";
+			formattedLecturers += "<td>" + l.getExternalInstitute() + "</td>";
+			formattedLecturers += "<td>" + (l.getIsPaidSeparately() ? "x" : "") + "</td>";
+			formattedLecturers += "<td>" + (l.getInternalCostCenter() == null ? "" : l.getInternalCostCenter()) + "</td>";
+		}
 		return formattedLecturers;
 	}
 
 	private String formatRoles(ArrayList<Role> roles) {
 		String roleString = "";
-		for(int i = 0; i < roles.size()-1;++i){
-			roleString += roles.get(i).getAbbreviation()+",";
+		for (int i = 0; i < roles.size() - 1; ++i) {
+			roleString += roles.get(i).getAbbreviation() + ",";
 		}
-		roleString += roles.get(roles.size()-1).getAbbreviation();
+		roleString += roles.get(roles.size() - 1).getAbbreviation();
 		return roleString;
 	}
 
-	private <T> String  formatList(ArrayList<T> list) {
+	private <T> String formatList(ArrayList<T> list) {
 		String formattedData = "";
-		for(int i = 0; i < list.size()-1;++i){
+		for (int i = 0; i < list.size() - 1; ++i) {
 			formattedData += list.get(i).toString() + "\n";
 		}
-		formattedData += list.get(list.size()-1).toString();
+		formattedData += list.get(list.size() - 1).toString();
 		return formattedData;
 	}
 
 	private String getHTMLBasics(int planId, String content) {
-		return "<html>" + "<head><title>Plan " + planId + "</title></head>" + "<body>" + content + "</body>" + "</html>";
+		return "<html>" + "<head><title>Plan " + planId + "</title><link rel=\"stylesheet\" type=\"text/css\" href=\"../../../style.css\" /></head>" + "<body><div class=\"container\" >" + content + "</div></body>" + "</html>";
 	}
 
 	private Plan retrieveFullPlan(int planId) throws SQLException {
@@ -268,19 +237,19 @@ public enum PlanDao {
 		ArrayList<Module> modules = plan.getModules();
 		for (Module module : modules) {
 			module.setCourses(CourseDao.instance.getCoursesForModule(module.getId()));
-			for(Course course: module.getCourses()){
+			for (Course course : module.getCourses()) {
 				ArrayList<Employee> lecturers = course.getLecturers();
-				if(lecturers != null){
-					for(Employee e: lecturers){
-						e = EmployeeDao.instance.getEmployeeDetails(e.getId());
-					}
-				}else{
-					course.setLecturers(new ArrayList<>());
+				ArrayList<Employee> fullBlownLecturers = new ArrayList<>();
+
+				for (Employee e : lecturers) {
+					fullBlownLecturers.add(EmployeeDao.instance.getEmployeeDetails(e.getId()));
 				}
+
+				course.setLecturers(fullBlownLecturers);
+
 			}
 		}
 		return plan;
 	}
 
-	
 }
