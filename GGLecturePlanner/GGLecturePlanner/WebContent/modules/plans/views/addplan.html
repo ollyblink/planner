@@ -1,0 +1,23 @@
+<div class="container"
+	ng-init="getPlanDetails();getSemesterTypes();getYears()">
+	<form name="form" ng-submit="addPlan()" role="form">
+		<div class="form-group">
+			<label for="semester">Semester</label> <select class="form-control" name="semester"
+				ng-model="semester">
+				<option ng-repeat="s in semestertypes" value="{{s.abbreviation}}">{{s.description}}</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="year">Jahr</label> <select class="form-control" name="year" ng-model="year">
+				<option ng-repeat="y in years" value="{{y}}">{{y}}</option>
+			</select>
+		</div>
+		<input type="hidden" ng-model="planid" value="{{planDetails.id}}" />
+		<div class="form-actions">
+			<button type="submit" class="btn btn-danger"
+				ng-show="!isPlanIdDefined()">Add plan</button>
+			<button type="submit" class="btn btn-danger"
+				ng-show="isPlanIdDefined()">Change plan</button>
+		</div>
+	</form>
+</div>
