@@ -220,7 +220,7 @@ public enum PlanDao {
 			formattedLecturers += "<td>" + l.getFirstName() + " " + l.getLastName() + "</td>";
 			formattedLecturers += "<td>" + formatRoles(l.getRoles()) + "</td>";
 			formattedLecturers += "<td>" + l.getExternalInstitute() + "</td>";
-			formattedLecturers += "<td>" + (l.getIsPaidSeparately() ? "x" : "") + "</td>";
+			formattedLecturers += "<td>" + (l.getIsPaidSeparately().getValue() ? "x" : "") + "</td>";
 			formattedLecturers += "<td>" + (l.getInternalCostCenter() == null ? "" : l.getInternalCostCenter()) + "</td>";
 		}
 		return formattedLecturers;

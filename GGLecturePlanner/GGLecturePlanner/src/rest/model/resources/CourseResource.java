@@ -219,7 +219,7 @@ public class CourseResource {
 	}
 
 	@GET
-	@Path("/coursedetails/{moduleid}")
+	@Path("/coursedetails/moduleid/{moduleid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Course> getCoursesForModule(@PathParam("moduleid") int moduleId) {
 		System.out.println("Module id in getCoursesForModule: " + moduleId);
@@ -234,7 +234,7 @@ public class CourseResource {
 	}
 
 	@GET
-	@Path("/coursedetails/{moduleid}/{courseid}")
+	@Path("/coursedetails/moduleid/{moduleid}/courseid/{courseid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Course getCourseDetails(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId) {
 		System.out.println("CourseResource::getCourseDetails: moduleId : " + moduleId + ", courseid: " + courseId);
@@ -257,7 +257,7 @@ public class CourseResource {
 	}
  
 	@DELETE
-	@Path("/deletecourse/{moduleid}/{courseid}")
+	@Path("/deletecourse/moduleid/{moduleid}/courseid/{courseid}")
 	public boolean deletePlan(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId) throws IOException {
 
 		try {

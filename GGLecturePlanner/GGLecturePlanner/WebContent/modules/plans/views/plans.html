@@ -3,15 +3,15 @@
 	<div>
 		<a href="#/plans/addplan">(+) Plan hinzufügen</a>
 	</div>
-
+ 
 	<!-- 	<div class="alert alert-info" ng-show="responseMessage.length > 0">{{responseMessage}}</div> -->
 	<div class="table-responsive">
 		<table class="table table-hover">
 			<tr ng-repeat="plan in plans">
 				<th>{{plan.semester}}&nbsp;{{plan.year}}</th>
-							<td><a href="#/modules/{{plan.id}}">Module
+							<td><a href="#/modules/planid/{{plan.id}}">Module
 									anzeigen/ändern/hinzufügen</a></td>
-				<td><a href="#/plans/changeplan/{{plan.id}}">Plan
+				<td><a href="#/plans/changeplan/planid/{{plan.id}}">Plan
 						bearbeiten</a></td>
 				<td><a ng-click="deletePlan(plan.id)">Plan löschen</a></td>
 				<!-- 			<td><a href="printPlan.html?planid={{plan.id}}">Plan drucken</a></td> -->

@@ -3,14 +3,12 @@ package rest.model.resources;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,7 +25,9 @@ import rest.dao.EmployeeDao;
 import rest.dao.MessageDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Employee;
+import rest.model.datastructures.ResponseMessage;
 import rest.model.datastructures.Role;
+import rest.model.datastructures.TrueFalseTupel;
 
 // Plain old Java Object it does not extend as class or implements 
 // an interface
@@ -73,7 +73,7 @@ public class EmployeesResource {
 	@GET
 	@Path("/employeedetails/{employeeid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Employee getLecturers(@PathParam("employeeid") int employeeId) {
+	public Employee getLecturer(@PathParam("employeeid") int employeeId) {
 		try {
 			return EmployeeDao.instance.getEmployeeDetails(employeeId);
 		} catch (SQLException e) {
@@ -81,55 +81,79 @@ public class EmployeesResource {
 		}
 		return new Employee();
 	}
- 
 
-
-	@POST 
-	@Path("/addemployee/")
-	@Produces(MediaType.TEXT_HTML + ";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED + ";charset=utf-8")
-	public void addEmployee(@FormParam("employeenr") String employeeNr, @FormParam("firstname") String firstName,
-			@FormParam("lastname") String lastName, @FormParam("email") String email, @FormParam("internalcostcenter") Integer internalCostCenter,
-			@FormParam("externalinstitute") String externalInstitute, @FormParam("ispaidseparately") Boolean isPaidSeparately,
-			@FormParam("username") String username, @FormParam("comments") String comments, @FormParam("roles") List<String> roles,
-			@FormParam("employeeid") Integer employeeId, @Context HttpServletResponse servletResponse) throws IOException {
+	@SuppressWarnings("unchecked")
+	@POST
+	@Path("/addemployee")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addEmployee(Map<String, Object> employeeDetails,
+	// @FormParam("employeenr") String employeeNr, @FormParam("firstname") String firstName,
+	// @FormParam("lastname") String lastName, @FormParam("email") String email, @FormParam("internalcostcenter") Integer internalCostCenter,
+	// @FormParam("externalinstitute") String externalInstitute, @FormParam("ispaidseparately") Boolean isPaidSeparately,
+	// @FormParam("username") String username, @FormParam("comments") String comments, @FormParam("roles") List<String> roles,
+	// @FormParam("employeeid") Integer employeeId,
+			@Context HttpServletResponse servletResponse) throws IOException {
 
 		try {
-			if (internalCostCenter == null) {
-				internalCostCenter = 0;
+
+			Employee employee = new Employee();
+			try {
+				employee.setId(Integer.parseInt((String) employeeDetails.get("employeeid")));
+			}catch(NumberFormatException n){
+				employee.setId(null);
+			}
+			employee.setEmployeeNr(((String) employeeDetails.get("employeenr")));
+			employee.setFirstName(((String) employeeDetails.get("firstname")));
+			employee.setLastName(((String) employeeDetails.get("lastname")));
+			employee.setEmail(((String) employeeDetails.get("email")));
+			employee.setInternalCostCenter(((Integer) employeeDetails.get("internalcostcenter")));
+			employee.setExternalInstitute(((String) employeeDetails.get("externalinstitute")));
+			System.out.println(employeeDetails.keySet());
+			System.out.println(employeeDetails.values());
+			try { 
+ 				boolean trueFalse = ((Boolean) employeeDetails.get("ispaidseparately"));
+				employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse ? "Ja" : "Nein")));
+			} catch (NullPointerException n) {
+				employee.setIsPaidSeparately(null);
+			}
+			employee.setUsername(((String) employeeDetails.get("username")));
+			employee.setComments(((String) employeeDetails.get("comments")));
+			try {
+				employee.setRoles(getRealRoles(((List<String>) employeeDetails.get("roles"))));
+			} catch (NullPointerException n) {
+				employee.setRoles(null);
 			}
 
-			ArrayList<Role> realRoles = getRealRoles(roles);
-			Employee employee = new Employee(employeeId, employeeNr, firstName, lastName, email, internalCostCenter, externalInstitute,
-					isPaidSeparately, username, null, comments, realRoles, null);
-
-			if (employeeId == null) {
-
-				int id = EmployeeDao.instance.getNextEmployeeId();
+			if (employee.getId() == null) {
+				Integer id = EmployeeDao.instance.getNextEmployeeId();
 				employee.setId(id);
 				String pw = EmployeeDao.instance.addEmployee(employee);
 				MessageDao.instance.sendMessage(employee, pw);
+				return Response.ok(new ResponseMessage("Created employee with id " + id, "ok")).build();
 			} else {
 				EmployeeDao.instance.updateEmployee(employee);
-
+				return Response.ok(new ResponseMessage("Updated employee with id " + employee.getId(), "ok")).build();
 			}
-			servletResponse.sendRedirect("GGLecturePlaner/web/showEmployees.html");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			servletResponse.sendRedirect("GGLecturePlaner/web/error.html");
+			return Response.status(Status.NOT_MODIFIED).build();
+
 		}
 	}
 
 	@DELETE
 	@Path("/deleteemployee/{employeeid}")
-	public boolean deletePlan(@PathParam("employeeid") int employeeId) throws IOException {
+	public Response deletePlan(@PathParam("employeeid") int employeeId) throws IOException {
 
 		try {
-			return EmployeeDao.instance.deleteEmployee(employeeId);
+			boolean deleted = EmployeeDao.instance.deleteEmployee(employeeId);
+			return Response.ok(new ResponseMessage("deleted employee with id " + employeeId + "?: " + deleted, "ok")).build();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false; 
+			return Response.status(Status.NOT_MODIFIED).build();
+
 		}
 	}
 

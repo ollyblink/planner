@@ -16,7 +16,7 @@ public class Employee {
 	/** for those paid via contracts */
 	private String externalInstitute;
 	/** x that goes into the other column, for people that are e.g. from another company */
-	private Boolean isPaidSeparately;
+	TrueFalseTupel isPaidSeparately;
 	/** for login if needed */
 	private String username;
 	/** for login if needed */
@@ -31,10 +31,9 @@ public class Employee {
 
 	}
 
-	 
-
-	public Employee(Integer id, String employeeNr, String firstName, String lastName, String email, Integer internalCostCenter, String externalInstitute,
-			Boolean isPaidSeparately, String username, String password, String comments, ArrayList<Role> roles, ArrayList<Course> courses) {
+	public Employee(Integer id, String employeeNr, String firstName, String lastName, String email, Integer internalCostCenter,
+			String externalInstitute, TrueFalseTupel isPaidSeparately, String username, String password, String comments, ArrayList<Role> roles,
+			ArrayList<Course> courses) {
 		this.id = id;
 		this.employeeNr = employeeNr;
 		this.firstName = firstName;
@@ -50,19 +49,21 @@ public class Employee {
 		this.courses = courses;
 	}
 
+	public TrueFalseTupel getIsPaidSeparately() {
+		return isPaidSeparately;
+	}
 
+	public void setIsPaidSeparately(TrueFalseTupel isPaidSeparately) {
+		this.isPaidSeparately = isPaidSeparately;
+	}
 
 	public Integer getId() {
 		return id;
 	}
 
-
-
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
-
 
 	public String getEmployeeNr() {
 		return employeeNr;
@@ -112,14 +113,6 @@ public class Employee {
 		this.externalInstitute = externalInstitute;
 	}
 
-	public Boolean getIsPaidSeparately() {
-		return isPaidSeparately;
-	}
-
-	public void setIsPaidSeparately(Boolean isPaidSeparately) {
-		this.isPaidSeparately = isPaidSeparately;
-	}
-
 	public String getUsername() {
 		return username;
 	}
@@ -160,8 +153,6 @@ public class Employee {
 		this.courses = courses;
 	}
 
-
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -169,8 +160,6 @@ public class Employee {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -189,13 +178,9 @@ public class Employee {
 		return true;
 	}
 
-
-
 	@Override
 	public String toString() {
-		return firstName + " "+ lastName;
+		return firstName + " " + lastName;
 	}
 
-	
-	
 }

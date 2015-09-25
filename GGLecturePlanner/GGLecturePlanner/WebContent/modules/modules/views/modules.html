@@ -1,8 +1,8 @@
-<div class="container" ng-init="getPlanDetails()">
+<div class="container"  ng-init="getPlanDetails()">
 	<div class="title">{{planDetails.semester}}&nbsp;{{planDetails.year}}:
 		Module</div>
 	<div>
-		<a href="addModule.html?planid={{getPlanId()}}">(+) Modul
+		<a href="#/modules/addmodule/planid/{{planDetails.id}}">(+) Modul
 			hinzufügen</a>
 	</div>
 	<div class="table-responsive">
@@ -29,10 +29,10 @@
 				<td>{{module.responsibleEmployee.firstName}}
 					{{module.responsibleEmployee.lastName}}</td>
 				<td>{{module.comments}}</td>
-				<td><a href="showCourses.html?moduleid={{module.id}}">LVA
+				<td><a href="#/courses/moduleid/{{module.id}}">LVA
 						anzeigen/ändern/hinzufügen</a></td>
-				<td><a
-					href="addModule.html?planid={{getPlanId()}}&moduleid={{module.id}}">Modul
+				 
+						<td><a href="#/modules/changemodule/planid/{{planDetails.id}}/moduleid/{{module.id}}">Modul
 						bearbeiten</a></td>
 				<td><a ng-click="deleteModule(module.id)">Modul löschen</a></td>
 			</tr>

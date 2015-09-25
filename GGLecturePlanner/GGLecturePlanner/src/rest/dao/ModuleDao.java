@@ -15,7 +15,7 @@ public enum ModuleDao {
 	instance;
 
 	private PreparedStatement moduleExists;
-	
+
 	private PreparedStatement insertModule;
 	private PreparedStatement insertPlansToModule;
 	private PreparedStatement insertModuleNrs;
@@ -23,9 +23,9 @@ public enum ModuleDao {
 	private PreparedStatement insertDepartmentsToModules;
 	private PreparedStatement insertModulesToDisciplines;
 
-	private PreparedStatement updateModule;  
+	private PreparedStatement updateModule;
 	private PreparedStatement updateDepartmentsToModules;
-	private PreparedStatement deleteModuleTypes; 
+	private PreparedStatement deleteModuleTypes;
 	private PreparedStatement deleteModulesToDisciplines;
 	private PreparedStatement deleteModuleNr;
 
@@ -41,32 +41,30 @@ public enum ModuleDao {
 
 		try {
 			createUtilityStatements();
-			createInsertStatements(); 
-			createUpdateStatements(); 
-			createDeleteStatements();  
+			createInsertStatements();
+			createUpdateStatements();
+			createDeleteStatements();
 			createGetDataStatements();
-			 
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void createUtilityStatements() throws SQLException {
-		this.moduleExists = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("select id from modules where id=?");
+		this.moduleExists = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("select id from modules where id=?");
 	}
 
 	private void createDeleteStatements() throws SQLException {
 		this.deleteModuleTypes = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("delete from modules_to_module_types where module_id_fk=? and module_type_fk=?;"); 
+				.prepareStatement("delete from modules_to_module_types where module_id_fk=? and module_type_fk=?;");
 		this.deleteModulesToDisciplines = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("delete from modules_to_disciplines where module_id_fk = ? and discipline_fk = ?;");
 
 		this.deleteModuleNr = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("delete from module_nrs where module_nr=? and module_id_fk = ?;");
-		
-		this.deleteModule = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("delete from modules where id = ?;");
+
+		this.deleteModule = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("delete from modules where id = ?;");
 	}
 
 	private void createUpdateStatements() throws SQLException {
@@ -75,7 +73,7 @@ public enum ModuleDao {
 				.getConnection()
 				.prepareStatement(
 						"update modules set semester_nr=?, assessment_type_fk=?, assessment_date=?, responsible_employee=?, comments=? where id=?;");
- 
+
 		this.updateDepartmentsToModules = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("update departments_to_modules set dept_id_fk=? where module_id_fk = ?;");
 	}
@@ -103,12 +101,10 @@ public enum ModuleDao {
 	}
 
 	private void createInsertStatements() throws SQLException {
-		this.insertModule = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("insert into modules values(?,?,?,?,?,?)");
+		this.insertModule = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("insert into modules values(?,?,?,?,?,?)");
 		this.insertPlansToModule = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("insert into plans_to_modules values(?,?)");
-		this.insertModuleNrs = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("insert into module_nrs values(?,?)");
+		this.insertModuleNrs = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("insert into module_nrs values(?,?)");
 		this.insertModuleTypes = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("insert into modules_to_module_types values(?,?)");
 
@@ -122,62 +118,71 @@ public enum ModuleDao {
 	public void addModule(int planId, Module module) throws SQLException {
 
 		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(false);
-		
-		int moduleId = module.getId(); 
+
+		int moduleId = module.getId();
 		insertModule(module, moduleId);
 		insertPlansToModules(planId, moduleId);
-		
+
 		insertDepartmentsToModules(module, moduleId);
 		insertModuleNrs(module, moduleId);
 		insertModuleTypes(module, moduleId);
 		insertModulesToDisciplines(module, moduleId);
-		
+
 		DBConnectionProvider.instance.getDataSource().getConnection().commit();
 		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
 
 	}
-	
+
 	public void updateModule(int planId, Module module) throws SQLException {
 
 		int moduleId = module.getId();
 
 		if (moduleExists(moduleId)) {
 			DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(false);
-			//For comparison...
-			Module oldModule = getModuleDetails(module.getId()); 
-			
-			updateModule(module, moduleId);  
+			// For comparison...
+			Module oldModule = getModuleDetails(module.getId());
+
+			updateModule(module, moduleId);
 			updateDepartmentsToModule(module, moduleId);
-			//No update plans to modules... makes no sense so far as you cannot change the module from one to another plan...
+			// No update plans to modules... makes no sense so far as you cannot change the module from one to another plan...
 			updateModuleNrs(module, moduleId, oldModule);
-			updateModuleTypes(module, moduleId, oldModule); 
+			updateModuleTypes(module, moduleId, oldModule);
 			updateModulesToDisciplines(module, moduleId, oldModule);
-			
+
 			DBConnectionProvider.instance.getDataSource().getConnection().commit();
 			DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
 		}
 
 	}
+
 	private void insertModule(Module module, int moduleId) throws SQLException {
 		this.insertModule.setInt(1, moduleId);
 		this.insertModule.setString(2, module.getSemesterNr());
-		this.insertModule.setString(3, module.getAssessmentType().getAbbreviation());
+		try {
+			this.insertModule.setString(3, module.getAssessmentType().getAbbreviation());
+		} catch (NullPointerException e) {
+			this.insertModule.setString(3, null);
+		}
 		this.insertModule.setString(4, module.getAssessmentDate());
-		this.insertModule.setInt(5, module.getResponsibleEmployee().getId());
+		try {
+			this.insertModule.setObject(5, module.getResponsibleEmployee().getId());
+		} catch (NullPointerException e) {
+			this.insertModule.setObject(5, null);
+		}
 		this.insertModule.setString(6, module.getComments());
 
 		this.insertModule.executeUpdate();
 	}
 
 	private void insertDepartmentsToModules(Module module, int moduleId) throws SQLException {
-		
+
 		Department dept = module.getDepartment();
-		if(dept != null){
+		if (dept != null) {
 			this.insertDepartmentsToModules.setInt(1, moduleId);
-			this.insertDepartmentsToModules.setInt(2, dept.getId()); 
+			this.insertDepartmentsToModules.setInt(2, dept.getId());
 			this.insertDepartmentsToModules.executeUpdate();
 		}
-		 
+
 	}
 
 	private void insertPlansToModules(int planId, int moduleId) throws SQLException {
@@ -204,21 +209,19 @@ public enum ModuleDao {
 	}
 
 	private void insertModuleNrs(Module module, int moduleId) throws SQLException {
-		
+
 		for (String moduleNr : module.getPrimaryNrs()) {
-			if(moduleNr == null || moduleNr.length() == 0){
+			if (moduleNr == null || moduleNr.length() == 0) {
 				continue;
 			}
- 			this.insertModuleNrs.setInt(1, moduleId);
+			this.insertModuleNrs.setInt(1, moduleId);
 			this.insertModuleNrs.setString(2, moduleNr);
 			this.insertModuleNrs.executeUpdate();
 		}
 	}
 
-
-
 	private void deleteModuleTypes(Module module, int moduleId) throws SQLException {
-		for (ModuleType mt : module.getModuleTypes()) { 
+		for (ModuleType mt : module.getModuleTypes()) {
 			this.deleteModuleTypes.setInt(1, moduleId);
 			this.deleteModuleTypes.setString(2, mt.getAbbreviation());
 			this.deleteModuleTypes.executeUpdate();
@@ -226,16 +229,26 @@ public enum ModuleDao {
 	}
 
 	private void updateDepartmentsToModule(Module module, int moduleId) throws SQLException {
-		this.updateDepartmentsToModules.setInt(1, module.getDepartment().getId());  
-		this.updateDepartmentsToModules.setInt(2, moduleId);
-		this.updateDepartmentsToModules.executeUpdate();
+		if (module.getDepartment() != null) {
+			this.updateDepartmentsToModules.setInt(1, module.getDepartment().getId());
+			this.updateDepartmentsToModules.setInt(2, moduleId);
+			this.updateDepartmentsToModules.executeUpdate();
+		}
 	}
 
 	private void updateModule(Module module, int moduleId) throws SQLException {
 		this.updateModule.setString(1, module.getSemesterNr());
-		this.updateModule.setString(2, module.getAssessmentType().getAbbreviation());
+		try {
+			this.updateModule.setString(2, module.getAssessmentType().getAbbreviation());
+		} catch (NullPointerException e) {
+			this.updateModule.setString(2, null);
+		}
 		this.updateModule.setString(3, module.getAssessmentDate());
-		this.updateModule.setInt(4, module.getResponsibleEmployee().getId());
+		try {
+			this.updateModule.setObject(4, module.getResponsibleEmployee().getId());
+		} catch (NullPointerException e) {
+			this.updateModule.setObject(4, null);
+		}
 		this.updateModule.setString(5, module.getComments());
 		this.updateModule.setInt(6, moduleId);
 
@@ -243,21 +256,21 @@ public enum ModuleDao {
 	}
 
 	private void updateModuleNrs(Module updatedModule, int moduleId, Module oldModule) throws SQLException {
-		//delete the old ones 
+		// delete the old ones
 		deleteModuleNrs(oldModule, moduleId);
 		insertModuleNrs(updatedModule, moduleId);
 	}
+
 	private void updateModulesToDisciplines(Module updatedModule, int moduleId, Module oldModule) throws SQLException {
 		deleteModulesToDisciplines(oldModule, moduleId);
 		insertModulesToDisciplines(updatedModule, moduleId);
 	}
 
-
 	private void updateModuleTypes(Module updatedModule, int moduleId, Module oldModule) throws SQLException {
-		deleteModuleTypes(oldModule, moduleId); 
+		deleteModuleTypes(oldModule, moduleId);
 		insertModuleTypes(updatedModule, moduleId);
 	}
-	
+
 	private void deleteModulesToDisciplines(Module oldModule, int moduleId) throws SQLException {
 		for (Discipline discipline : oldModule.getDisciplines()) {
 			this.deleteModulesToDisciplines.setInt(1, moduleId);
@@ -266,19 +279,18 @@ public enum ModuleDao {
 		}
 	}
 
-
-	private void deleteModuleNrs( Module oldModule,int moduleId) throws SQLException {
+	private void deleteModuleNrs(Module oldModule, int moduleId) throws SQLException {
 		for (String moduleNr : oldModule.getPrimaryNrs()) {
-			 deleteModuleNr.setString(1, moduleNr);
-			 deleteModuleNr.setInt(2, moduleId);
-			 deleteModuleNr.executeUpdate();
+			deleteModuleNr.setString(1, moduleNr);
+			deleteModuleNr.setInt(2, moduleId);
+			deleteModuleNr.executeUpdate();
 		}
 	}
 
 	private boolean moduleExists(int moduleId) throws SQLException {
 		moduleExists.setInt(1, moduleId);
 		ResultSet r = moduleExists.executeQuery();
-		while(r.next()){
+		while (r.next()) {
 			return true;
 		}
 		return false;
@@ -356,9 +368,17 @@ public enum ModuleDao {
 		while (r.next()) {
 			module.setId(r.getInt("id"));
 			module.setSemesterNr(r.getString("semester_nr"));
-			module.setAssessmentType(StaticDataDao.instance.getAssessmentType(r.getString("assessment_type_fk")));
+			try {
+				module.setAssessmentType(StaticDataDao.instance.getAssessmentType(r.getString("assessment_type_fk")));
+			} catch (NullPointerException e) {
+				module.setAssessmentType(null);
+			}
 			module.setAssessmentDate(r.getString("assessment_date"));
-			module.setResponsibleEmployee(EmployeeDao.instance.getEmployeeFirstAndLastNameFor(r.getInt("responsible_employee")));
+			try {
+				module.setResponsibleEmployee(EmployeeDao.instance.getEmployeeFirstAndLastNameFor(r.getInt("responsible_employee")));
+			} catch (NullPointerException e) {
+				module.setResponsibleEmployee(null);
+			}
 			module.setComments(r.getString("comments"));
 		}
 		r.close();

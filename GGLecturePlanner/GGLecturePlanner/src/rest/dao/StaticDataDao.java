@@ -1,6 +1,5 @@
 package rest.dao;
 
-import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,6 +16,7 @@ import rest.model.datastructures.Discipline;
 import rest.model.datastructures.ModuleType;
 import rest.model.datastructures.Role;
 import rest.model.datastructures.SemesterType;
+import rest.model.datastructures.TrueFalseTupel;
 
 public enum StaticDataDao {
 	//
@@ -26,7 +26,7 @@ public enum StaticDataDao {
 	/** Used for splitting transferred data */
 	public final String outerSplittingPattern = ";;;";
 	public final String innerSplittingPattern = "%%%";
-	
+
 	private Map<String, AssessmentType> assessmentTypes;
 	private Map<String, Role> roles;
 	private Map<String, CourseType> courseTypes;
@@ -52,8 +52,8 @@ public enum StaticDataDao {
 			Statement stat = DBConnectionProvider.instance.getDataSource().getConnection().createStatement();
 			ResultSet res = stat.executeQuery("Select * from day_abbr;");
 			while (res.next()) {
-				  
-					dayAbbreviations.add(res.getString(1)); 
+
+				dayAbbreviations.add(res.getString(1));
 			}
 			res.close();
 			stat.close();
@@ -226,13 +226,10 @@ public enum StaticDataDao {
 	public Map<String, Department> getDepartments() {
 		return departments;
 	}
-	
-	
 
 	public Set<String> getDayAbbreviations() {
 		return dayAbbreviations;
 	}
- 
 
 	public ArrayList<Integer> getNumberRange(int min, int max) {
 
@@ -241,6 +238,13 @@ public enum StaticDataDao {
 			numbers.add(new Integer(i));
 		}
 		return numbers;
+	}
+
+	public Set<TrueFalseTupel> getTrueFalseValues() {
+		Set<TrueFalseTupel> trueFalse = new HashSet<>();
+		trueFalse.add(new TrueFalseTupel(true, "Ja"));
+		trueFalse.add(new TrueFalseTupel(false, "Nein"));
+		return trueFalse;
 	}
 
 }

@@ -6,15 +6,15 @@ angular
 		.controller(
 				'PlansController',
 				[
-						'$scope','$rootScope','$route',
+						'$scope','$rootScope','$routeParams','$route',
 						'$http',
 						'$location',
-						function($scope,$rootScope, $route,$http, $location) {
+						function($scope,$rootScope,$routeParams, $route,$http, $location) {
 							var rest = '/GGLecturePlanner/rest/';
 							
 
 							$scope.isPlanIdDefined = function() {
-								return (((typeof $scope.planId) !== "undefined") && (!isNaN($scope.planId)));
+								return (((typeof $routeParams.planid) !== "undefined") && (!isNaN($routeParams.planid)));
 							};
 							
 							
@@ -39,7 +39,7 @@ angular
 									});
 								}else{
 									$http.post(rest + "plans/changeplan", {
-										id: $scope.planId,
+										id: $routeParams.planid,
 										semester : $scope.semester,
 										year : $scope.year
 									}).success(function(response) { 
@@ -87,14 +87,14 @@ angular
 							};
 
 							$scope.getPlanDetails = function() {
-								$scope.planId = parseInt($location.url().split(
-										"/")[$location.url().split("/").length - 1]);
-								if (((typeof $scope.planId) !== "undefined")
-										&& (!isNaN($scope.planId))) {
+								 
+								if (((typeof $routeParams.planid) !== "undefined")
+										&& (!isNaN($routeParams.planid))) {
+									
 									return $http
 											.get(
 													rest + 'plans/plandetails/'
-															+ $scope.planId)
+															+ $routeParams.planid)
 											.success(
 													function(data) {
 														if ((typeof data) !== "") {
@@ -119,7 +119,7 @@ angular
 													});
 								} else {
 									$location.path("/plans/addplan");
-								}
+								} 
 							};
 
 						} ]);

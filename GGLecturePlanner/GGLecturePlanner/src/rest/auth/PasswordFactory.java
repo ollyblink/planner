@@ -23,12 +23,9 @@ public enum PasswordFactory {
 
 	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-		String pw = "3789437fdsf";
+		String pw = "32qjivkd";
 
-		System.out.println(EmployeeDao.instance.authenticate("hmüller", pw));
-		pw = "v#RHa>dOBr";
-
-		System.out.println(EmployeeDao.instance.authenticate("hmüller", pw));
+		System.out.println(PasswordFactory.instance.generatePWHash(pw)); 
 	}
 
 	public String generatePWHash(String password) {

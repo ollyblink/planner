@@ -1,0 +1,68 @@
+<div class="container" ng-init="init()">
+	<div class="title">{{moduleDetails.primaryNrs[0]}}:
+		Lernveranstaltungen</div>
+	<div>
+		<a href="#/courses/addcourse/moduleid/{{moduleDetails.id}}">(+) LVA hinzufügen</a>
+	</div>
+	<table>
+		<tr>
+			<th>Kursbeschreibung</th>
+			<th>VVZ Nr</th>
+			<th>Modulteil</th>
+			<th># Gruppen</th>
+			<th># Studenten erwartet pro Gruppe (max?)</th>
+			<th>SWS total pro Gruppe</th>
+			<th>Dozenten</th>
+			<th># Doz.</th>
+			<th>SWS/Doz.</th>
+			<th>Beginn-Datum</th>
+			<th>End-Datum</th>
+			<th>Verteilung über Semester / Veranstaltungs-rhythmus</th>
+			<th>Kommentare</th>
+			<td>
+				<table>
+					<tr>
+						<th>Wochentag</th>
+						<th>Zeiten</th>
+						<th>Gewünschter Hörsaal</th>
+						<th>Kapazität des gew. Raumes</th>
+						<th>Kommentare</th>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr ng-repeat="course in courses">
+			<td>{{course.courseDescription}}</td>
+			<td>{{course.vvzNr}}</td>
+			<td><label ng-repeat="mp in course.moduleParts">{{mp}}</label></td>
+			<td>{{course.nrOfGroups}}</td>
+			<td>{{course.nrOfStudentsExpectedperGroup}} <span
+				ng-show="{{course.maxNrStudentsExpectedPerGroup}}">max</span></td>
+			<td>{{course.swsTotalPerGroup}}</td>
+			<td><div ng-repeat="e in course.lecturers">{{e.firstName}}
+					{{e.lastName}}</div></td>
+
+			<td>{{course.lecturers.length}}</td>
+			<td>{{course.swsTotalPerGroup/course.lecturers.length | number:
+				2}}</td>
+			<td>{{course.startDate}}</td>
+			<td>{{course.endDate}}</td>
+			<td>{{course.rythm}}</td>
+			<td>{{course.comments}}</td>
+			<td>
+				<table>
+					<tr ng-repeat="t in course.courseTimesAndRooms">
+						<td>{{t.dayOfWeek}}</td>
+						<td>{{t.times.startTime}} - {{t.times.endTime}}</td>
+						<td>{{t.roomLabel}}</td>
+						<td>{{t.roomCapacity}}</td>
+						<td>{{t.comments}}</td>
+					</tr>
+				</table>
+			</td>
+			<td><a
+				href="addCourse.html?moduleid={{moduleId}}&courseid={{course.id}}">bearbeiten</a></td>
+			<td><a ng-click="deleteCourse(moduleId, course.id)">löschen</a></td>
+		</tr>
+	</table>
+</div>

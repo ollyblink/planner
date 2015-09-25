@@ -19,6 +19,7 @@ import rest.model.datastructures.Discipline;
 import rest.model.datastructures.ModuleType;
 import rest.model.datastructures.Role;
 import rest.model.datastructures.SemesterType;
+import rest.model.datastructures.TrueFalseTupel;
 
 @Path("/staticresources") 
 public class StaticDataResource {
@@ -95,5 +96,12 @@ public class StaticDataResource {
 	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
 	public Set<String> getDayAbbreviations() {
 		return StaticDataDao.instance.getDayAbbreviations();
+	}
+	
+	@GET
+	@Path("/truefalse")
+	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	public Set<TrueFalseTupel> getTrueFalseValues() {
+		return StaticDataDao.instance.getTrueFalseValues();
 	}
 }

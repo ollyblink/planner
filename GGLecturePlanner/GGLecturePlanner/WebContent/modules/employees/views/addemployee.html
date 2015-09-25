@@ -1,0 +1,71 @@
+<div class="container" ng-init="init()">
+	<div class="title">Angestellten Hinzufügen</div>
+	<div class="optionals"></div>
+	<form name="form" ng-submit="addEmployee()" role="form">
+		<table>
+			</tr>
+			<tr>
+				<td><label for="employeenr">Angestelltennummer</label></td>
+				<td><input ng-model="employeeNr" name="employeenr" /></td>
+			</tr>
+			<tr>
+				<td><label for="firstname">Vorname</label></td>
+				<td><input ng-model="firstName" name="firstname"   required/></td>
+			</tr>
+			<tr>
+				<td><label for="lastname">Nachname</label></td>
+				<td><input ng-model="lastName" name="lastname" required /></td>
+			</tr>
+			<tr>
+				<td><label>Rolle(n)</label></td>
+				<td><span ng-repeat="r in allroles"> <input
+						type="checkbox" name="roles" value="{{r.abbreviation}}"
+						ng-checked="employeeHasRole(r.abbreviation)">{{r.description}}<br />
+				</span></td>
+			</tr>
+			<tr>
+				<td><label for="email">E-Mail</label></td>
+				<td><input ng-model="email" name="email" required /></td>
+			</tr>
+			<tr>
+				<td><label for="internalcostcenter">Interne
+						Kostenstelle</label></td>
+				<td><input ng-model="internalCostCenter"
+					value="{{internalCostCenter}}" type="number"
+					name="internalcostcenter" /></td>
+			</tr>
+			<tr>
+				<td><label for="externalinstitute">Externes Institut</label></td>
+				<td><input ng-model="externalInstitute"
+					name="externalinstitute" /></td>
+			</tr>
+			<tr>
+				<td><label for="username" >Nutzername</label></td>
+				<td><input ng-model="username" name="username" required /></td>
+			</tr>
+			<tr>
+				<td><label for="ispaidseparately">Separat bezahlt?</label></td>
+				<td><select name="ispaidseparately" id="ispaidseparately"
+					ng-options="tf.value for tf in trueFalse track by tf.name"
+					ng-model="isPaidSeparately" required></select></td>
+			</tr>
+			<tr>
+				<td><label for="comments">Kommentare (z.B. bezüglich
+						Anstellung, etc.):</label></td>
+				<td><textarea ng-model="comments" NAME="comments" COLS=40
+						ROWS=6></textarea></td>
+			</tr>
+			<input type="hidden" name="employeeid" value="{{employeeDetails.id}}" />
+			<tr>
+				<td></td>
+				<td class="form-actions">
+					<button type="submit" class="btn btn-danger"
+						ng-show="!employeeDetails.id">Angestelltenangaben
+						hinzufügen</button>
+					<button type="submit" class="btn btn-danger"
+						ng-show="employeeDetails.id">Angestelltenangaben ändern</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>

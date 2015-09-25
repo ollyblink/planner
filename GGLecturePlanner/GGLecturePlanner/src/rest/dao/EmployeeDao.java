@@ -12,6 +12,7 @@ import rest.auth.CurrentlyLoggedinUsers;
 import rest.auth.PasswordFactory;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.Role;
+import rest.model.datastructures.TrueFalseTupel;
 
 public enum EmployeeDao {
 	instance;
@@ -27,7 +28,6 @@ public enum EmployeeDao {
 	private PreparedStatement deleteRolesFromEmployee;
 	private PreparedStatement getUserForUsername;
 
-	  
 	private EmployeeDao() {
 		try {
 			this.addEmployeeStatement = DBConnectionProvider.instance
@@ -60,8 +60,8 @@ public enum EmployeeDao {
 							"Update employees set employee_nr=?, first_name=?, last_name=?, email=?, internal_cost_center=?, external_institute=?, is_external_paid_separately=?, username=?, comments=? where id=?;");
 			this.deleteRolesFromEmployee = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("Delete from employees_to_roles where employee_fk=?;");
-			
-			this.getUserForUsername =  DBConnectionProvider.instance.getDataSource().getConnection()
+
+			this.getUserForUsername = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("select id from employees where username=?");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -85,9 +85,13 @@ public enum EmployeeDao {
 		this.addEmployeeStatement.setString(3, employee.getFirstName());
 		this.addEmployeeStatement.setString(4, employee.getLastName());
 		this.addEmployeeStatement.setString(5, employee.getEmail());
-		this.addEmployeeStatement.setInt(6, employee.getInternalCostCenter());
+		this.addEmployeeStatement.setObject(6, employee.getInternalCostCenter());
 		this.addEmployeeStatement.setString(7, employee.getExternalInstitute());
-		this.addEmployeeStatement.setBoolean(8, employee.getIsPaidSeparately());
+		try {
+			this.addEmployeeStatement.setObject(8, employee.getIsPaidSeparately().getValue());
+		}catch(NullPointerException e){
+			this.addEmployeeStatement.setObject(8, false);
+		}
 		this.addEmployeeStatement.setString(9, employee.getUsername());
 		this.addEmployeeStatement.setString(10, passwordHash);
 		this.addEmployeeStatement.setString(11, employee.getComments());
@@ -101,6 +105,9 @@ public enum EmployeeDao {
 	}
 
 	private void addRoles(int employeeId, ArrayList<Role> roles) throws SQLException {
+		if(roles == null){
+			return;
+		}
 		for (Role role : roles) {
 			this.addEmployeeRolesStatement.setInt(1, employeeId);
 			this.addEmployeeRolesStatement.setString(2, role.getAbbreviation());
@@ -116,13 +123,13 @@ public enum EmployeeDao {
 		this.updateEmployeeStatement.setString(4, employee.getEmail());
 		this.updateEmployeeStatement.setInt(5, employee.getInternalCostCenter());
 		this.updateEmployeeStatement.setString(6, employee.getExternalInstitute());
-		this.updateEmployeeStatement.setBoolean(7, employee.getIsPaidSeparately());
+		this.updateEmployeeStatement.setBoolean(7, employee.getIsPaidSeparately().getValue());
 		this.updateEmployeeStatement.setString(8, employee.getUsername());
 		this.updateEmployeeStatement.setString(9, employee.getComments());
 		this.updateEmployeeStatement.setInt(10, employee.getId());
 
 		this.updateEmployeeStatement.executeUpdate();
- 
+
 		deleteRolesFromEmployee(employee.getId());
 
 		addRoles(employee.getId(), employee.getRoles());
@@ -164,7 +171,8 @@ public enum EmployeeDao {
 			employee.setEmail(r.getString("email"));
 			employee.setInternalCostCenter(r.getInt("internal_cost_center"));
 			employee.setExternalInstitute(r.getString("external_institute"));
-			employee.setIsPaidSeparately(r.getBoolean("is_external_paid_separately"));
+			boolean trueFalse = r.getBoolean("is_external_paid_separately");
+			employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse?"Ja":"Nein")));
 			employee.setUsername(r.getString("username"));
 			employee.setComments(r.getString("comments"));
 			employee.setRoles(employeesToRoles.get(r.getInt("id")));
@@ -231,7 +239,8 @@ public enum EmployeeDao {
 			employee.setEmail(r.getString("email"));
 			employee.setInternalCostCenter(r.getInt("internal_cost_center"));
 			employee.setExternalInstitute(r.getString("external_institute"));
-			employee.setIsPaidSeparately(r.getBoolean("is_external_paid_separately"));
+			boolean trueFalse = r.getBoolean("is_external_paid_separately");
+			employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse?"Ja":"Nein")));
 			employee.setUsername(r.getString("username"));
 			employee.setPassword(null);
 			employee.setComments(r.getString("comments"));
@@ -255,7 +264,7 @@ public enum EmployeeDao {
 	public boolean authenticate(String username, String password) {
 		try {
 			return userExistsWithPassword(username, password);
-		} catch (SQLException e) { 
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -270,10 +279,10 @@ public enum EmployeeDao {
 		}
 		if (passwordHash != null) {
 			boolean isPwHashValid = PasswordFactory.instance.validatePassword(password, passwordHash);
-			if(isPwHashValid){
+			if (isPwHashValid) {
 				CurrentlyLoggedinUsers.instance.addLoggedInUser(getUserForUsername(username));
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		}
@@ -283,11 +292,11 @@ public enum EmployeeDao {
 	public Employee getUserForUsername(String username) throws SQLException {
 		this.getUserForUsername.setString(1, username);
 		ResultSet r = this.getUserForUsername.executeQuery();
-		while(r.next()){
+		while (r.next()) {
 			Employee employee = getEmployeeDetails(r.getInt("id"));
 			return employee;
 		}
-		r.close(); 
+		r.close();
 		return null;
 	}
 

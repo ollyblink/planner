@@ -1,23 +1,102 @@
 <div class="container"
-	ng-init="getPlanDetails();getSemesterTypes();getYears()">
-	<form name="form" ng-submit="addPlan()" role="form">
-		<div class="form-group">
-			<label for="semester">Semester</label> <select class="form-control" name="semester"
-				ng-model="semester">
-				<option ng-repeat="s in semestertypes" value="{{s.abbreviation}}">{{s.description}}</option>
-			</select>
-		</div>
-		<div class="form-group">
-			<label for="year">Jahr</label> <select class="form-control" name="year" ng-model="year">
-				<option ng-repeat="y in years" value="{{y}}">{{y}}</option>
-			</select>
-		</div>
-		<input type="hidden" ng-model="planid" value="{{planDetails.id}}" />
-		<div class="form-actions">
-			<button type="submit" class="btn btn-danger"
-				ng-show="!isPlanIdDefined()">Add plan</button>
-			<button type="submit" class="btn btn-danger"
-				ng-show="isPlanIdDefined()">Change plan</button>
-		</div>
+	ng-init="init();getPlanDetails();getModuleDetails()">
+	<form name="form" ng-submit="addModule()" role="form">
+		<input type="hidden" name="planid" value="{{planDetails.id}}" /> <input
+			type="hidden" name="moduleid" value="{{moduleDetails.id}}" />
+		<table>
+			<tr class="form-group">
+				<td><label>Plan</label></td>
+				<td><label ng-model="plantitle">{{planDetails.semester}}
+						{{planDetails.year}}</label></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="primarynr">Modulbezeichnung (z.B. GEO
+						110)</label></td>
+				<td><input class="form-control" name="primarynr"
+					ng-model="modulePrimaryNr" />&nbsp;<a ng-click="addModulePN()">hinzufügen</a></td>
+			</tr>
+			<tr class="form-group">
+				<td></td>
+				<td><p ng-repeat="pN in modulePrimaryNrs">
+						<label>{{pN}}</label>&nbsp;<a ng-click="deleteModulePN(pN)">(x)
+							löschen</a>
+					</p></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="semesternr">Semester</label></td>
+				<td><input class="form-control" name="semesternr"
+					ng-model="semesternr" value="{{semesternr}}" /></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="moduletypes">Modultyp(en)</label></td>
+				<td><label ng-repeat="mt in allmoduletypes"> <input
+						type="checkbox" name="moduletypes" value="{{mt.abbreviation}}"
+						ng-checked="containsType(moduletypes, mt)" ng-model="modtype"
+						ng-change="addOrRemove(moduletypes, mt)">{{mt.description}}<br />
+
+				</label></td>
+			</tr>
+			<tr class="form-group">
+				<td><label>Disziplin(e)</label></td>
+				<td><span ng-repeat="d in alldisciplines"> <input
+						type="checkbox" name="disciplines" value="{{d.abbreviation}}"
+						ng-checked="containsType(disciplines, d)" ng-model="discType"
+						ng-change="addOrRemove(disciplines, d)">{{d.abbreviation}}<br />
+				</span></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="department">Verantwortliche Abteilung</label></td>
+				<td><select class="form-control" name="department"
+					ng-model="department">
+						<option ng-repeat="d in alldepartments" value="{{d.deptName}}">{{d.deptName}}:
+							{{d.fieldOfExpertise}}</option>
+				</select></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="assessmenttype">Prüfungsart</label></td>
+				<!-- 					<td><select name="assessmenttype" -->
+				<!-- 						ng-options="a.abbreviation a.description for a in assessmenttypes track by a.abbreviation" -->
+				<!-- 						ng-model="assessmenttype"> -->
+				<!-- 					</select></td> -->
+
+				<td><select class="form-control" name="assessmenttype"
+					ng-model="assessmenttype">
+						<option ng-repeat="at in allassessmenttypes"
+							value="{{at.abbreviation}}">{{at.description}}</option>
+				</select></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="assessmentdate">Prüfungszeitpunkt</label></td>
+				<td><input class="form-control" ng-model="assessmentdate"
+					name="assessmentdate" /></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="responsibleemployee">Modulverantwortlicher</label></td>
+				<!-- 					<td><select name="responsibleemployee" -->
+				<!-- 						ng-options="mv.lastName for mv in employees track by mv.id" -->
+				<!-- 						ng-model="responsibleemployee"></select> 					 -->
+				<td><select class="form-control" ng-model="responsibleemployee"
+					name="responsibleemployee">
+						<option ng-repeat="mv in allemployees track by mv.id"
+							value="{{mv.id}}">{{mv.firstName}} {{mv.lastName}}</option>
+				</select></td>
+			</tr>
+			<tr class="form-group">
+				<td><label for="comments">Kommentare (z.B. bezüglich
+						Anstellung, etc.):</label></td>
+				<td><textarea class="form-control" ng-model="comments"
+						NAME="comments" COLS=40 ROWS=6></textarea></td>
+			</tr>
+			<tr class="form-actions">
+				<td></td>
+				<!-- 				<td><input type="submit" value="Submit" /></td> -->
+				<td class="form-actions">
+					<button type="submit" class="btn btn-danger"
+						ng-show="!moduleDetails.id">Add module</button>
+					<button type="submit" class="btn btn-danger"
+						ng-show="moduleDetails.id">Change module</button>
+				</td>
+			</tr>
+		</table>
 	</form>
 </div>

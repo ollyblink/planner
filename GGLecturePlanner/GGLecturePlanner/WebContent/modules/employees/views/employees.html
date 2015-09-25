@@ -1,0 +1,38 @@
+<div class="table-responsive" ng-init="getEmployees()">
+	<div class="title">Angestellte</div>
+	<div class="optionals">
+		<a href="#/employees/addemployee">(+) Angestellten hinzufügen</a>
+	</div>
+	<table class="table table-hover">
+		<tr>
+			<th>Angestellten-Nr.</th>
+			<th>Vorname</th>
+			<th>Nachname</th>
+			<th>Rollen</th>
+			<th>E-Mail</th>
+			<th>Interne Kostenstelle</th>
+			<th>Externes Institut</th>
+			<th>Extern bezahlt?</th>
+			<th>Nutzername</th>
+			<th>Kommentare</th>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr ng-repeat="e in allemployees track by e.id">
+			<td>{{e.employeeNr}}</td>
+			<td>{{e.firstName}}</td>
+			<td>{{e.lastName}}</td>
+			<td><span ng-repeat="r in e.roles">{{r.abbreviation}}<br /></span></td>
+			<td>{{e.email}}</td>
+			<td ng-if="e.internalCostCenter>0">{{e.internalCostCenter}}</td>
+			<td ng-if="e.internalCostCenter==0">-</td>
+			<td>{{e.externalInstitute}}</td>
+			<td ng-if="e.isPaidSeparately.value==true">x</td>
+			<td ng-if="e.isPaidSeparately.value==false">-</td>
+			<td>{{e.username}}</td>
+			<td>{{e.comments}}</td>
+			<td><a href="#/employees/changeemployee/employeeid/{{e.id}}">bearbeiten</a></td>
+			<td><a ng-click="deleteEmployee(e.id)">löschen</a></td>
+		</tr>
+	</table>
+</div>
