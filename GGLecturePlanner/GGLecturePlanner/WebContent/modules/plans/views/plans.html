@@ -6,8 +6,8 @@
  
 	<!-- 	<div class="alert alert-info" ng-show="responseMessage.length > 0">{{responseMessage}}</div> -->
 	<div class="table-responsive">
-		<table class="table table-hover">
-			<tr ng-repeat="plan in plans">
+		<table class="table table-striped">
+			<tr ng-repeat="plan in plans | orderBy:'year+semester'">
 				<th>{{plan.semester}}&nbsp;{{plan.year}}</th>
 							<td><a href="#/modules/planid/{{plan.id}}">Module
 									anzeigen/ändern/hinzufügen</a></td>

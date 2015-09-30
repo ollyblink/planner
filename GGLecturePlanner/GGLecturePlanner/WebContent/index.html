@@ -2,25 +2,20 @@
 <html ng-app="BasicHttpAuthExample">
 
 <head>
-<!-- <meta http-equiv="Content-Type" content="text/html;charset=utf-8"> -->
-<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta charset="utf-8" />
 <title>Lernveranstaltungsplaner</title>
 <link rel="stylesheet"
 	href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
 </head>
 <body>
-	<a href="#/login" ng-show="globals.currentUser">Log out</a>
-	<div class="jumbotron">
-		<div class="container">
-			<div class="col-xs-offset-2 col-xs-8">
-				<div ng-view></div>
-			</div>
-		</div>
-	</div>
+	<a href="#/login" ng-show="globals.currentUser" >Log out</a> 
+	<div class="container-fluid" ng-view></div>
 	<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
 	<script src="//code.angularjs.org/1.2.20/angular.js"></script>
 	<script src="//code.angularjs.org/1.2.20/angular-route.js"></script>
 	<script src="//code.angularjs.org/1.2.13/angular-cookies.js"></script>
+	<script src="//code.angularjs.org/1.2.24/angular-sanitize.min.js"></script>
 	<script src="scripts/app.js"></script>
 	<script src="modules/authentication/services.js"></script>
 	<script src="modules/authentication/controllers.js"></script>

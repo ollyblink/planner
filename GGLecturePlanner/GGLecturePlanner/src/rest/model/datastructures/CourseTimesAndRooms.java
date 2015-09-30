@@ -5,19 +5,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class CourseTimesAndRooms {
 
-	private int id;
-	private int courseId;
-	private int moduleId;
+	private Integer id;
+	private Integer courseId;
+	private Integer moduleId;
 	private Times times;
 	private String dayOfWeek;
-	private int roomCapacity;
+	private Integer roomCapacity;
 	private String roomLabel;
 	private String comments;
 
 	public CourseTimesAndRooms() {
 	}
 
-	public CourseTimesAndRooms(int id, int courseId, int moduleId, Times times, String dayOfWeek, int roomCapacity, String roomLabel, String comments) {
+	public CourseTimesAndRooms(Integer id, Integer courseId, Integer moduleId, Times times, String dayOfWeek, Integer roomCapacity, String roomLabel,
+			String comments) {
 		this.id = id;
 		this.courseId = courseId;
 		this.moduleId = moduleId;
@@ -28,66 +29,64 @@ public class CourseTimesAndRooms {
 		this.comments = comments;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-
-	}
-
-	public void setCourseId(int courseId) {
-		this.courseId = courseId;
-	}
-
-	public void setModuleId(int moduleId) {
-		this.moduleId = moduleId;
-	}
-
-	public void setTimes(Times times) {
-		this.times = times;
-	}
-
-	public void setDayOfWeek(String dayOfWeek) {
-		this.dayOfWeek = dayOfWeek;
-	}
-
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public int getCourseId() {
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getCourseId() {
 		return courseId;
 	}
 
-	public int getModuleId() {
+	public void setCourseId(Integer courseId) {
+		this.courseId = courseId;
+	}
+
+	public Integer getModuleId() {
 		return moduleId;
+	}
+
+	public void setModuleId(Integer moduleId) {
+		this.moduleId = moduleId;
 	}
 
 	public Times getTimes() {
 		return times;
 	}
 
+	public void setTimes(Times times) {
+		this.times = times;
+	}
+
 	public String getDayOfWeek() {
 		return dayOfWeek;
 	}
 
-	public int getRoomCapacity() {
+	public void setDayOfWeek(String dayOfWeek) {
+		this.dayOfWeek = dayOfWeek;
+	}
+
+	public Integer getRoomCapacity() {
 		return roomCapacity;
+	}
+
+	public void setRoomCapacity(Integer roomCapacity) {
+		this.roomCapacity = roomCapacity;
 	}
 
 	public String getRoomLabel() {
 		return roomLabel;
 	}
 
-	public String getComments() {
-		return comments;
-	}
-
-	public void setRoomCapacity(int roomCapacity) {
-		this.roomCapacity = roomCapacity;
-	}
-
 	public void setRoomLabel(String roomLabel) {
 		this.roomLabel = roomLabel;
+	}
 
+	public String getComments() {
+		return comments;
 	}
 
 	public void setComments(String comments) {

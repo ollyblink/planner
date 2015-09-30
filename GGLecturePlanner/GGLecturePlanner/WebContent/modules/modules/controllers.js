@@ -218,11 +218,12 @@ angular
 							}
 							
 							$scope.addModule = function() {
-								if (!$scope.isModuleIdDefined()) {
+							 
 									$http
 											.post(
 													rest + "modules/addmodule",
 													{
+														moduleid: $routeParams.moduleid,
 														planid : $routeParams.planid,
 														modulePrimaryNrs : $scope.modulePrimaryNrs,
 														semesternr : $scope.semesternr,
@@ -243,33 +244,7 @@ angular
 																			+ $routeParams.planid);
 														}
 													});
-								} else {
-									$http
-											.post(
-													rest + "modules/addmodule",
-													{
-														moduleid : $routeParams.moduleid,
-														planid : $routeParams.planid,
-														modulePrimaryNrs : $scope.modulePrimaryNrs,
-														semesternr : $scope.semesternr,
-														moduletypes : $scope.moduletypes,
-														disciplines : $scope.disciplines,
-														department : $scope.department,
-														assessmenttype : $scope.assessmenttype,
-														assessmentdate : $scope.assessmentdate,
-														responsibleemployee : $scope.responsibleemployee,
-														comments : $scope.comments
-													})
-											.success(
-													function(response) {
-														alert(response.message);
-														if (response.status === "ok") {
-															$location
-																	.path("/modules/planid/"
-																			+ $routeParams.planid);
-														}
-													});
-								}
+						 
 							};
 
 							$scope.deleteModule = function(moduleid ) {
@@ -281,145 +256,6 @@ angular
 											}
 										});
 							};
-							//
-							// Modules stuff:
-
-							//					
-							//				 
-							//								                
-							// $scope.getModuleDetails = function (moduleId) {
-							// if(typeof moduleId !== "undefined") {
-							//								                    
-							// $http.get($scope.getRest()+'modules/moduledetails/'+moduleId).
-							// success(function (data) {
-							// $scope.moduleDetails = data;
-							// // alert(data.primaryNrs.length);
-
-							// });
-							// }
-							// };
-							//								                
-
-							// $scope.getAssessmentTypes = function () {
-							// return
-							// $http.get($scope.getRest()+'staticresources/assessmenttypes').
-							// success(function (data) {
-							// $scope.allassessmenttypes = data;
-							// });
-							// };
-							//					
-							//					
-
-							// $scope.getEmployees = function () {
-							// return
-							// $http.get($scope.getRest()+'employees/allemployees').
-							// success(function (data) {
-							// $scope.allemployees = data;
-							// });
-							// };
-							//					 
-							//					
-
-							//					
-							//					
-							// $scope.containsType =
-							// function(typesWithAbbreviation,
-							// valWithAbbreviation){
-							// if((typeof typesWithAbbreviation === "undefined")
-							// ||
-							// (typeof
-							// valWithAbbreviation ==="undefined")) {
-							// return false;
-							// }
-							// for(var i = 0; i <
-							// typesWithAbbreviation.length;++i){
-							// if(typesWithAbbreviation[i].abbreviation ===
-							// valWithAbbreviation.abbreviation) {
-							// return true;
-							// }
-							// }
-							// return false;
-							// };
-							// ================================
-							// New things similar to how i did it for plans
-
-							// Below is just stuff from plan
-
-							//							
-							//
-							// $scope.isPlanIdDefined = function() {
-							// return (((typeof $scope.planId) !== "undefined")
-							// &&
-							// (!isNaN($scope.planId)));
-							// };
-							//							
-							//							
-							// $scope.getAllPlans = function() {
-							// return $http.get(rest + 'plans/allplans')
-							// .success(function(data) {
-							// $scope.plans = data;
-							// // alert(data);
-							// });
-							// };
-							//
-							// $scope.addPlan = function() {
-							// if(!$scope.isPlanIdDefined()) {
-							// $http.post(rest + "plans/addplan", {
-							// semester : $scope.semester,
-							// year : $scope.year
-							// }).success(function(response) {
-							// alert(response.message);
-							// if (response.status === "ok") {
-							// $location.path("/plans");
-							// }
-							// });
-							// }else{
-							// $http.post(rest + "plans/changeplan", {
-							// id: $scope.planId,
-							// semester : $scope.semester,
-							// year : $scope.year
-							// }).success(function(response) {
-							// alert(response.message);
-							// if (response.status === "ok") {
-							// $location.path("/plans");
-							// }
-							// });
-							// }
-							// };
-							//
-							// $scope.deletePlan = function(planid) {
-							// return $http.delete(
-							// rest + 'plans/deleteplan/' + planid)
-							// .success(function(response) {
-							// if (response.status === "ok") {
-							// $route.reload();
-							// }
-							// });
-							// };
-							//
-							// $scope.copyPlan = function(planId) {
-							// return $http.get(
-							// rest + 'plans/copyplan/' + planId)
-							// .success(function(response) {
-							// if (response.status === "ok") {
-							// $route.reload();
-							// }
-							// });
-							// };
-							//
-							// $scope.getSemesterTypes = function() {
-							// return $http.get(
-							// rest + 'staticresources/semestertypes')
-							// .success(function(data) {
-							// $scope.semestertypes = data;
-							// });
-							// };
-							// $scope.getYears = function() {
-							// return $http
-							// .get(rest + 'staticresources/years')
-							// .success(function(data) {
-							// $scope.years = data;
-							// });
-							// };
+						 
 
 						} ]).$inject = [ 'Plans', 'StaticData' ];

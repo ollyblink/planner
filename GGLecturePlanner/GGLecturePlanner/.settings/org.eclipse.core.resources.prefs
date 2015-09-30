@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding//WebContent/modules/authentication/views/login.html=UTF-8
+encoding//WebContent/modules/courses/views/addcourse.html=UTF-8
+encoding//WebContent/modules/courses/views/courses.html=UTF-8
+encoding//WebContent/modules/employees/views/addemployee.html=UTF-8
+encoding//WebContent/modules/employees/views/employees.html=UTF-8
+encoding//WebContent/modules/home/views/home.html=UTF-8
+encoding//WebContent/modules/modules/views/addmodule.html=UTF-8
+encoding//WebContent/modules/modules/views/modules.html=UTF-8
+encoding//WebContent/modules/plans/views/addplan.html=UTF-8
+encoding//WebContent/modules/plans/views/plans.html=UTF-8
+encoding/<project>=UTF-8

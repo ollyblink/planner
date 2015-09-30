@@ -1,41 +1,38 @@
-<div class="container"  ng-init="getPlanDetails()">
-	<div class="title">{{planDetails.semester}}&nbsp;{{planDetails.year}}:
-		Module</div>
-	<div>
-		<a href="#/modules/addmodule/planid/{{planDetails.id}}">(+) Modul
-			hinzufügen</a>
-	</div>
-	<div class="table-responsive">
-		<table class="table table-hover">
-			<th>Modulteil</th>
-			<th>Semester</th>
-			<th>Modultyp(en)</th>
-			<th>Disziplin(e)</th>
-			<th>Anbietende Abteilung</th>
-			<th>Prüfungstyp</th>
-			<th>Prüfungszeitraum</th>
-			<th>Modulverantwortlicher</th>
-			<th>Kommentare zum Modul</th>
+<h2>{{planDetails.semester}}&nbsp;{{planDetails.year}}: Module</h2>
+<div>
+	<a href="#/modules/addmodule/planid/{{planDetails.id}}">(+) Modul
+		hinzufügen</a>
+</div>
+<div ng-init="getPlanDetails()" class="table-responsive">
+	<table class="table table-striped">
+		<th>Modulteil</th>
+		<th>Semester</th>
+		<th>Modultyp(en)</th>
+		<th>Disziplin(e)</th>
+		<th>Anbietende Abteilung</th>
+		<th>Prüfungstyp</th>
+		<th>Prüfungszeitraum</th>
+		<th>Modulverantwortlicher</th>
+		<th>Kommentare zum Modul</th>
 
+		<tr ng-repeat="module in planDetails.modules">
+			<td><span ng-repeat="p in module.primaryNrs")>{{p}}<br /></span></td>
+			<td>{{module.semesterNr}}</td>
+			<td><span ng-repeat="mt in module.moduleTypes")>{{mt.abbreviation}}<br /></span></td>
+			<td><span ng-repeat="d in module.disciplines")>{{d.abbreviation}}<br /></span></td>
+			<td>{{module.department.deptName}}:{{module.department.fieldOfExpertise}}</td>
+			<td>{{module.assessmentType.abbreviation}}</td>
+			<td>{{module.assessmentDate}}</td>
+			<td>{{module.responsibleEmployee.firstName}}
+				{{module.responsibleEmployee.lastName}}</td>
+			<td>{{module.comments}}</td>
+			<td><a href="#/courses/moduleid/{{module.id}}">LVA
+					anzeigen/ändern/hinzufügen</a></td>
 
-			<tr ng-repeat="module in planDetails.modules">
-				<td><span ng-repeat="p in module.primaryNrs")>{{p}}<br /></span></td>
-				<td>{{module.semesterNr}}</td>
-				<td><span ng-repeat="mt in module.moduleTypes")>{{mt.abbreviation}}<br /></span></td>
-				<td><span ng-repeat="d in module.disciplines")>{{d.abbreviation}}<br /></span></td>
-				<td>{{module.department.deptName}}:{{module.department.fieldOfExpertise}}</td>
-				<td>{{module.assessmentType.abbreviation}}</td>
-				<td>{{module.assessmentDate}}</td>
-				<td>{{module.responsibleEmployee.firstName}}
-					{{module.responsibleEmployee.lastName}}</td>
-				<td>{{module.comments}}</td>
-				<td><a href="#/courses/moduleid/{{module.id}}">LVA
-						anzeigen/ändern/hinzufügen</a></td>
-				 
-						<td><a href="#/modules/changemodule/planid/{{planDetails.id}}/moduleid/{{module.id}}">Modul
-						bearbeiten</a></td>
-				<td><a ng-click="deleteModule(module.id)">Modul löschen</a></td>
-			</tr>
-		</table>
-	</div>
+			<td><a
+				href="#/modules/changemodule/planid/{{planDetails.id}}/moduleid/{{module.id}}">Modul
+					bearbeiten</a></td>
+			<td><a ng-click="deleteModule(module.id)">Modul löschen</a></td>
+		</tr>
+	</table>
 </div>

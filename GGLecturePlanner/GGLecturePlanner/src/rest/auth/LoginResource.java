@@ -46,13 +46,7 @@ public class LoginResource {
 				}
 			}
 		}
-		try {
-			return Response.seeOther(new URI("../index.html")).build();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return Response.noContent().build();
 
 	}
 }

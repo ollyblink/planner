@@ -79,15 +79,15 @@
                     });
                 }
                 
-                $scope.containsEmployee = function(selectedLecturers, lecturer){
+//                 $scope.containsEmployee = function(selectedLecturers, lecturer){
 
-                	 for (var i = 0; i < selectedLecturers.length; i++) {
-                         if (selectedLecturers[i].id === lecturer.id) {
-                             return true;
-                         }
-                     }
-                     return false;
-				}
+//                 	 for (var i = 0; i < selectedLecturers.length; i++) {
+//                          if (selectedLecturers[i].id === lecturer.id) {
+//                              return true;
+//                          }
+//                      }
+//                      return false;
+// 				}
 				
                 $scope.getModuleId = function() { 
           			return window.location.search.substring(1).split("&")[0].split("=")[1]; 
@@ -155,15 +155,15 @@
                 	$scope.courseId = undefined;
                 }
                 
-                $scope.contains = function (a, id) {
-                    if(a == null || id == null){return false;}
-                    for (var i = 0; i < a.length; i++) {
-                        if (a[i].id === id) {
-                            return true;
-                        }
-                    }
-                    return false;
-                };
+//                 $scope.contains = function (a, id) {
+//                     if(a == null || id == null){return false;}
+//                     for (var i = 0; i < a.length; i++) {
+//                         if (a[i].id === id) {
+//                             return true;
+//                         }
+//                     }
+//                     return false;
+//                 };
 
                 $scope.getDayAbbreviations = function(){
                 	
@@ -173,98 +173,98 @@
                     });
                 };
                 
-                $scope.getCourseTypes = function () {
-                    return $http.get(rest+'staticresources/coursetypes').
-                     success(function (data) {
-                         $scope.courseTypes = data; 
-                     });
-                }; 
-                $scope.getEmployees = function () {
-                    return $http.get(rest+'employees/alllecturers').
-                     success(function (data) {
-                         $scope.employees = data; 
-                     });
-                };  
+//                 $scope.getCourseTypes = function () {
+//                     return $http.get(rest+'staticresources/coursetypes').
+//                      success(function (data) {
+//                          $scope.courseTypes = data; 
+//                      });
+//                 }; 
+//                 $scope.getEmployees = function () {
+//                     return $http.get(rest+'employees/alllecturers').
+//                      success(function (data) {
+//                          $scope.employees = data; 
+//                      });
+//                 };  
                 
-                $scope.initSelectedModuleParts = function(){
-					$scope.selectedModuleParts = []; 
-	            };
+//                 $scope.initSelectedModuleParts = function(){
+// 					$scope.selectedModuleParts = []; 
+// 	            };
 
-                $scope.initLecturers = function(){
-                    $scope.selectedLecturers = [];
-                };
+//                 $scope.initLecturers = function(){
+//                     $scope.selectedLecturers = [];
+//                 };
 
-                $scope.initSelectedPrimaryNr = function(){$scope.selectedPrimaryNr = null};
-                $scope.initSelectedModulePartNr = function(){$scope.selectedModulePartNr = null};
+//                 $scope.initSelectedPrimaryNr = function(){$scope.selectedPrimaryNr = null};
+//                 $scope.initSelectedModulePartNr = function(){$scope.selectedModulePartNr = null};
                 
-                $scope.addModulePart = function(){  
-                    if($scope.selectedPrimaryNr == null || $scope.selectedPrimaryNr.length == 0){
-						return;
-                       }
+//                 $scope.addModulePart = function(){  
+//                     if($scope.selectedPrimaryNr == null || $scope.selectedPrimaryNr.length == 0){
+// 						return;
+//                        }
 
-                    if($scope.selectedModulePartNr == null || $scope.selectedModulePartNr.length == 0) {
-                        return;
-                    }
-                	var modulePartConcat = $scope.selectedPrimaryNr+"."+$scope.selectedModulePartNr;
-                    var contains = false;
-                    for(var i = 0; i < $scope.selectedModuleParts.length; ++i) {
-						if($scope.selectedModuleParts[i].indexOf(modulePartConcat) >= 0){
-							contains = true;
-						}
-                    }
-					if(!contains) {
-                        $scope.selectedModuleParts.push(modulePartConcat);  
-                       }  
+//                     if($scope.selectedModulePartNr == null || $scope.selectedModulePartNr.length == 0) {
+//                         return;
+//                     }
+//                 	var modulePartConcat = $scope.selectedPrimaryNr+"."+$scope.selectedModulePartNr;
+//                     var contains = false;
+//                     for(var i = 0; i < $scope.selectedModuleParts.length; ++i) {
+// 						if($scope.selectedModuleParts[i].indexOf(modulePartConcat) >= 0){
+// 							contains = true;
+// 						}
+//                     }
+// 					if(!contains) {
+//                         $scope.selectedModuleParts.push(modulePartConcat);  
+//                        }  
 
-            	};
-                $scope.deleteModulePart = function(modulePart){ 
-					var currentlySelectedModulePartNrs = []; 
+//             	};
+//                 $scope.deleteModulePart = function(modulePart){ 
+// 					var currentlySelectedModulePartNrs = []; 
 					 
-					for(var i=0; i < $scope.selectedModuleParts.length; i++) {
-// 						alert($scope.selectedModuleParts[i]);
-						if($scope.selectedModuleParts[i].indexOf(modulePart) < 0) {
-							currentlySelectedModulePartNrs.push($scope.selectedModuleParts[i]); 
-                        } 
-                    }
-// 					alert("Currently selected module part nrs: " +currentlySelectedModulePartNrs);
-// 					alert("selected Module parts: "+ $scope.selectedModuleParts);
+// 					for(var i=0; i < $scope.selectedModuleParts.length; i++) {
+// // 						alert($scope.selectedModuleParts[i]);
+// 						if($scope.selectedModuleParts[i].indexOf(modulePart) < 0) {
+// 							currentlySelectedModulePartNrs.push($scope.selectedModuleParts[i]); 
+//                         } 
+//                     }
+// // 					alert("Currently selected module part nrs: " +currentlySelectedModulePartNrs);
+// // 					alert("selected Module parts: "+ $scope.selectedModuleParts);
 				 
-	                	$scope.selectedModuleParts = currentlySelectedModulePartNrs;
+// 	                	$scope.selectedModuleParts = currentlySelectedModulePartNrs;
 				 
-                };
+//                 };
 
 	            
                 
-                $scope.addLecturer = function(){
-					var availableLecturers = [];
-                    for(var i=0; i < $scope.employees.length; ++i ) {
-						if($scope.employees[i].id == $scope.selectedLecturer && !$scope.contains($scope.selectedLecturers, $scope.selectedLecturer)) {
-                        	$scope.selectedLecturers.push($scope.employees[i]);  
-                        }else{ 
-                        	availableLecturers.push($scope.employees[i]);
-                       	}
+//                 $scope.addLecturer = function(){
+// 					var availableLecturers = [];
+//                     for(var i=0; i < $scope.employees.length; ++i ) {
+// 						if($scope.employees[i].id == $scope.selectedLecturer && !$scope.contains($scope.selectedLecturers, $scope.selectedLecturer)) {
+//                         	$scope.selectedLecturers.push($scope.employees[i]);  
+//                         }else{ 
+//                         	availableLecturers.push($scope.employees[i]);
+//                        	}
 
-                    } 
-    	                	$scope.employees = availableLecturers;
+//                     } 
+//     	                	$scope.employees = availableLecturers;
     				 
-             	};
-                $scope.deleteLecturer = function(id){
-					var currentlySelectedEmployees = []; 
+//              	};
+//                 $scope.deleteLecturer = function(id){
+// 					var currentlySelectedEmployees = []; 
 					 
-					for(var i=0; i < $scope.selectedLecturers.length; ++i ) {
-						if($scope.selectedLecturers[i].id != id && !$scope.contains(currentlySelectedEmployees, id)) {
-							if(currentlySelectedEmployees == null){
-								currentlySelectedEmployees=[];
-							}
-							currentlySelectedEmployees.push($scope.selectedLecturers[i]); 
-                        }else{
-                        	$scope.employees.push($scope.selectedLecturers[i]);
-                        }
-                    }
+// 					for(var i=0; i < $scope.selectedLecturers.length; ++i ) {
+// 						if($scope.selectedLecturers[i].id != id && !$scope.contains(currentlySelectedEmployees, id)) {
+// 							if(currentlySelectedEmployees == null){
+// 								currentlySelectedEmployees=[];
+// 							}
+// 							currentlySelectedEmployees.push($scope.selectedLecturers[i]); 
+//                         }else{
+//                         	$scope.employees.push($scope.selectedLecturers[i]);
+//                         }
+//                     }
 					  
-	    	             $scope.selectedLecturers = currentlySelectedEmployees;
+// 	    	             $scope.selectedLecturers = currentlySelectedEmployees;
 	    		 
-                };
+//                 };
 
                  
 
@@ -275,22 +275,22 @@
                      });
                 }; 
 
-                $scope.getNumbers = function () {
-                    return $http.get(rest+'staticresources/numbers').
-                    success(function (data) { 
-                        $scope.modulePartNrs = data; 
-                    });
-               }; 
+//                 $scope.getNumbers = function () {
+//                     return $http.get(rest+'staticresources/numbers').
+//                     success(function (data) { 
+//                         $scope.modulePartNrs = data; 
+//                     });
+//                }; 
 
-               $scope.initRoomAndTimeModels = function(){
-                   $scope.id ="";
-            	   $scope.dayofweek = "";
-            	   $scope.begintime = "";
-            	   $scope.endtime = "";
-            	   $scope.roomlabel = "";
-            	   $scope.roomcapacity = "";
-            	   $scope.roomcomments = "";
-               };
+//                $scope.initRoomAndTimeModels = function(){
+//                    $scope.id ="";
+//             	   $scope.dayofweek = "";
+//             	   $scope.begintime = "";
+//             	   $scope.endtime = "";
+//             	   $scope.roomlabel = "";
+//             	   $scope.roomcapacity = "";
+//             	   $scope.roomcomments = "";
+//                };
 
                $scope.formatRoomsAndTimesForTransfer = function() { 
                    var formattedData = "" 
@@ -342,62 +342,62 @@
                    } 
 				return formattedData;
               }
-               $scope.addRoomAndTimes = function(){
-				if($scope.roomsAndTimes == null){
-							$scope.roomsAndTimes = [];
-					}
-                   if(($scope.dayofweek == null ||$scope.dayofweek.length==0 )&& 
-                		   ($scope.begintime == null ||$scope.begintime.length==0) &&
-                		   ($scope.endtime == null ||$scope.endtime.length==0) &&
-                		   ($scope.roomlabel == null ||$scope.roomlabel.length==0) &&
-                		   ($scope.roomcapacity == null ||$scope.roomcapacity.length==0) &&
-                		   ($scope.roomcomments == null ||$scope.roomcomments.length==0)  ){
-                       return;
-                   }
-                   var nextId = $scope.nextRoomId;
-                   $scope.updateRoomId();
+//                $scope.addRoomAndTimes = function(){
+// 				if($scope.roomsAndTimes == null){
+// 							$scope.roomsAndTimes = [];
+// 					}
+//                    if(($scope.dayofweek == null ||$scope.dayofweek.length==0 )&& 
+//                 		   ($scope.begintime == null ||$scope.begintime.length==0) &&
+//                 		   ($scope.endtime == null ||$scope.endtime.length==0) &&
+//                 		   ($scope.roomlabel == null ||$scope.roomlabel.length==0) &&
+//                 		   ($scope.roomcapacity == null ||$scope.roomcapacity.length==0) &&
+//                 		   ($scope.roomcomments == null ||$scope.roomcomments.length==0)  ){
+//                        return;
+//                    }
+//                    var nextId = $scope.nextRoomId;
+//                    $scope.updateRoomId();
  
-                   var roomAndTimes = new RoomAndTimes(nextId, $scope.dayofweek, $scope.begintime,$scope.endtime,$scope.roomlabel,$scope.roomcapacity,$scope.roomcomments);
-//     				alert(nextId);
-					$scope.roomsAndTimes.push(roomAndTimes);
-					$scope.initRoomAndTimeModels();
-					$scope.hideRoomtable();
-               };
+//                    var roomAndTimes = new RoomAndTimes(nextId, $scope.dayofweek, $scope.begintime,$scope.endtime,$scope.roomlabel,$scope.roomcapacity,$scope.roomcomments);
+// //     				alert(nextId);
+// 					$scope.roomsAndTimes.push(roomAndTimes);
+// 					$scope.initRoomAndTimeModels();
+// 					$scope.hideRoomtable();
+//                };
 
-               $scope.deleteRoomsAndTimes = function(id){
-                   var tmp = [];
-                   for(var i = 0; i < $scope.roomsAndTimes.length;++i){
-                       if(!angular.equals($scope.roomsAndTimes[i].getId(), id)){
-                           tmp.push($scope.roomsAndTimes[i]);
-                       }
-                   }
-                   if(tmp.length == 0){
-                       $scope.roomtableIsVisible = true;
-                  }
-                   //alert(tmp + " " +tmp.length +" "+$scope.roomtableIsVisible)
-                   $scope.roomsAndTimes = tmp;
+//                $scope.deleteRoomsAndTimes = function(id){
+//                    var tmp = [];
+//                    for(var i = 0; i < $scope.roomsAndTimes.length;++i){
+//                        if(!angular.equals($scope.roomsAndTimes[i].getId(), id)){
+//                            tmp.push($scope.roomsAndTimes[i]);
+//                        }
+//                    }
+//                    if(tmp.length == 0){
+//                        $scope.roomtableIsVisible = true;
+//                   }
+//                    //alert(tmp + " " +tmp.length +" "+$scope.roomtableIsVisible)
+//                    $scope.roomsAndTimes = tmp;
 
-                                  };
+//                                   };
 
-               $scope.initIsRoomtableVisible=function(){
-					$scope.roomtableIsVisible = false;
-               }
+//                $scope.initIsRoomtableVisible=function(){
+// 					$scope.roomtableIsVisible = false;
+//                }
 
-                $scope.showRoomtable = function(){
-                	$scope.roomtableIsVisible = true;
-                }
-                $scope.hideRoomtable = function(){
-                	$scope.roomtableIsVisible = false;
-                }
+//                 $scope.showRoomtable = function(){
+//                 	$scope.roomtableIsVisible = true;
+//                 }
+//                 $scope.hideRoomtable = function(){
+//                 	$scope.roomtableIsVisible = false;
+//                 }
 
-               $scope.canShowRoomtable = function(){
+//                $scope.canShowRoomtable = function(){
 
-                   var canShow = ( !($scope.coursedescription == undefined || $scope.coursedescription == '' || $scope.coursedescription.trim().length == 0) 
-                           || !(  $scope.vvznr == undefined || $scope.vvznr == '' || $scope.vvznr.trim().length == 0 ));
-//                    alert(canShow)
-            	   return canShow;
+//                    var canShow = ( !($scope.coursedescription == undefined || $scope.coursedescription == '' || $scope.coursedescription.trim().length == 0) 
+//                            || !(  $scope.vvznr == undefined || $scope.vvznr == '' || $scope.vvznr.trim().length == 0 ));
+// //                    alert(canShow)
+//             	   return canShow;
   
-                   }
+//                    }
 
                
             });

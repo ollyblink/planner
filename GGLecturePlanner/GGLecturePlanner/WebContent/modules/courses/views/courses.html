@@ -1,10 +1,11 @@
-<div class="container" ng-init="init()">
-	<div class="title">{{moduleDetails.primaryNrs[0]}}:
-		Lernveranstaltungen</div>
+<div  class="table-responsive" ng-init="init()">
+	<h2><span ng-repeat="m in moduleDetails.primaryNrs">{{m}}/</span>:
+		Lernveranstaltungen</h2>
 	<div>
-		<a href="#/courses/addcourse/moduleid/{{moduleDetails.id}}">(+) LVA hinzufügen</a>
+		<a href="#/courses/addcourse/moduleid/{{moduleDetails.id}}">(+)
+			LVA hinzufügen</a>
 	</div>
-	<table>
+	<table class="table table-striped">
 		<tr>
 			<th>Kursbeschreibung</th>
 			<th>VVZ Nr</th>
@@ -34,10 +35,10 @@
 		<tr ng-repeat="course in courses">
 			<td>{{course.courseDescription}}</td>
 			<td>{{course.vvzNr}}</td>
-			<td><label ng-repeat="mp in course.moduleParts">{{mp}}</label></td>
+			<td><span ng-repeat="mp in course.moduleParts">{{mp}}</span></td>
 			<td>{{course.nrOfGroups}}</td>
 			<td>{{course.nrOfStudentsExpectedperGroup}} <span
-				ng-show="{{course.maxNrStudentsExpectedPerGroup}}">max</span></td>
+				ng-show="{{course.isMaxNrStudentsExpectedPerGroup}}">(max)</span></td>
 			<td>{{course.swsTotalPerGroup}}</td>
 			<td><div ng-repeat="e in course.lecturers">{{e.firstName}}
 					{{e.lastName}}</div></td>
@@ -61,8 +62,8 @@
 				</table>
 			</td>
 			<td><a
-				href="addCourse.html?moduleid={{moduleId}}&courseid={{course.id}}">bearbeiten</a></td>
-			<td><a ng-click="deleteCourse(moduleId, course.id)">löschen</a></td>
+				href="#/courses/changecourse/moduleid/{{moduleDetails.id}}/courseid/{{course.id}}">bearbeiten</a></td>
+			<td><a ng-click="deleteCourse(moduleDetails.id, course.id)">löschen</a></td>
 		</tr>
 	</table>
 </div>

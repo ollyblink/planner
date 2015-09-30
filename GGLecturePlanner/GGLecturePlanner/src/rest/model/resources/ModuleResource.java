@@ -140,7 +140,7 @@ public class ModuleResource {
 				return Response.ok(new ResponseMessage("Changed module with id: " + module.getId(), "ok")).build();
 			}
 
-		} catch (SQLException e) {
+		} catch (SQLException e) { 
 			e.printStackTrace();
 			return Response.status(Status.NOT_MODIFIED).build();
 		}

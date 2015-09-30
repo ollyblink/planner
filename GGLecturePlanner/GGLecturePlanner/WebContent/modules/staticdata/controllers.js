@@ -68,5 +68,21 @@ angular.module('StaticData')
 									$scope.trueFalse = data;
 								});
 					};
+					$scope.getCourseTypes = function($scope) {
+						return $http.get(rest + 'staticresources/coursetypes')
+								.success(function(data) {
+									$scope.courseTypes = data;
+								});
+					};
+					
+					$scope.contains = function (a, id) {
+	                    if(a == null || id == null){return false;}
+	                    for (var i = 0; i < a.length; i++) {
+	                        if (a[i].id === id) {
+	                            return true;
+	                        }
+	                    }
+	                    return false;
+	                };
 
 				} ]);
