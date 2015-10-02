@@ -45,7 +45,7 @@ public class PlansResource {
 	@GET
 	@Path("/allplans")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public ArrayList<Plan> getEmployees() {
+	public ArrayList<Plan> getAllPlans() {
 		try {
 			return PlanDao.instance.getAllPlans();
 		} catch (SQLException e) {

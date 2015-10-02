@@ -3,6 +3,8 @@ package rest.model.resources;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +20,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
+import rest.dao.EmployeeDao;
 import rest.dao.ModuleDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Discipline;
@@ -67,30 +70,63 @@ public class ModuleResource {
 		// for (String pN : pNs) {
 		// primaryNrs.add(pN);
 		// }
-		ArrayList<ModuleType> moduleTypesReal = new ArrayList<>();
-		List<String> mTypeAbbreviations = ((List<String>) moduleDetails.get("moduletypes"));
-		for (String type : mTypeAbbreviations) {
-			moduleTypesReal.add(StaticDataDao.instance.getModuleType(type));
+//		ArrayList<ModuleType> moduleTypesReal = new ArrayList<>();
+//		List<String> mTypeAbbreviations = ((List<String>) moduleDetails.get("moduletypes"));
+//		for (String type : mTypeAbbreviations) {
+//			moduleTypesReal.add(StaticDataDao.instance.getModuleType(type));
+//		}
+//		System.out.println("Actual module types: " + moduleTypesReal);
+//
+//		ArrayList<Discipline> disciplineReal = new ArrayList<>();
+//
+//		List<String> discs = ((List<String>) moduleDetails.get("disciplines"));
+//		for (String type : discs) {
+//			disciplineReal.add(StaticDataDao.instance.getDiscipline(type));
+//		}
+////		System.out.println("Disciplines: " + disciplineReal);
+//		System.out.println("Disciplines & ModuletypeS: " +moduleDetails.get("selectedDisciplinesAndModuleParts"));
+//		System.out.println("Disciplines & ModuletypeS: type:"+moduleDetails.get("selectedDisciplinesAndModuleParts").getClass().getSimpleName());
+//		
+		Map<Discipline, List<ModuleType>> disciplinesWithModuletypes = new HashMap<>(); 
+		ArrayList<LinkedHashMap<String, String>> discs = ((ArrayList<LinkedHashMap<String, String>>) moduleDetails.get("selectedDisciplinesAndModuleParts"));
+		for(LinkedHashMap<String, String> o: discs){
+			String discipline = o.get("discipline");
+			String moduleType = o.get("moduletype"); 
+			Discipline actualDiscipline  =StaticDataDao.instance.getDiscipline(discipline);
+			List<ModuleType> moduleTypesForDiscipline = disciplinesWithModuletypes.get(actualDiscipline);
+			if(moduleTypesForDiscipline == null){
+				moduleTypesForDiscipline = new ArrayList<>();
+				disciplinesWithModuletypes.put(actualDiscipline, moduleTypesForDiscipline);
+			}
+			moduleTypesForDiscipline.add(StaticDataDao.instance.getModuleType(moduleType));
+			
+			 
 		}
-		System.out.println("Actual module types: " + moduleTypesReal);
-
-		ArrayList<Discipline> disciplineReal = new ArrayList<>();
-
-		List<String> discs = ((List<String>) moduleDetails.get("disciplines"));
-		for (String type : discs) {
-			disciplineReal.add(StaticDataDao.instance.getDiscipline(type));
+		System.out.println(disciplinesWithModuletypes);
+		ArrayList<Discipline> disciplines = new ArrayList<>();
+		for(Discipline d: disciplinesWithModuletypes.keySet()){
+			d.setModuleTypes(disciplinesWithModuletypes.get(d));
+			disciplines.add(d);
 		}
-		System.out.println("Disciplines: " + disciplineReal);
-
+		System.out.println("Disciplines: " +disciplines);
 		try {
 			Employee responsibleEmployee = new Employee();
-
+ 
+			Integer emplId = null;
 			try {
-				responsibleEmployee.setId(Integer.parseInt((String) moduleDetails.get("responsibleemployee")));
-			} catch (Exception e) {
-				responsibleEmployee.setId(null);
+				emplId = (Integer) moduleDetails.get("responsibleemployee");
+				responsibleEmployee = EmployeeDao.instance.getEmployeeDetails(emplId);
+			} catch (ClassCastException c) {
+				try {
+					String idString = (String) moduleDetails.get("responsibleemployee");
+					emplId = Integer.parseInt(idString);
+					responsibleEmployee = EmployeeDao.instance.getEmployeeDetails(emplId);
+				} catch (Exception e) {
+					e.printStackTrace();
+					responsibleEmployee.setId(null);
+				}
 			}
-
+ 
 			Integer actualModuleId = null;
 			try {
 				actualModuleId = Integer.parseInt((String) moduleDetails.get("moduleid"));
@@ -116,8 +152,8 @@ public class ModuleResource {
 			module.setResponsibleEmployee(responsibleEmployee);
 
 			module.setComments(((String) moduleDetails.get("comments")));
-			module.setModuleTypes(moduleTypesReal);
-			module.setDisciplines(disciplineReal);
+//			module.setModuleTypes(moduleTypesReal);
+			module.setDisciplines(disciplines);
 
 			try {
 				module.setDepartment(StaticDataDao.instance.getDepartment(((String) moduleDetails.get("department"))));
@@ -140,7 +176,7 @@ public class ModuleResource {
 				return Response.ok(new ResponseMessage("Changed module with id: " + module.getId(), "ok")).build();
 			}
 
-		} catch (SQLException e) { 
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return Response.status(Status.NOT_MODIFIED).build();
 		}

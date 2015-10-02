@@ -15,8 +15,7 @@ public class Module {
 	private String comments;
 
 	private ArrayList<String> primaryNrs;  
-	private Department department;
-	private ArrayList<ModuleType> moduleTypes;
+	private Department department; 
 	private ArrayList<Discipline> disciplines;
 	private ArrayList<Course> courses;
 
@@ -25,22 +24,7 @@ public class Module {
  
 
 
-	public Module(Integer id, ArrayList<String> primaryNrs, String semesterNr, AssessmentType assessmentType, String assessmentDate,
-			Employee responsibleEmployee, String comments, ArrayList<Course> courses, ArrayList<ModuleType> moduleTypes,
-			ArrayList<Discipline> disciplines, Department department) {
-		this.id = id;
-		this.primaryNrs = primaryNrs;
-		this.semesterNr = semesterNr;
-		this.assessmentType = assessmentType;
-		this.assessmentDate = assessmentDate;
-		this.responsibleEmployee = responsibleEmployee;
-		this.comments = comments;
-		this.courses = courses;
-		this.moduleTypes = moduleTypes;
-		this.disciplines = disciplines;
-		this.department = department;
-	}
-
+	 
 
 
 	public Integer getId() {
@@ -54,16 +38,7 @@ public class Module {
 	}
 
 
-
-	public ArrayList<ModuleType> getModuleTypes() {
-		return moduleTypes;
-	}
-
-
-
-	public void setModuleTypes(ArrayList<ModuleType> moduleTypes) {
-		this.moduleTypes = moduleTypes;
-	}
+ 
 
 
 
@@ -158,11 +133,17 @@ public class Module {
 
 
 
+
+
+
 	@Override
 	public String toString() {
-		return "\nModule [id=" + id + ", semesterNr=" + semesterNr + ", assessmentType=" + assessmentType + ", assessmentDate=" + assessmentDate
+		return "Module [id=" + id + ", semesterNr=" + semesterNr + ", assessmentType=" + assessmentType + ", assessmentDate=" + assessmentDate
 				+ ", responsibleEmployee=" + responsibleEmployee + ", comments=" + comments + ", primaryNrs=" + primaryNrs + ", department="
-				+ department + ", moduleTypes=" + moduleTypes + ", disciplines=" + disciplines + ", courses=" + courses + "]";
+				+ department + ", disciplines=" + disciplines + ", courses=" + courses + "]";
 	}
+
+
+ 
 
 }

@@ -14,66 +14,74 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rest.dao.EmployeeDao;
+import utils.CommonUtilities;
 
 public class RestAuthenticationFilter implements javax.servlet.Filter {
 	public static final String AUTHENTICATION_HEADER = "Authorization";
+	private boolean canPrint = true;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filter) throws IOException, ServletException {
 
 		if (request instanceof HttpServletRequest) {
 			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(" [");
-			sb.append("\n\t request.getContextPath(): ").append(httpServletRequest.getContextPath());
-			sb.append("\n\t request.getLocalAddr(): ").append(httpServletRequest.getLocalAddr());
-			sb.append("\n\t request.getLocalName(): ").append(httpServletRequest.getLocalName());
-			sb.append("\n\t request.getLocalPort(): ").append(httpServletRequest.getLocalPort());
-			sb.append("\n\t request.getPathInfo(): ").append(httpServletRequest.getPathInfo());
-			sb.append("\n\t request.getPathTranslated(): ").append(httpServletRequest.getPathTranslated());
-			sb.append("\n\t request.getProtocol(): ").append(httpServletRequest.getProtocol());
-			sb.append("\n\t request.getRemoteAddr(): ").append(httpServletRequest.getRemoteAddr());
-			sb.append("\n\t request.getRemoteHost(): ").append(httpServletRequest.getRemoteHost());
-			sb.append("\n\t request.getRemotePort(): ").append(httpServletRequest.getRemotePort());
-			sb.append("\n\t request.getRequestURI(): ").append(httpServletRequest.getRequestURI());
-			sb.append("\n\t request.getRequestURL(): ").append(httpServletRequest.getRequestURL());
-			sb.append("\n\t request.getScheme(): " ).append(httpServletRequest.getScheme());
-			sb.append("\n\t request.getServerName(): ").append(httpServletRequest.getServerName());
-			sb.append("\n\t request.getServerPort(): ").append(httpServletRequest.getServerPort());
-			sb.append("\n\t request.getServletPath(): ").append(httpServletRequest.getServletPath());
-			sb.append("\n]");
-			
-			System.out.println(sb.toString());
+
+			printRequestParams(httpServletRequest);
+
 			String authCredentials = httpServletRequest.getHeader(AUTHENTICATION_HEADER);
- 
-			System.out.println("Auth credentials: "+ authCredentials);
+
+			CommonUtilities.cu.printIfPossible("Auth credentials: " + authCredentials, canPrint);
+
 			StringTupel uPW = getUsernameAndPassword(authCredentials);
-			System.out.println(uPW);
- 
+			CommonUtilities.cu.printIfPossible(uPW.toString(), canPrint);
+
 			boolean isAuth = false;
 			try {
 				isAuth = CurrentlyLoggedinUsers.instance.containsUser(EmployeeDao.instance.getUserForUsername(uPW.username));
-			} catch (SQLException e) { 
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			System.out.println("Is authenticated?" +isAuth);
+			CommonUtilities.cu.printIfPossible("Is authenticated?" + isAuth, canPrint);
 			if (isAuth) {
-				if (response instanceof HttpServletResponse) { 
+				if (response instanceof HttpServletResponse) {
 					HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 					httpServletResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
-				} 
+				}
 				filter.doFilter(request, response);
 			} else {
 				if (response instanceof HttpServletResponse) {
-					HttpServletResponse httpServletResponse = (HttpServletResponse) response;					
-					httpServletResponse.sendRedirect("/GGLecturePlanner/index.html");
- 				}			
-				
+					HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+					httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				}
+				filter.doFilter(request, response);
 
 			}
 		}
-	 
+
+	}
+
+	private void printRequestParams(HttpServletRequest httpServletRequest) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(" [");
+		sb.append("\n\t request.getContextPath(): ").append(httpServletRequest.getContextPath());
+		sb.append("\n\t request.getLocalAddr(): ").append(httpServletRequest.getLocalAddr());
+		sb.append("\n\t request.getLocalName(): ").append(httpServletRequest.getLocalName());
+		sb.append("\n\t request.getLocalPort(): ").append(httpServletRequest.getLocalPort());
+		sb.append("\n\t request.getPathInfo(): ").append(httpServletRequest.getPathInfo());
+		sb.append("\n\t request.getPathTranslated(): ").append(httpServletRequest.getPathTranslated());
+		sb.append("\n\t request.getProtocol(): ").append(httpServletRequest.getProtocol());
+		sb.append("\n\t request.getRemoteAddr(): ").append(httpServletRequest.getRemoteAddr());
+		sb.append("\n\t request.getRemoteHost(): ").append(httpServletRequest.getRemoteHost());
+		sb.append("\n\t request.getRemotePort(): ").append(httpServletRequest.getRemotePort());
+		sb.append("\n\t request.getRequestURI(): ").append(httpServletRequest.getRequestURI());
+		sb.append("\n\t request.getRequestURL(): ").append(httpServletRequest.getRequestURL());
+		sb.append("\n\t request.getScheme(): ").append(httpServletRequest.getScheme());
+		sb.append("\n\t request.getServerName(): ").append(httpServletRequest.getServerName());
+		sb.append("\n\t request.getServerPort(): ").append(httpServletRequest.getServerPort());
+		sb.append("\n\t request.getServletPath(): ").append(httpServletRequest.getServletPath());
+		sb.append("\n]");
+
+		CommonUtilities.cu.printIfPossible(sb.toString(), canPrint);
 	}
 
 	private class StringTupel {
@@ -89,13 +97,12 @@ public class RestAuthenticationFilter implements javax.servlet.Filter {
 		public String toString() {
 			return "StringTupel [username=" + username + ", password=" + password + "]";
 		}
-		
-		
+
 	}
 
 	private StringTupel getUsernameAndPassword(String authCredentials) {
 		if (null == authCredentials) {
-			return new StringTupel("","");
+			return new StringTupel("", "");
 		}
 		// header value format will be "Basic encodedstring" for Basic
 		// authentication. Example "Basic YWRtaW46YWRtaW4="

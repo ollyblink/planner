@@ -55,11 +55,30 @@ public enum PlanDao {
 		ResultSet r = s.executeQuery("select * from plans");
 
 		while (r.next()) {
-			plans.add(new Plan(r.getInt("id"), r.getString("semester"), r.getInt("year"), new ArrayList<>()));
+			int planid = r.getInt("id");
+			Plan plan = new Plan(planid, r.getString("semester"), r.getInt("year"), null);
+			 
+			
+			ArrayList<Module> modules = new ArrayList<>();
+			Statement s1 = DBConnectionProvider.instance.getDataSource().getConnection().createStatement();
+			ResultSet r1 = s1.executeQuery("select distinct module_id_fk from plans_to_modules where plan_id_fk = "+planid);
+			while(r1.next()){
+				Module module = new Module();
+				module.setId(r1.getInt("module_id_fk"));
+				modules.add(module);
+			}
+			r1.close();
+			s1.close();
+			
+			plan.setModules(modules);
+			plans.add(plan);
+			
 		}
 		r.close();
 		s.close();
 
+		
+		
 		return plans;
 	}
 

@@ -33,7 +33,7 @@ angular
 								$scope.isPaidSeparately = null;
 								$scope.username = null;
 								$scope.comments = null;
-								$scope.employeeRoles = null;
+								$scope.employeeRoles = [];
 
 								$scope.getEmployeeDetails()
 								staticDataController.getRoles($scope);
@@ -46,8 +46,11 @@ angular
 											$scope.allemployees = data;
 										});
 							};
+							
+				 
 
 							$scope.getEmployees = function() {
+								
 								return $http.get(rest + 'allemployees')
 										.success(function(data) {
 											$scope.allemployees = data;
@@ -64,7 +67,7 @@ angular
 							 }
 							 })
 							 };
-							$scope.addEmployee = function() {
+							$scope.addEmployee = function() { 
 								$http
 										.post(
 												rest + "addemployee",
@@ -80,6 +83,7 @@ angular
 													ispaidseparately : $scope.isPaidSeparately.value,
 													username : $scope.username,
 													comments : $scope.comments,
+													
 													employeeroles : $scope.employeeRoles
 												}).success(function(response) {
 											alert(response.message);
@@ -113,13 +117,28 @@ angular
 								}
 							};
 
-							$scope.checkValue == function(tfValue) {
+							$scope.checkValue = function(tfValue) {
 								if (tfValue) {
 									return true;
 								} else {
 									return false;
 								}
 							}
+							
+							$scope.addOrRemove = function(role){
+								if($scope.employeeHasRole(role.abbreviation)) {
+									var tmp = [];
+									for (var i = 0; i < $scope.employeeRoles.length; ++i) {
+										if ($scope.employeeRoles[i].abbreviation !== role.abbreviation) {
+											tmp.push($scope.employeeRoles[i]);
+										}
+									}
+									$scope.employeeRoles = tmp;
+								}else{
+									$scope.employeeRoles.push(role)
+								}
+								 
+							};
 
 							$scope.employeeHasRole = function(roleAbbr) {
 								if (((typeof $scope.employeeRoles) === "undefined")

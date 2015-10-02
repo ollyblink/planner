@@ -19,6 +19,8 @@ angular
 							
 							
 							$scope.getAllPlans = function() {
+  
+						 
 								return $http.get(rest + 'plans/allplans')
 										.success(function(data) {
 											$scope.plans = data;

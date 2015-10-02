@@ -31,14 +31,15 @@ angular
 							};
 
 							service.SetCredentials = function(username,
-									password) {
+									password, userdetails) {
 								var authdata = Base64.encode(username + ':'
 										+ password);
 
 								$rootScope.globals = {
 									currentUser : {
 										username : username,
-										authdata : authdata
+										authdata : authdata,
+										userdetails: userdetails
 									}
 								};
 

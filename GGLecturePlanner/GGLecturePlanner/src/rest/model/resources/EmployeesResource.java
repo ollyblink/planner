@@ -3,7 +3,7 @@ package rest.model.resources;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +20,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+
+import com.sun.research.ws.wadl.Application;
 
 import rest.dao.EmployeeDao;
 import rest.dao.MessageDao;
@@ -100,7 +102,7 @@ public class EmployeesResource {
 			Employee employee = new Employee();
 			try {
 				employee.setId(Integer.parseInt((String) employeeDetails.get("employeeid")));
-			}catch(NumberFormatException n){
+			} catch (NumberFormatException n) {
 				employee.setId(null);
 			}
 			employee.setEmployeeNr(((String) employeeDetails.get("employeenr")));
@@ -111,16 +113,19 @@ public class EmployeesResource {
 			employee.setExternalInstitute(((String) employeeDetails.get("externalinstitute")));
 			System.out.println(employeeDetails.keySet());
 			System.out.println(employeeDetails.values());
-			try { 
- 				boolean trueFalse = ((Boolean) employeeDetails.get("ispaidseparately"));
+			try {
+				boolean trueFalse = ((Boolean) employeeDetails.get("ispaidseparately"));
 				employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse ? "Ja" : "Nein")));
 			} catch (NullPointerException n) {
 				employee.setIsPaidSeparately(null);
 			}
 			employee.setUsername(((String) employeeDetails.get("username")));
 			employee.setComments(((String) employeeDetails.get("comments")));
+
+			System.out.println(employeeDetails.get("employeeroles"));
+			System.out.println(employeeDetails.get("employeeroles").getClass().getSimpleName());
 			try {
-				employee.setRoles(getRealRoles(((List<String>) employeeDetails.get("roles"))));
+				employee.setRoles(getRealRoles(((ArrayList<LinkedHashMap<String, String>>) employeeDetails.get("employeeroles"))));
 			} catch (NullPointerException n) {
 				employee.setRoles(null);
 			}
@@ -157,11 +162,19 @@ public class EmployeesResource {
 		}
 	}
 
-	private ArrayList<Role> getRealRoles(List<String> roles) {
+	private ArrayList<Role> getRealRoles(ArrayList<LinkedHashMap<String, String>> arrayList) {
 		ArrayList<Role> realRoles = new ArrayList<>();
-		for (String r : roles) {
-			realRoles.add(StaticDataDao.instance.getRole(r));
+		for (LinkedHashMap<String, String> r : arrayList) {
+			realRoles.add(new Role(r.get("abbreviation"), r.get("description")));
+
 		}
 		return realRoles;
+	}
+
+	@GET
+	@Path("/home")
+	@Produces(MediaType.TEXT_HTML)
+	public String getHomeHtml() {
+		return "<div ng-show=\"canUpdate()\">		<ul>			<li><a href=\"#/plans\">Pläne/Module					anzeigen/ändern/hinzufügen</a></li>			<li><a href=\"#/employees\">Angestellten					anzeigen/ändern/hinzufügen</a></li>		</ul>	</div>	<div ng-show=\"!canUpdate()\">		<ul>			<li><a href=\"#/plans\">Meine Pläne/Module anzeigen</a></li>		</ul>	</div>";
 	}
 }

@@ -1,6 +1,7 @@
 package rest.model.resources;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -54,7 +55,14 @@ public class StaticDataResource {
 	@Path("/roles")
 	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
 	public ArrayList<Role> getAllRoles() {
-		return new ArrayList<>(StaticDataDao.instance.getRoles().values());
+		Collection<Role> roles = StaticDataDao.instance.getRoles().values();
+		ArrayList<Role> choosableRoles = new ArrayList<>();
+		for(Role role: roles){
+			if(!role.getAbbreviation().equalsIgnoreCase("MV")) {
+				choosableRoles.add(role);
+			}
+		}
+		return choosableRoles;
 	}
 
 	@GET

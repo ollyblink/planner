@@ -1,13 +1,13 @@
 'use strict';
 
 // declare modules
-angular.module('Authentication', []);
-angular.module('Home', []);
-angular.module('StaticData', []);
-angular.module('Employees', []);
-angular.module('Plans', []);
-angular.module('Modules', []);
-angular.module('Courses', []);
+angular.module('Authentication', ['ngSanitize']);
+angular.module('Home', ['ngSanitize']);
+angular.module('StaticData', ['ngSanitize']);
+angular.module('Employees', ['ngSanitize']);
+angular.module('Plans', ['ngSanitize']);
+angular.module('Modules', ['ngSanitize']);
+angular.module('Courses', ['ngSanitize']);
 
 // Don't forget to add the modules here!!!
 angular
@@ -72,19 +72,19 @@ angular
 												templateUrl : 'modules/modules/views/addmodule.html'
 											})
 									.when(
-											'/courses/moduleid/:moduleid',
+											'/courses/planid/:planid/moduleid/:moduleid',
 											{
 												controller : 'CoursesController',
 												templateUrl : 'modules/courses/views/courses.html'
 											})
 									.when(
-											'/courses/addcourse/moduleid/:moduleid',
+											'/courses/addcourse/planid/:planid/moduleid/:moduleid',
 											{
 												controller : 'CoursesController',
 												templateUrl : 'modules/courses/views/addcourse.html'
 											})
 									.when(
-											'/courses/changecourse/moduleid/:moduleid/courseid/:courseid',
+											'/courses/changecourse/planid/:planid/moduleid/:moduleid/courseid/:courseid',
 											{
 												controller : 'CoursesController',
 												templateUrl : 'modules/courses/views/addcourse.html'
@@ -115,6 +115,8 @@ angular
 											}).otherwise({
 										redirectTo : '/login'
 									});
+ 
+							
 						} ])
 
 		.run(

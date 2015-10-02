@@ -108,7 +108,7 @@ courseHandler
 											$scope.moduleDetails = data;
 										});
 							};
-							$scope.getCourseDetails = function() {
+							$scope.getCourseDetails = function() { 
 								return $http
 										.get(
 												rest
@@ -130,6 +130,7 @@ courseHandler
 										.post(
 												rest + "courses/addcourse/",
 												{
+
 													moduleid : $routeParams.moduleid,
 													courseid : $routeParams.courseid,
 													coursetype : $scope.coursetype,
@@ -149,10 +150,13 @@ courseHandler
 												})
 										.success(
 												function(response) {
-													alert(response.message);
+													alert("path: " + "/courses/planid/"+$routeParams.planid+"/moduleid/"
+															+ $routeParams.moduleid);
+//													alert(response.message);
+													
 													if (response.status === "ok") {
 														$location
-																.path("/courses/moduleid/"
+																.path("/courses/planid/"+$routeParams.planid+"/moduleid/"
 																		+ $routeParams.moduleid);
 													}
 
@@ -377,11 +381,17 @@ courseHandler
 							 });
 							 };
 							$scope.init = function() {
-								$scope.getCourseDetails();
+
+// alert("module id: " +$routeParams.moduleid);
+// alert("plan id: " +$routeParams.planid);
+								$scope.planid = $routeParams.planid;
+// alert($scope.planid);
 								$scope.getModuleDetails();
+								$scope.getCourseDetails();
 							};
 							 
-							$scope.initAddCourse = function() {
+							$scope.initAddCourse = function() { 
+								$scope.planid = $routeParams.planid;
 								$scope.updateRoomId();
 								$scope.getDayAbbreviations();
 								$scope.initRoomAndTimeModels();

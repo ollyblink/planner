@@ -1,7 +1,15 @@
 
-<ul>
-	<li><a href="#/plans">Pläne/Module anzeigen/ändern/hinzufügen</a></li>
-	<li><a href="#/employees">Angestellten
-			anzeigen/ändern/hinzufügen</a></li>
-</ul>
-
+<h2>Ãœbersicht</h2>
+<div ng-show="canUpdate()">
+	<ul>
+		<li><a href="#/plans">PlÃ¤ne/Module/Kurse
+				anzeigen/Ã¤ndern/hinzufÃ¼gen</a></li>
+		<li><a href="#/employees">Angestellten
+				anzeigen/Ã¤ndern/hinzufÃ¼gen</a></li>
+	</ul>
+</div>
+<div ng-show="!canUpdate()">
+	<ul>
+		<li><a href="#/plans">Meine PlÃ¤ne anzeigen</a></li>
+	</ul>
+</div>

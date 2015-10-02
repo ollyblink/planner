@@ -1,3 +1,5 @@
+
+<div><a href="#/plans">zurück</a></div>
 <div class="container"
 	ng-init="getPlanDetails();getSemesterTypes();getYears()">
 	<form name="form" ng-submit="addPlan()" role="form">
@@ -15,9 +17,9 @@
 		<input type="hidden" ng-model="planid" value="{{planDetails.id}}" />
 		<div class="form-actions">
 			<button type="submit" class="btn btn-danger"
-				ng-show="!isPlanIdDefined()">Add plan</button>
+				ng-show="!isPlanIdDefined()">Plan hinzufügen</button>
 			<button type="submit" class="btn btn-danger"
-				ng-show="isPlanIdDefined()">Change plan</button>
+				ng-show="isPlanIdDefined()">Plan ändern</button>
 		</div>
 	</form>
 </div>

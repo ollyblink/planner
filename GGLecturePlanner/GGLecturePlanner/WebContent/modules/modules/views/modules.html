@@ -1,38 +1,42 @@
+
+<div ng-init="getPlanDetails()" >
+	<a href="#/plans">zurÃ¼ck</a>
+</div>
 <h2>{{planDetails.semester}}&nbsp;{{planDetails.year}}: Module</h2>
+
 <div>
 	<a href="#/modules/addmodule/planid/{{planDetails.id}}">(+) Modul
-		hinzufügen</a>
+		hinzufÃ¼gen</a>
 </div>
-<div ng-init="getPlanDetails()" class="table-responsive">
+<div class="table-responsive">
 	<table class="table table-striped">
 		<th>Modulteil</th>
-		<th>Semester</th>
-		<th>Modultyp(en)</th>
-		<th>Disziplin(e)</th>
+		<th>Semester</th> 
+		<th>Disziplin(e)/Modultyp(en)</th>
 		<th>Anbietende Abteilung</th>
-		<th>Prüfungstyp</th>
-		<th>Prüfungszeitraum</th>
+		<th>PrÃ¼fungstyp</th>
+		<th>PrÃ¼fungszeitraum</th> 
 		<th>Modulverantwortlicher</th>
 		<th>Kommentare zum Modul</th>
 
 		<tr ng-repeat="module in planDetails.modules">
 			<td><span ng-repeat="p in module.primaryNrs")>{{p}}<br /></span></td>
 			<td>{{module.semesterNr}}</td>
-			<td><span ng-repeat="mt in module.moduleTypes")>{{mt.abbreviation}}<br /></span></td>
-			<td><span ng-repeat="d in module.disciplines")>{{d.abbreviation}}<br /></span></td>
+<!-- 			<td><span ng-repeat="mt in module.moduleTypes")>{{mt.abbreviation}}<br /></span></td> -->
+			<td><ul><li ng-repeat="d in module.disciplines")>{{d.abbreviation}} / <span ng-repeat="mt in d.moduleTypes">{{mt.abbreviation}} </span></li></ul><br /></td>
 			<td>{{module.department.deptName}}:{{module.department.fieldOfExpertise}}</td>
 			<td>{{module.assessmentType.abbreviation}}</td>
 			<td>{{module.assessmentDate}}</td>
 			<td>{{module.responsibleEmployee.firstName}}
 				{{module.responsibleEmployee.lastName}}</td>
 			<td>{{module.comments}}</td>
-			<td><a href="#/courses/moduleid/{{module.id}}">LVA
-					anzeigen/ändern/hinzufügen</a></td>
+			<td><a href="#/courses/planid/{{planDetails.id}}/moduleid/{{module.id}}">LVA
+					anzeigen/Ã¤ndern/hinzufÃ¼gen</a></td>
 
 			<td><a
 				href="#/modules/changemodule/planid/{{planDetails.id}}/moduleid/{{module.id}}">Modul
 					bearbeiten</a></td>
-			<td><a ng-click="deleteModule(module.id)">Modul löschen</a></td>
+			<td><a ng-click="deleteModule(module.id)">Modul lÃ¶schen</a></td>
 		</tr>
 	</table>
 </div>

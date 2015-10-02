@@ -1,26 +1,33 @@
+
+<div>
+	<a href="#/employees">zurÃ¼ck</a>
+</div>
 <div class="container" ng-init="init()">
-	<div class="title">Angestellten Hinzufügen</div>
+	<div class="title">
+		<h2>Angestellte/n hinzufÃ¼gen/Ã¤ndern</h2>
+	</div>
 	<div class="optionals"></div>
 	<form name="form" ng-submit="addEmployee()" role="form">
 		<table>
 			</tr>
 			<tr>
 				<td><label for="employeenr">Angestelltennummer</label></td>
-				<td><input ng-model="employeeNr" name="employeenr" /></td>
+				<td><input class="form-group" ng-model="employeeNr" name="employeenr" /></td>
 			</tr>
 			<tr>
 				<td><label for="firstname">Vorname</label></td>
-				<td><input ng-model="firstName" name="firstname"   required/></td>
+				<td><input class="form-group" ng-model="firstName" name="firstname" required /></td>
 			</tr>
 			<tr>
 				<td><label for="lastname">Nachname</label></td>
-				<td><input ng-model="lastName" name="lastname" required /></td>
+				<td><input class="form-group" ng-model="lastName" name="lastname" required /></td>
 			</tr>
 			<tr>
 				<td><label>Rolle(n)</label></td>
-				<td><span ng-repeat="r in allroles"> <input
+				<td><span ng-repeat="r in allroles"> <input class="form-group"
 						type="checkbox" name="roles" value="{{r.abbreviation}}"
-						ng-checked="employeeHasRole(r.abbreviation)">{{r.description}}<br />
+						ng-checked="employeeHasRole(r.abbreviation)"
+						ng-change="addOrRemove(r)" ng-model="emplroles">{{r.description}}<br />
 				</span></td>
 			</tr>
 			<tr>
@@ -30,27 +37,28 @@
 			<tr>
 				<td><label for="internalcostcenter">Interne
 						Kostenstelle</label></td>
-				<td><input ng-model="internalCostCenter"
+				<td><input class="form-group" ng-model="internalCostCenter"
 					value="{{internalCostCenter}}" type="number"
-					name="internalcostcenter" /></td>
+					name="internalcostcenter" ng-disabled="externalInstitute||(isPaidSeparately.value)" /></td>
 			</tr>
 			<tr>
 				<td><label for="externalinstitute">Externes Institut</label></td>
-				<td><input ng-model="externalInstitute"
-					name="externalinstitute" /></td>
-			</tr>
-			<tr>
-				<td><label for="username" >Nutzername</label></td>
-				<td><input ng-model="username" name="username" required /></td>
+				<td><input class="form-group" ng-model="externalInstitute"
+					name="externalinstitute" ng-disabled="internalCostCenter"/></td>
 			</tr>
 			<tr>
 				<td><label for="ispaidseparately">Separat bezahlt?</label></td>
-				<td><select name="ispaidseparately" id="ispaidseparately"
-					ng-options="tf.value for tf in trueFalse track by tf.name"
-					ng-model="isPaidSeparately" required></select></td>
+				<td><select class="form-group" name="ispaidseparately" id="ispaidseparately"
+					ng-options="tf.name for tf in trueFalse track by tf.name"
+					ng-model="isPaidSeparately" ng-disabled="internalCostCenter"></select></td>
 			</tr>
 			<tr>
-				<td><label for="comments">Kommentare (z.B. bezüglich
+				<td><label for="username">Nutzername</label></td>
+				<td><input class="form-group" ng-model="username" name="username" required /></td>
+			</tr>
+
+			<tr>
+				<td><label for="comments">Kommentare (z.B. bzgl.
 						Anstellung, etc.):</label></td>
 				<td><textarea ng-model="comments" NAME="comments" COLS=40
 						ROWS=6></textarea></td>
@@ -60,10 +68,9 @@
 				<td></td>
 				<td class="form-actions">
 					<button type="submit" class="btn btn-danger"
-						ng-show="!employeeDetails.id">Angestelltenangaben
-						hinzufügen</button>
+						ng-show="!employeeDetails.id">Angestellte/n hinzufÃ¼gen</button>
 					<button type="submit" class="btn btn-danger"
-						ng-show="employeeDetails.id">Angestelltenangaben ändern</button>
+						ng-show="employeeDetails.id">Angestellte/n Ã¤ndern</button>
 				</td>
 			</tr>
 		</table>

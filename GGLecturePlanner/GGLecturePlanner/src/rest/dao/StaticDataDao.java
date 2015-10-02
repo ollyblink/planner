@@ -86,7 +86,7 @@ public enum StaticDataDao {
 			Statement stat = DBConnectionProvider.instance.getDataSource().getConnection().createStatement();
 			ResultSet res = stat.executeQuery("Select * from disciplines;");
 			while (res.next()) {
-				data.put(res.getString("abbr"), new Discipline(res.getString("abbr"), res.getString("description")));
+				data.put(res.getString("abbr"), new Discipline(res.getString("abbr"), res.getString("description"), null));
 			}
 			res.close();
 			stat.close();

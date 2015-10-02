@@ -1,9 +1,10 @@
 <div  class="table-responsive" ng-init="init()">
+<div><a href="#/modules/planid/{{planid}}">zurÃ¼ck</a></div>
 	<h2><span ng-repeat="m in moduleDetails.primaryNrs">{{m}}/</span>:
 		Lernveranstaltungen</h2>
-	<div>
-		<a href="#/courses/addcourse/moduleid/{{moduleDetails.id}}">(+)
-			LVA hinzufügen</a>
+	<div  >
+		<a href="#/courses/addcourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}">(+)
+			LVA hinzufÃ¼gen</a>
 	</div>
 	<table class="table table-striped">
 		<tr>
@@ -18,15 +19,15 @@
 			<th>SWS/Doz.</th>
 			<th>Beginn-Datum</th>
 			<th>End-Datum</th>
-			<th>Verteilung über Semester / Veranstaltungs-rhythmus</th>
+			<th>Verteilung Ã¼ber Semester / Veranstaltungs-rhythmus</th>
 			<th>Kommentare</th>
 			<td>
 				<table>
 					<tr>
 						<th>Wochentag</th>
 						<th>Zeiten</th>
-						<th>Gewünschter Hörsaal</th>
-						<th>Kapazität des gew. Raumes</th>
+						<th>GewÃ¼nschter HÃ¶rsaal</th>
+						<th>KapazitÃ¤t des gew. Raumes</th>
 						<th>Kommentare</th>
 					</tr>
 				</table>
@@ -62,8 +63,8 @@
 				</table>
 			</td>
 			<td><a
-				href="#/courses/changecourse/moduleid/{{moduleDetails.id}}/courseid/{{course.id}}">bearbeiten</a></td>
-			<td><a ng-click="deleteCourse(moduleDetails.id, course.id)">löschen</a></td>
+				href="#/courses/changecourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}/courseid/{{course.id}}">bearbeiten</a></td>
+			<td><a ng-click="deleteCourse(moduleDetails.id, course.id)">lÃ¶schen</a></td>
 		</tr>
 	</table>
 </div>

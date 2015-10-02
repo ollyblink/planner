@@ -60,65 +60,49 @@
 			<param-name>cors.maxAge</param-name>
 			<param-value>-1</param-value>
 		</init-param>
-	</filter>
-
-	<filter>
-		<filter-name>AuthenticationFilter</filter-name>
-		<filter-class>rest.auth.RestAuthenticationFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/rest/courses/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/rest/employees/*</url-pattern>
-	</filter-mapping>
-
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/rest/modules/*</url-pattern>
-	</filter-mapping>
-
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/rest/plans/*</url-pattern>
-	</filter-mapping>
-
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/rest/staticresources/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/modules/courses/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/modules/employees/*</url-pattern>
-	</filter-mapping>
-	
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/modules/home/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/modules/modules/*</url-pattern>
-	</filter-mapping>
-	
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/modules/plans/*</url-pattern>
-	</filter-mapping>
-	
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/modules/staticdata/*</url-pattern>
-	</filter-mapping>
-	
-	<filter-mapping>
-		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/scripts/*</url-pattern>
-	</filter-mapping>
+	</filter> 
+<!-- 	<filter> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<filter-class>rest.auth.RestAuthenticationFilter</filter-class> -->
+<!-- 	</filter> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/rest/courses/*</url-pattern> -->
+<!-- 	</filter-mapping> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/rest/employees/*</url-pattern> -->
+<!-- 	</filter-mapping>  -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/rest/modules/*</url-pattern> -->
+<!-- 	</filter-mapping>  -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/rest/plans/*</url-pattern> -->
+<!-- 	</filter-mapping>  -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/modules/courses/views/*</url-pattern> -->
+<!-- 	</filter-mapping> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/modules/employees/views/*</url-pattern> -->
+<!-- 	</filter-mapping>  -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/modules/home/views/*</url-pattern> -->
+<!-- 	</filter-mapping> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/modules/modules/views/*</url-pattern> -->
+<!-- 	</filter-mapping>  -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/modules/plans/views/*</url-pattern> -->
+<!-- 	</filter-mapping>   -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>AuthenticationFilter</filter-name> -->
+<!-- 		<url-pattern>/sql/*</url-pattern> -->
+<!-- 	</filter-mapping> -->
 </web-app>

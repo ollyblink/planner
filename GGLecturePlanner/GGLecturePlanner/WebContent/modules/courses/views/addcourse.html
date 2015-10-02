@@ -1,6 +1,9 @@
-
-<form ng-init="initAddCourse()" name="form" ng-submit="addCourse()"
+<div ng-init="initAddCourse()">
+		<a href="#/courses/planid/{{planid}}/moduleid/{{moduleDetails.id}}">zurÃ¼ck</a>
+	</div>
+<form  name="form" ng-submit="addCourse()"
 	role="form">
+	
 	<table>
 		<tr>
 			<td>LVA des Moduls</td>
@@ -17,7 +20,7 @@
 		</tr>
 		<tr>
 			<td><label for="coursedescription">Kursbeschreibung
-					(E.g. Grundzüge Fernerkundung)</label></td>
+					(E.g. GrundzÃ¼ge Fernerkundung)</label></td>
 			<td><input name="coursedescription" ng-model="coursedescription" /></td>
 		</tr>
 		<tr>
@@ -67,7 +70,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><label for="lecturers">Dozierende (ausgewählt:
+			<td><label for="lecturers">Dozierende (ausgewÃ¤hlt:
 					{{selectedLecturers.length}})</label></td>
 			<td><select name="lecturers" ng-model="selectedLecturer"
 				ng-change="addLecturer()">
@@ -102,7 +105,7 @@
 			<td><input ng-model="enddate" name="enddate" /></td>
 		</tr>
 		<tr>
-			<td><label for="rythm">Verteilung über Semester /
+			<td><label for="rythm">Verteilung Ã¼ber Semester /
 					Verantsaltungs-Rhythmus</label></td>
 			<td><input ng-model="rythm" name="rythm" /></td>
 		</tr>
@@ -113,12 +116,12 @@
 	</table>
 	<div ng-show="canShowRoomtable()&&!roomtableIsVisible">
 
-		<a ng-click="showRoomtable()">(+) Raum und Zeiten hinzufügen</a>
+		<a ng-click="showRoomtable()">(+) Raum und Zeiten hinzufÃ¼gen</a>
 
 	</div>
 	<table name="roomtable" ng-show="roomtableIsVisible">
 		<tr>
-			<th colspan="2">Zeiten und Räume</th>
+			<th colspan="2">Zeiten und RÃ¼ume</th>
 		</tr>
 		<tr>
 			<td><label for="dayofweek">Wochentag</label></td>
@@ -135,11 +138,11 @@
 			<td><input type="time" name="endtime" ng-model="endtime" /></td>
 		</tr>
 		<tr>
-			<td><label for="roomlabel">Gewünschter Hörsaal</label></td>
+			<td><label for="roomlabel">GewÃ¼nschter HÃ¶rsaal</label></td>
 			<td><input name="roomlabel" ng-model="roomlabel" /></td>
 		</tr>
 		<tr>
-			<td><label for="roomcapacity">Kapazität des gewünschten
+			<td><label for="roomcapacity">KapazitÃ¤t des gewÃ¼nschten
 					Raums</label></td>
 			<td><input name="roomcapacity" type="number"
 				ng-model="roomcapacity" /></td>
@@ -153,7 +156,7 @@
 		<tr>
 			<td>
 			<td><a name="addroomandtimes" ng-click="addRoomAndTimes()">Raum
-					und Zeiten hinzufügen</a></td>
+					und Zeiten hinzufÃ¼gen</a></td>
 		</tr>
 		<table ng-show="canShowRoomtable()">
 			<tr ng-repeat="r in roomsAndTimes">
@@ -180,9 +183,9 @@
 		<tr>
 			<td class="form-actions">
 				<button type="submit" class="btn btn-danger"
-					ng-show="moduleDetails.id&&!course.id">Add module</button>
+					ng-show="moduleDetails.id&&!course.id">Kurs hinzufÃ¼gen</button>
 				<button type="submit" class="btn btn-danger"
-					ng-show="moduleDetails.id&&course.id">Change module</button>
+					ng-show="moduleDetails.id&&course.id">Kurs Ã¤ndern</button>
 			</td>
 		</tr>
 	</table>

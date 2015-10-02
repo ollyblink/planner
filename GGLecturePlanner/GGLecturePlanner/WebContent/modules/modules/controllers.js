@@ -55,6 +55,58 @@ angular
 								}
 								return false;
 							};
+							$scope.compare = function(dmtCombs, dmtComb){  
+// alert(dmtCombs.discipline +"==="+ dmtComb.discipline+"=
+// "+Object.is(dmtCombs.discipline,dmtComb.discipline));
+// alert(dmtCombs.moduletype +"==="+ dmtComb.moduletype+"=
+// "+(Object.is(dmtCombs.moduletype,dmtComb.moduletype)));
+
+								return ((Object.is(dmtCombs.discipline,dmtComb.discipline)) &&
+										(Object.is(dmtCombs.moduletype,dmtComb.moduletype)));
+							};
+							$scope.addDiscipline = function() {
+								if (((typeof $scope.selectedDiscipline) === "undefined") || ($scope.selectedDiscipline.length == 0) ) {
+									return;
+								}
+
+								if (((typeof $scope.selectedModuleType) === "undefined") || ($scope.selectedModuleType.length == 0) )  {
+									return;
+								}
+								
+								var disciplineModuleTypeCombination = {
+										discipline: $scope.selectedDiscipline,
+										moduletype: $scope.selectedModuleType,
+										concat: $scope.selectedDiscipline+ " "+ $scope.selectedModuleType
+								}; 
+
+								var contains = false;
+								for (var i = 0; i < $scope.selectedDisciplinesAndModuleParts.length; ++i) {
+									if ($scope.compare($scope.selectedDisciplinesAndModuleParts[i],disciplineModuleTypeCombination)) {
+ 										contains = true;
+ 										break;
+									}
+								}
+// alert("contains?"+ contains);
+								if (!contains) {
+// alert("inside contains")
+									$scope.selectedDisciplinesAndModuleParts
+											.push(disciplineModuleTypeCombination);
+								}
+
+							};
+							$scope.deleteDiscipline = function(disciplineModuleTypeCombination) {
+			 
+								var tmp = [];
+
+								for (var i = 0; i < $scope.selectedDisciplinesAndModuleParts.length; i++) {
+									if (!$scope.compare($scope.selectedDisciplinesAndModuleParts[i],disciplineModuleTypeCombination  )) {
+										tmp.push($scope.selectedDisciplinesAndModuleParts[i]);
+									}
+								}
+								$scope.selectedDisciplinesAndModuleParts = tmp;
+
+							};
+							
 							$scope.addOrRemove = function(
 									typesWithAbbreviation, typeWithAbbreviation) {
 								// alert(typeof typesWithAbbreviation );
@@ -86,28 +138,7 @@ angular
 								alert(printString);
 							}
 
-							$scope.init = function() {
-								$scope.modulePrimaryNrs = [];
-								$scope.modulePrimaryNr = null;
-								$scope.semesternr = null;
-								$scope.moduletypes = [];
-								$scope.disciplines = [];
-								$scope.department = null;
-								$scope.assessmenttype = null;
-								$scope.assessmentdate = null;
-								$scope.responsibleemployee = null;
-								$scope.comments = null;
-								$scope.moduleid = null;
-								$scope.planid = null;
-
-								staticDataController.getModuleTypes($scope);
-								staticDataController.getDisciplines($scope);
-								staticDataController.getAssessmentTypes($scope);
-								staticDataController.getDepartments($scope);
-
-								employeeController.getAllEmployees($scope)
-
-							};
+							
 
 							$scope.addAllAbbreviations = function(
 									dataWAbbreviations, abbreviations) {
@@ -117,7 +148,8 @@ angular
 								}
 							}
 
-							$scope.getPlanDetails = function() {
+							$scope.getPlanDetails = function() {  
+								
 								if (((typeof $routeParams.planid) !== "undefined")
 										&& (!isNaN($routeParams.planid))) {
 									return $http.get(
@@ -147,6 +179,7 @@ angular
 															+ $routeParams.moduleid)
 											.success(
 													function(data) {
+
 														if ((typeof data) !== "") {
 															$scope.moduleDetails = data;
 															$scope.modulePrimaryNrs = (data.primaryNrs);
@@ -156,17 +189,28 @@ angular
 															$scope.department = (!data.department ? ""
 																	: data.department.deptName);
 															$scope.assessmentdate = data.assessmentDate;
+// alert("Responsible employee: " +data.responsibleEmployee.firstName );
 															$scope.responsibleemployee = (!data.responsibleEmployee ? ""
 																	: data.responsibleEmployee.id);
 
-															$scope
-																	.addAllAbbreviations(
-																			data.moduleTypes,
-																			$scope.moduletypes);
-															$scope
-																	.addAllAbbreviations(
-																			data.disciplines,
-																			$scope.disciplines);
+// $scope
+// .addAllAbbreviations(
+// data.moduleTypes,
+// $scope.moduletypes);
+// $scope
+// .addAllAbbreviations(
+// data.disciplines,
+// $scope.disciplines);
+															for(var i = 0; i< data.disciplines.length;++i){
+																for(var j = 0; j < data.disciplines[i].moduleTypes.length;++j){
+																	var dmt = {
+																		discipline: data.disciplines[i].abbreviation,
+																		moduletype: data.disciplines[i].moduleTypes[j].abbreviation,
+																		concat: data.disciplines[i].abbreviation+" "+data.disciplines[i].moduleTypes[j].abbreviation
+																	} 
+																	$scope.selectedDisciplinesAndModuleParts.push(dmt);
+																}
+															}
 															// alert($scope.responsibleemployee);
 															$scope.comments = data.comments;
 														} else {
@@ -218,7 +262,7 @@ angular
 							}
 							
 							$scope.addModule = function() {
-							 
+//							 alert($scope.selectedDisciplinesAndModuleParts);
 									$http
 											.post(
 													rest + "modules/addmodule",
@@ -227,8 +271,9 @@ angular
 														planid : $routeParams.planid,
 														modulePrimaryNrs : $scope.modulePrimaryNrs,
 														semesternr : $scope.semesternr,
-														moduletypes : $scope.moduletypes,
-														disciplines : $scope.disciplines,
+// moduletypes : $scope.moduletypes,
+// disciplines : $scope.disciplines,
+														selectedDisciplinesAndModuleParts: $scope.selectedDisciplinesAndModuleParts,
 														department : $scope.department,
 														assessmenttype : $scope.assessmenttype,
 														assessmentdate : $scope.assessmentdate,
@@ -256,6 +301,31 @@ angular
 											}
 										});
 							};
-						 
+							$scope.init = function() {
+								$scope.modulePrimaryNrs = [];
+								$scope.modulePrimaryNr = null;
+								$scope.semesternr = null;
+// $scope.moduletypes = [];
+// $scope.disciplines = [];
+								$scope.department = null;
+								$scope.assessmenttype = null;
+								$scope.assessmentdate = null;
+								$scope.responsibleemployee = null;
+								$scope.comments = null;
+								$scope.moduleid = null;
+								$scope.planid = null; 
+								$scope.selectedDisciplinesAndModuleParts = [];
+								staticDataController.getModuleTypes($scope);
+								staticDataController.getDisciplines($scope);
+								staticDataController.getAssessmentTypes($scope);
+								staticDataController.getDepartments($scope);
+
+								employeeController.getAllEmployees($scope)
+
+
+								$scope.getPlanDetails();
+								$scope.getModuleDetails();
+
+							};
 
 						} ]).$inject = [ 'Plans', 'StaticData' ];
