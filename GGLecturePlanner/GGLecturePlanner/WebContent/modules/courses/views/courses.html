@@ -1,9 +1,14 @@
-<div  class="table-responsive" ng-init="init()">
-<div><a href="#/modules/planid/{{planid}}">zurück</a></div>
-	<h2><span ng-repeat="m in moduleDetails.primaryNrs">{{m}}/</span>:
-		Lernveranstaltungen</h2>
-	<div  >
-		<a href="#/courses/addcourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}">(+)
+<div class="table-responsive" ng-init="init()">
+	<div>
+		<a href="#/modules/planid/{{planid}}">zurück</a>
+	</div>
+	<h2>
+		<span ng-repeat="m in moduleDetails.primaryNrs">{{m}}/</span>:
+		Lernveranstaltungen
+	</h2>
+	<div>
+		<a
+			href="#/courses/addcourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}">(+)
 			LVA hinzufügen</a>
 	</div>
 	<table class="table table-striped">
@@ -21,17 +26,7 @@
 			<th>End-Datum</th>
 			<th>Verteilung über Semester / Veranstaltungs-rhythmus</th>
 			<th>Kommentare</th>
-			<td>
-				<table>
-					<tr>
-						<th>Wochentag</th>
-						<th>Zeiten</th>
-						<th>Gewünschter Hörsaal</th>
-						<th>Kapazität des gew. Raumes</th>
-						<th>Kommentare</th>
-					</tr>
-				</table>
-			</td>
+			<th>Räume und Zeiten</th>
 		</tr>
 		<tr ng-repeat="course in courses">
 			<td>{{course.courseDescription}}</td>
@@ -51,20 +46,30 @@
 			<td>{{course.endDate}}</td>
 			<td>{{course.rythm}}</td>
 			<td>{{course.comments}}</td>
-			<td>
-				<table>
-					<tr ng-repeat="t in course.courseTimesAndRooms">
-						<td>{{t.dayOfWeek}}</td>
-						<td>{{t.times.startTime}} - {{t.times.endTime}}</td>
-						<td>{{t.roomLabel}}</td>
-						<td>{{t.roomCapacity}}</td>
-						<td>{{t.comments}}</td>
-					</tr>
-				</table>
-			</td>
+			<td><a ng-click="showRoomsAndTimes(course.id)">Räume &
+					Zeiten anzeigen</a></td>
 			<td><a
 				href="#/courses/changecourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}/courseid/{{course.id}}">bearbeiten</a></td>
 			<td><a ng-click="deleteCourse(moduleDetails.id, course.id)">löschen</a></td>
 		</tr>
+		<tr ng-repeat="course in courses">
+			<table ng-show="canShowRoomsAndTimes(course.id)">
+				<tr>
+					<th>Wochentag</th>
+					<th>Zeiten</th>
+					<th>Gewünschter Hörsaal</th>
+					<th>Kapazität des gew. Raumes</th>
+					<th>Kommentare</th>
+				</tr>
+				<tr ng-repeat="t in course.courseTimesAndRooms">
+					<td>{{t.dayOfWeek}}</td>
+					<td>{{t.times.startTime}} - {{t.times.endTime}}</td>
+					<td>{{t.roomLabel}}</td>
+					<td>{{t.roomCapacity}}</td>
+					<td>{{t.comments}}</td>
+				</tr>
+			</table>
+		</tr>
+
 	</table>
 </div>

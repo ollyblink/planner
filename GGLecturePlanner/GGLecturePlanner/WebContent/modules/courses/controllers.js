@@ -73,7 +73,43 @@ courseHandler
 								$http, $location, $controller, RoomAndTimes) {
 
 							var rest = '/GGLecturePlanner/rest/';
+							
+							$scope.showRoomsAndTimes = function(courseid){  
+//								alert("current courseid:" + courseid);
+								var contains = false;
+								for(var i = 0; i < $scope.showableRoomsAndTimes.length; ++i){ 
+									if($scope.showableRoomsAndTimes[i]==courseid){ 
+										contains = true;
+									}
+								}  
+								if(!contains) {
+//									alert("enabled " + courseid);
+									 $scope.showableRoomsAndTimes.push(courseid);
+								}else{
+									var tmp = [];
+									for(var i = 0; i < $scope.showableRoomsAndTimes.length; ++i){
+										if($scope.showableRoomsAndTimes[i]!=courseid){
+											 tmp.push($scope.showableRoomsAndTimes[i]);
+										}
+									}
+									$scope.showableRoomsAndTimes = tmp;
+//									alert("removed " +courseid);
+								}
+							}
+							
+							$scope.canShowRoomsAndTimes = function(courseid) {
+								 alert("Courseid: " +courseid);
+								for(var i = 0; i < $scope.showableRoomsAndTimes.length; ++i){ 
+									if($scope.showableRoomsAndTimes[i]==courseid){ 
+										alert("true with courseid " + courseid);
+										return true;
+									}
+								} 
 
+								alert("false with courseid " + courseid);
+								return false;
+							}
+							
 							var staticDataController = $scope.$new();
 							$controller('StaticDataController', {
 								$scope : staticDataController
@@ -152,7 +188,7 @@ courseHandler
 												function(response) {
 													alert("path: " + "/courses/planid/"+$routeParams.planid+"/moduleid/"
 															+ $routeParams.moduleid);
-//													alert(response.message);
+// alert(response.message);
 													
 													if (response.status === "ok") {
 														$location
@@ -368,6 +404,8 @@ courseHandler
 								$scope.roomsAndTimes = tmp;
 
 							};
+							
+							
 
 							 $scope.deleteCourse = function(moduleId, courseId
 							 ) {
@@ -388,6 +426,7 @@ courseHandler
 // alert($scope.planid);
 								$scope.getModuleDetails();
 								$scope.getCourseDetails();
+								$scope.showableRoomsAndTimes=[];
 							};
 							 
 							$scope.initAddCourse = function() { 

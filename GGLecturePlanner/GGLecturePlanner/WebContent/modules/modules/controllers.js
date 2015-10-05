@@ -189,19 +189,11 @@ angular
 															$scope.department = (!data.department ? ""
 																	: data.department.deptName);
 															$scope.assessmentdate = data.assessmentDate;
-// alert("Responsible employee: " +data.responsibleEmployee.firstName );
+ 
 															$scope.responsibleemployee = (!data.responsibleEmployee ? ""
-																	: data.responsibleEmployee.id);
+																	: data.responsibleEmployee);
 
-// $scope
-// .addAllAbbreviations(
-// data.moduleTypes,
-// $scope.moduletypes);
-// $scope
-// .addAllAbbreviations(
-// data.disciplines,
-// $scope.disciplines);
-															for(var i = 0; i< data.disciplines.length;++i){
+ 															for(var i = 0; i< data.disciplines.length;++i){
 																for(var j = 0; j < data.disciplines[i].moduleTypes.length;++j){
 																	var dmt = {
 																		discipline: data.disciplines[i].abbreviation,
@@ -277,7 +269,7 @@ angular
 														department : $scope.department,
 														assessmenttype : $scope.assessmenttype,
 														assessmentdate : $scope.assessmentdate,
-														responsibleemployee : $scope.responsibleemployee,
+														responsibleemployee : $scope.getResponsibleEmployee().id,
 														comments : $scope.comments
 													})
 											.success(
@@ -301,12 +293,19 @@ angular
 											}
 										});
 							};
+							 
+							$scope.getResponsibleEmployee = function(){
+								if($scope.selectedEmployee){
+									return $scope.selectedEmployee.originalObject;
+								}else{
+									return $scope.responsibleemployee;
+								}
+							}
+							
 							$scope.init = function() {
 								$scope.modulePrimaryNrs = [];
 								$scope.modulePrimaryNr = null;
-								$scope.semesternr = null;
-// $scope.moduletypes = [];
-// $scope.disciplines = [];
+								$scope.semesternr = null; 
 								$scope.department = null;
 								$scope.assessmenttype = null;
 								$scope.assessmentdate = null;
@@ -322,8 +321,7 @@ angular
 
 								employeeController.getAllEmployees($scope)
 
-
-								$scope.getPlanDetails();
+ 								$scope.getPlanDetails();
 								$scope.getModuleDetails();
 
 							};

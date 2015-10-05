@@ -1,13 +1,14 @@
 'use strict';
 
-// declare modules
-angular.module('Authentication', ['ngSanitize']);
-angular.module('Home', ['ngSanitize']);
-angular.module('StaticData', ['ngSanitize']);
-angular.module('Employees', ['ngSanitize']);
-angular.module('Plans', ['ngSanitize']);
-angular.module('Modules', ['ngSanitize']);
-angular.module('Courses', ['ngSanitize']);
+// declare modules 
+angular.module('app', ["angucomplete-alt"]);
+angular.module('Authentication', ["angucomplete-alt"]);
+angular.module('Home', ["angucomplete-alt"]);
+angular.module('StaticData', ["angucomplete-alt"]);
+angular.module('Employees', ["angucomplete-alt"]);
+angular.module('Plans', ["angucomplete-alt"]);
+angular.module('Modules', ["angucomplete-alt"]);
+angular.module('Courses', ["angucomplete-alt"]); 
 
 // Don't forget to add the modules here!!!
 angular

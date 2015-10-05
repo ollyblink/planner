@@ -3,6 +3,7 @@ plans,
 plans_to_modules,
 modules,
 disciplines_to_module_types,
+modules_to_disciplines_to_module_types,
 module_nrs,
 modules_to_disciplines, 
 departments_to_modules, 
@@ -180,23 +181,24 @@ create table plans_to_modules (
 	foreign key (module_id_fk) references modules(id) on delete cascade on update cascade
 );
   
-create table disciplines_to_module_types(
-	discipline_fk text references disciplines(abbr) on delete cascade on update cascade,
- 	module_type_fk text references module_types(abbr) on delete cascade on update cascade,
-	primary key (discipline_fk, module_type_fk)
-); 
+
  create table course_module_parts (
 	course_id_fk int references courses(id) on delete cascade on update cascade,
 	module_id_fk int references modules(id) on delete cascade on update cascade,
 	module_part text,
 	primary key (course_id_fk, module_id_fk, module_part)
 );
-create table modules_to_disciplines (
+-- create table modules_to_disciplines (
+-- 	
+-- 	discipline_fk text references disciplines(abbr) on delete cascade on update cascade,
+-- 	primary key (module_id_fk, discipline_fk)
+-- );
+create table modules_to_disciplines_to_module_types(
 	module_id_fk int references modules(id) on delete cascade on update cascade,
 	discipline_fk text references disciplines(abbr) on delete cascade on update cascade,
-	primary key (module_id_fk, discipline_fk)
-);
-
+ 	module_type_fk text references module_types(abbr) on delete cascade on update cascade,
+	primary key (module_id_fk, discipline_fk, module_type_fk)
+); 
 create table departments_to_modules(
 	module_id_fk int references modules(id) on delete cascade on update cascade,
 	dept_id_fk int references departments(id) on delete cascade on update cascade,
@@ -225,5 +227,6 @@ create table last_modified_log(
 	modifying_date timestamp not null
 );
 -- Tables end 
-select * from disciplines_to_module_types;
+delete from modules_to_disciplines_to_module_types where module_id_fk=1 discipline_fk='MSc' and module_type_fk='PF';
+select * from modules_to_disciplines_to_module_types;
 -- update courses set is_max_nr_students_expected_per_group=true where module_id_fk = 9 AND id = 29;

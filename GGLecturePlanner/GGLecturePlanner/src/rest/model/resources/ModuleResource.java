@@ -98,9 +98,7 @@ public class ModuleResource {
 				moduleTypesForDiscipline = new ArrayList<>();
 				disciplinesWithModuletypes.put(actualDiscipline, moduleTypesForDiscipline);
 			}
-			moduleTypesForDiscipline.add(StaticDataDao.instance.getModuleType(moduleType));
-			
-			 
+			moduleTypesForDiscipline.add(StaticDataDao.instance.getModuleType(moduleType));  
 		}
 		System.out.println(disciplinesWithModuletypes);
 		ArrayList<Discipline> disciplines = new ArrayList<>();
@@ -147,7 +145,7 @@ public class ModuleResource {
 			} catch (NullPointerException e) {
 				module.setAssessmentType(null);
 			}
-
+  
 			module.setAssessmentDate(((String) moduleDetails.get("assessmentdate")));
 			module.setResponsibleEmployee(responsibleEmployee);
 

@@ -56,11 +56,13 @@
 					<td><select name="disciplines" ng-model="selectedDiscipline"
 						ng-change="addDiscipline()">
 							<option></option>
-							<option ng-repeat="d in alldisciplines" value="{{d.abbreviation}}">{{d.abbreviation}}</option>
+							<option ng-repeat="d in alldisciplines"
+								value="{{d.abbreviation}}">{{d.abbreviation}}</option>
 					</select> <select name="moduletype" ng-model="selectedModuleType"
 						ng-change="addDiscipline()">
 							<option></option>
-							<option ng-repeat="m in allmoduletypes" value="{{m.abbreviation}}">{{m.description}}</option>
+							<option ng-repeat="m in allmoduletypes"
+								value="{{m.abbreviation}}">{{m.description}}</option>
 					</select></td>
 				</tr>
 				<tr>
@@ -100,12 +102,24 @@
 					<!-- 					<td><select name="responsibleemployee" -->
 					<!-- 						ng-options="mv.lastName for mv in employees track by mv.id" -->
 					<!-- 						ng-model="responsibleemployee"></select> 					 -->
-					<td><select class="form-control"
-						ng-model="responsibleemployee" name="responsibleemployee">
-							<option ng-repeat="mv in allemployees track by mv.id"
-								value="{{mv.id}}">{{mv.firstName}} {{mv.lastName}}</option>
-					</select></td>
+<!-- 					<td><select class="form-control" -->
+<!-- 						ng-model="responsibleemployee" name="responsibleemployee"> -->
+<!-- 							<option ng-repeat="mv in allemployees track by mv.id" -->
+<!-- 								value="{{mv.id}}">{{mv.firstName}} {{mv.lastName}}</option> -->
+<!-- 					</select></td> -->
+<!-- 				</tr> -->
+<!-- 				<tr class="form-group"> -->
+					<td>
+						<div angucomplete-alt id="ex1" placeholder="Angestellten finden"
+							maxlength="50" pause="100" selected-object="selectedEmployee"
+							local-data="allemployees" search-fields="firstName,lastName"
+							title-field="firstName,lastName" minlength="1"
+							input-class="form-control form-control-small"
+							match-class="highlight"></div>
+							<div >Ausgewählt: {{getResponsibleEmployee().firstName}} {{getResponsibleEmployee().lastName}}</div>
+					</td>
 				</tr>
+<!-- 				<div></div> -->
 				<tr class="form-group">
 					<td><label for="comments">Kommentare (z.B. bzgl.
 							Anstellung, etc.):</label></td>

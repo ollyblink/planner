@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import rest.model.datastructures.Department;
 import rest.model.datastructures.Discipline;
@@ -19,25 +21,24 @@ public enum ModuleDao {
 	private PreparedStatement insertModule;
 	private PreparedStatement insertPlansToModule;
 	private PreparedStatement insertModuleNrs;
-	private PreparedStatement insertDisciplineToModuleTypes;
+	private PreparedStatement insertModulesToDisciplineToModuleTypes;
 	private PreparedStatement insertDepartmentsToModules;
-	private PreparedStatement insertModulesToDisciplines;
+	// private PreparedStatement insertModulesToDisciplines;
 
 	private PreparedStatement updateModule;
 	private PreparedStatement updateDepartmentsToModules;
-	private PreparedStatement deleteDisciplinesToModuletypes;
-	private PreparedStatement deleteModulesToDisciplines;
+	private PreparedStatement deleteModulesToDisciplineToModuleTypes;
+	// private PreparedStatement deleteModulesToDisciplines;
 	private PreparedStatement deleteModuleNr;
 
 	private PreparedStatement getDepartmentForModule;
-	private PreparedStatement getDisciplinesForModule;
-	private PreparedStatement getModuleTypesForModule;
+	private PreparedStatement getDisciplinesWithModuleTypesForModule;
+	// private PreparedStatement getModuleTypesForModule;
 	private PreparedStatement getModuleNrsForModule;
 	private PreparedStatement getModuleDetails;
 
 	private PreparedStatement deleteModule;
-
-	private PreparedStatement getModuleTypesForDisciplines;
+ 
 
 	private ModuleDao() {
 
@@ -58,10 +59,8 @@ public enum ModuleDao {
 	}
 
 	private void createDeleteStatements() throws SQLException {
-		this.deleteDisciplinesToModuletypes = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("delete from disciplines_to_module_types where discipline_fk=? and module_type_fk=?;");
-		this.deleteModulesToDisciplines = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("delete from modules_to_disciplines where module_id_fk = ? and discipline_fk = ?;");
+		this.deleteModulesToDisciplineToModuleTypes = DBConnectionProvider.instance.getDataSource().getConnection()
+				.prepareStatement("delete from modules_to_disciplines_to_module_types where module_id_fk=? and discipline_fk=? and module_type_fk=?;");
 
 		this.deleteModuleNr = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("delete from module_nrs where module_nr=? and module_id_fk = ?;");
@@ -81,24 +80,19 @@ public enum ModuleDao {
 	}
 
 	private void createGetDataStatements() throws SQLException {
-		this.getModuleDetails = DBConnectionProvider.instance.prepareStatement("select * from modules where id = ?;");
-		this.getModuleTypesForDisciplines = DBConnectionProvider.instance
-				.prepareStatement("select * from disciplines_to_module_types where discipline_fk = ?;");
+		this.getModuleDetails = DBConnectionProvider.instance.prepareStatement("select * from modules where id = ?;"); 
 		this.getDepartmentForModule = DBConnectionProvider.instance
 				.getDataSource()
 				.getConnection()
 				.prepareStatement(
 						"select distinct d.* from departments_to_modules dm inner join departments d on dm.dept_id_fk = d.id where dm.module_id_fk=?;");
-		this.getDisciplinesForModule = DBConnectionProvider.instance
-				.getDataSource()
-				.getConnection()
-				.prepareStatement(
-						"select distinct  d.* from disciplines d inner join  modules_to_disciplines md on d.abbr=md.discipline_fk where md.module_id_fk=?;");
-		this.getModuleTypesForModule = DBConnectionProvider.instance
-				.getDataSource()
-				.getConnection()
-				.prepareStatement(
-						"select distinct m.* from modules_to_module_types mm inner join module_types m on mm.module_type_fk = m.abbr where mm.module_id_fk=?;");
+		this.getDisciplinesWithModuleTypesForModule = DBConnectionProvider.instance.getDataSource().getConnection()
+				.prepareStatement("select * from modules_to_disciplines_to_module_types d where d.module_id_fk=?;");
+		// this.getModulesToDisciplineToModuleTypes = DBConnectionProvider.instance
+		// .getDataSource()
+		// .getConnection()
+		// .prepareStatement(
+		// "select distinct m.* from modules_to_module_types mm inner join module_types m on mm.module_type_fk = m.abbr where mm.module_id_fk=?;");
 		this.getModuleNrsForModule = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("select distinct module_nr from module_nrs where module_id_fk=?;");
 	}
@@ -108,14 +102,14 @@ public enum ModuleDao {
 		this.insertPlansToModule = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("insert into plans_to_modules values(?,?)");
 		this.insertModuleNrs = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("insert into module_nrs values(?,?)");
-		this.insertDisciplineToModuleTypes = DBConnectionProvider.instance.getDataSource().getConnection()
+		this.insertModulesToDisciplineToModuleTypes = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("insert into disciplines_to_module_types values(?,?)");
 
 		this.insertDepartmentsToModules = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("insert into departments_to_modules values(?,?)");
 
-		this.insertModulesToDisciplines = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("insert into modules_to_disciplines values(?,?)");
+		this.insertModulesToDisciplineToModuleTypes = DBConnectionProvider.instance.getDataSource().getConnection()
+				.prepareStatement("insert into modules_to_disciplines_to_module_types values(?,?,?)");
 	}
 
 	public void addModule(int planId, Module module) throws SQLException {
@@ -128,8 +122,8 @@ public enum ModuleDao {
 
 		insertDepartmentsToModules(module, moduleId);
 		insertModuleNrs(module, moduleId);
-		insertModuleTypes(module);
-		insertModulesToDisciplines(module, moduleId);
+		// insertModuleTypes(module);
+		insertModulesToDisciplinesToModuletypes(module);
 
 		DBConnectionProvider.instance.getDataSource().getConnection().commit();
 		DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
@@ -149,8 +143,8 @@ public enum ModuleDao {
 			updateDepartmentsToModule(module, moduleId);
 			// No update plans to modules... makes no sense so far as you cannot change the module from one to another plan...
 			updateModuleNrs(module, moduleId, oldModule);
-			updateModuleTypes(module, moduleId, oldModule);
-			updateModulesToDisciplines(module, moduleId, oldModule);
+			// updateModuleTypes(module, moduleId, oldModule);
+			updateModulesToDisciplines(module, oldModule);
 
 			DBConnectionProvider.instance.getDataSource().getConnection().commit();
 			DBConnectionProvider.instance.getDataSource().getConnection().setAutoCommit(true);
@@ -194,23 +188,24 @@ public enum ModuleDao {
 		this.insertPlansToModule.executeUpdate();
 	}
 
-	private void insertModuleTypes(Module module) throws SQLException {
+	private void insertModulesToDisciplinesToModuletypes(Module module) throws SQLException {
 		for (Discipline d : module.getDisciplines()) {
 			for (ModuleType m : d.getModuleTypes()) {
-				this.insertDisciplineToModuleTypes.setString(1, d.getAbbreviation());
-				this.insertDisciplineToModuleTypes.setString(2, m.getAbbreviation());
-				this.insertDisciplineToModuleTypes.executeUpdate();
+				this.insertModulesToDisciplineToModuleTypes.setInt(1, module.getId());
+				this.insertModulesToDisciplineToModuleTypes.setString(2, d.getAbbreviation());
+				this.insertModulesToDisciplineToModuleTypes.setString(3, m.getAbbreviation());
+				this.insertModulesToDisciplineToModuleTypes.executeUpdate();
 			}
 		}
 	}
 
-	private void insertModulesToDisciplines(Module module, int moduleId) throws SQLException {
-		for (Discipline discipline : module.getDisciplines()) {
-			this.insertModulesToDisciplines.setInt(1, moduleId);
-			this.insertModulesToDisciplines.setString(2, discipline.getAbbreviation());
-			this.insertModulesToDisciplines.executeUpdate();
-		}
-	}
+	// private void insertModulesToDisciplines(Module module, int moduleId) throws SQLException {
+	// for (Discipline discipline : module.getDisciplines()) {
+	// this.insertModulesToDisciplines.setInt(1, moduleId);
+	// this.insertModulesToDisciplines.setString(2, discipline.getAbbreviation());
+	// this.insertModulesToDisciplines.executeUpdate();
+	// }
+	// }
 
 	private void insertModuleNrs(Module module, int moduleId) throws SQLException {
 
@@ -224,12 +219,13 @@ public enum ModuleDao {
 		}
 	}
 
-	private void deleteModuleTypes(Module module) throws SQLException {
+	private void deleteModulesToDisciplinesToModuletypes(Module module) throws SQLException {
 		for (Discipline d : module.getDisciplines()) {
 			for (ModuleType m : d.getModuleTypes()) {
-				this.deleteDisciplinesToModuletypes.setString(1, d.getAbbreviation());
-				this.deleteDisciplinesToModuletypes.setString(2, m.getAbbreviation());
-				this.deleteDisciplinesToModuletypes.executeUpdate();
+				this.deleteModulesToDisciplineToModuleTypes.setInt(1, module.getId());
+				this.deleteModulesToDisciplineToModuleTypes.setString(2, d.getAbbreviation());
+				this.deleteModulesToDisciplineToModuleTypes.setString(3, m.getAbbreviation());
+				this.deleteModulesToDisciplineToModuleTypes.executeUpdate();
 			}
 		}
 	}
@@ -267,23 +263,24 @@ public enum ModuleDao {
 		insertModuleNrs(updatedModule, moduleId);
 	}
 
-	private void updateModulesToDisciplines(Module updatedModule, int moduleId, Module oldModule) throws SQLException {
-		deleteModulesToDisciplines(oldModule, moduleId);
-		insertModulesToDisciplines(updatedModule, moduleId);
-	}
-//
-	private void updateModuleTypes(Module updatedModule, int moduleId, Module oldModule) throws SQLException {
-		deleteModuleTypes(oldModule);
-		insertModuleTypes(updatedModule);
+	private void updateModulesToDisciplines(Module updatedModule, Module oldModule) throws SQLException {
+		deleteModulesToDisciplinesToModuletypes(oldModule);
+		insertModulesToDisciplinesToModuletypes(updatedModule);
 	}
 
-	private void deleteModulesToDisciplines(Module oldModule, int moduleId) throws SQLException {
-		for (Discipline discipline : oldModule.getDisciplines()) {
-			this.deleteModulesToDisciplines.setInt(1, moduleId);
-			this.deleteModulesToDisciplines.setString(2, discipline.getAbbreviation());
-			this.deleteModulesToDisciplines.executeUpdate();
-		}
-	}
+	//
+	// private void updateModuleTypes(Module updatedModule, int moduleId, Module oldModule) throws SQLException {
+	// deleteModuleTypes(oldModule);
+	// insertModuleTypes(updatedModule);
+	// }
+
+	// private void deleteModulesToDisciplines(Module oldModule, int moduleId) throws SQLException {
+	// for (Discipline discipline : oldModule.getDisciplines()) {
+	// this.deleteModulesToDisciplines.setInt(1, moduleId);
+	// this.deleteModulesToDisciplines.setString(2, discipline.getAbbreviation());
+	// this.deleteModulesToDisciplines.executeUpdate();
+	// }
+	// }
 
 	private void deleteModuleNrs(Module oldModule, int moduleId) throws SQLException {
 		for (String moduleNr : oldModule.getPrimaryNrs()) {
@@ -330,25 +327,30 @@ public enum ModuleDao {
 		return dept;
 	}
 
-	public ArrayList<Discipline> getDisciplines(Integer id) throws SQLException {
+	public ArrayList<Discipline> setDisciplinesAndModuleTypes(Integer id) throws SQLException {
 
 		ArrayList<Discipline> disciplines = new ArrayList<Discipline>();
 
-		getDisciplinesForModule.setInt(1, id);
-		ResultSet r = getDisciplinesForModule.executeQuery();
+		getDisciplinesWithModuleTypesForModule.setInt(1, id);
+		ResultSet r = getDisciplinesWithModuleTypesForModule.executeQuery();
+		Map<Discipline, ArrayList<ModuleType>> disciplinesAndModuletypes = new HashMap<>();
+
 		while (r.next()) {
-			disciplines.add(new Discipline(r.getString("abbr"), r.getString("description"), new ArrayList<>()));
+			Discipline discipline = StaticDataDao.instance.getDiscipline(r.getString("discipline_fk"));
+			ArrayList<ModuleType> moduleTypes = disciplinesAndModuletypes.get(discipline);
+			if (moduleTypes == null) {
+				moduleTypes = new ArrayList<>();
+				disciplinesAndModuletypes.put(discipline, moduleTypes);
+			}
+			moduleTypes.add(StaticDataDao.instance.getModuleType(r.getString("module_type_fk")));
 		}
 		r.close();
 
-		for (Discipline d : disciplines) {
-			getModuleTypesForDisciplines.setString(1, d.getAbbreviation());
-			ResultSet r2 = getModuleTypesForDisciplines.executeQuery();
-			while (r2.next()) {
-				d.getModuleTypes().add(StaticDataDao.instance.getModuleType(r2.getString("module_type_fk"))); 
-			}
-			r2.close();
+		for (Discipline discipline : disciplinesAndModuletypes.keySet()) {
+			discipline.setModuleTypes(disciplinesAndModuletypes.get(discipline));
+			disciplines.add(discipline);
 		}
+
 		return disciplines;
 	}
 
@@ -363,16 +365,16 @@ public enum ModuleDao {
 		return primaryNrs;
 	}
 
-//	public ArrayList<ModuleType> getModuleTypes(Integer id) throws SQLException {
-//		ArrayList<ModuleType> moduleTypes = new ArrayList<ModuleType>();
-//
-//		getModuleTypesForModule.setInt(1, id);
-//		ResultSet r = getModuleTypesForModule.executeQuery();
-//		while (r.next()) {
-//			moduleTypes.add(new ModuleType(r.getString("abbr"), r.getString("description")));
-//		}
-//		return moduleTypes;
-//	}
+	// public ArrayList<ModuleType> getModuleTypes(Integer id) throws SQLException {
+	// ArrayList<ModuleType> moduleTypes = new ArrayList<ModuleType>();
+	//
+	// getModuleTypesForModule.setInt(1, id);
+	// ResultSet r = getModuleTypesForModule.executeQuery();
+	// while (r.next()) {
+	// moduleTypes.add(new ModuleType(r.getString("abbr"), r.getString("description")));
+	// }
+	// return moduleTypes;
+	// }
 
 	public Module getModuleDetails(int moduleId) throws SQLException {
 
@@ -400,9 +402,9 @@ public enum ModuleDao {
 		r.close();
 
 		module.setDepartment(getDepartments(moduleId));
-//		module.setModuleTypes(getModuleTypes(moduleId));
+		// module.setModuleTypes(getModuleTypes(moduleId));
 		module.setPrimaryNrs(getPrimaryNrs(moduleId));
-		module.setDisciplines(getDisciplines(moduleId));
+		module.setDisciplines(setDisciplinesAndModuleTypes(moduleId));
 		module.setCourses(new ArrayList<>());
 		return module;
 	}
