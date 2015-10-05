@@ -1,5 +1,6 @@
 package rest.model.datastructures;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,8 +15,9 @@ public class Course {
 	private Integer nrOfStudentsExpectedPerGroup;
 	private Boolean isMaxNrStudentsExpectedPerGroup;
 	private Float swsTotalPerGroup;
-	private String startDate;
-	private String endDate;
+	private String date;
+	private Date startDate;
+	private Date endDate;
 	private String rythm;
 	private String comments;
 	private CourseType courseType;
@@ -23,32 +25,17 @@ public class Course {
 	private ArrayList<CourseTimesAndRooms> courseTimesAndRooms;
 	private ArrayList<Employee> lecturers;
 
+	@Override
+	public String toString() {
+		return "Course [id=" + id + ", courseDescription=" + courseDescription + ", moduleNr=" + moduleNr + ", vvzNr=" + vvzNr + ", nrOfGroups="
+				+ nrOfGroups + ", nrOfStudentsExpectedPerGroup=" + nrOfStudentsExpectedPerGroup + ", isMaxNrStudentsExpectedPerGroup="
+				+ isMaxNrStudentsExpectedPerGroup + ", swsTotalPerGroup=" + swsTotalPerGroup + ", date=" + date + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", rythm=" + rythm + ", comments=" + comments + ", courseType=" + courseType + ", moduleParts="
+				+ moduleParts + ", courseTimesAndRooms=" + courseTimesAndRooms + ", lecturers=" + lecturers + "]";
+	}
+
 	public Course() {
 	}
-
-	public Course(Integer id, String courseDescription, Integer moduleNr, String vvzNr, Integer nrOfGroups, Integer nrOfStudentsExpectedPerGroup,
-			Boolean isMaxNrStudentsExpectedPerGroup, Float swsTotalPerGroup, String startDate, String endDate, String rythm, String comments,
-			CourseType courseType, ArrayList<String> moduleParts, ArrayList<CourseTimesAndRooms> courseTimesAndRooms, ArrayList<Employee> lecturers) {
-		this.id = id;
-		this.courseDescription = courseDescription;
-		this.moduleNr = moduleNr;
-		this.vvzNr = vvzNr;
-		this.nrOfGroups = nrOfGroups;
-		this.nrOfStudentsExpectedPerGroup = nrOfStudentsExpectedPerGroup;
-		this.isMaxNrStudentsExpectedPerGroup = isMaxNrStudentsExpectedPerGroup;
-		this.swsTotalPerGroup = swsTotalPerGroup;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.rythm = rythm;
-		this.comments = comments;
-		this.courseType = courseType;
-		this.moduleParts = moduleParts;
-		this.courseTimesAndRooms = courseTimesAndRooms;
-		this.lecturers = lecturers;
-	}
-
-	 
-	 
 
 	public Integer getId() {
 		return id;
@@ -114,19 +101,19 @@ public class Course {
 		this.swsTotalPerGroup = swsTotalPerGroup;
 	}
 
-	public String getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(String startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
-	public String getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(String endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
@@ -178,15 +165,12 @@ public class Course {
 		this.lecturers = lecturers;
 	}
 
-	@Override
-	public String toString() {
-		return "\nCourse [id=" + id + ", courseDescription=" + courseDescription + ", moduleNr=" + moduleNr + ", vvzNr=" + vvzNr + ", nrOfGroups="
-				+ nrOfGroups + ", nrOfStudentsExpectedPerGroup=" + nrOfStudentsExpectedPerGroup + ", isMaxNrStudentsExpectedPerGroup="
-				+ isMaxNrStudentsExpectedPerGroup + ", swsTotalPerGroup=" + swsTotalPerGroup + ", startDate=" + startDate + ", endDate=" + endDate
-				+ ", rythm=" + rythm + ", comments=" + comments + ", courseType=" + courseType + ", moduleParts=" + moduleParts
-				+ ", courseTimesAndRooms=" + courseTimesAndRooms + ", lecturers=" + lecturers + "]";
+	public void setDate(String date) {
+		this.date = date;
 	}
 
-	 
+	public String getDate() {
+		return date;
+	}
 
 }

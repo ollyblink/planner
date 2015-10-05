@@ -75,7 +75,7 @@ courseHandler
 							var rest = '/GGLecturePlanner/rest/';
 							
 							$scope.showRoomsAndTimes = function(courseid){  
-//								alert("current courseid:" + courseid);
+// alert("current courseid:" + courseid);
 								var contains = false;
 								for(var i = 0; i < $scope.showableRoomsAndTimes.length; ++i){ 
 									if($scope.showableRoomsAndTimes[i]==courseid){ 
@@ -83,7 +83,7 @@ courseHandler
 									}
 								}  
 								if(!contains) {
-//									alert("enabled " + courseid);
+// alert("enabled " + courseid);
 									 $scope.showableRoomsAndTimes.push(courseid);
 								}else{
 									var tmp = [];
@@ -93,7 +93,7 @@ courseHandler
 										}
 									}
 									$scope.showableRoomsAndTimes = tmp;
-//									alert("removed " +courseid);
+// alert("removed " +courseid);
 								}
 							}
 							
@@ -161,7 +161,6 @@ courseHandler
 									roomTimes.push($scope.roomsAndTimes[i]
 											.convertToObject());
 								}
-
 								$http
 										.post(
 												rest + "courses/addcourse/",
@@ -178,8 +177,9 @@ courseHandler
 													ismaxnrofstudentsexpectedpergroup : $scope.ismaxnrofstudentsexpectedpergroup,
 													selectedlecturers : $scope.selectedLecturers,
 													swstotpergroup : $scope.swstotpergroup,
-													begindate : $scope.begindate,
-													enddate : $scope.enddate,
+													date: $scope.date,
+													begindate : ($scope.date != 3? null: $scope.begindate),
+													enddate : ($scope.date != 3? null:$scope.enddate),
 													rythm : $scope.rythm,
 													comments : $scope.comments,
 													roomsandtimes : roomTimes
@@ -231,10 +231,10 @@ courseHandler
 													$scope.swsperlecturer = (data.lecturers.length > 0 ? data.swsTotalPerGroup
 															/ data.lecturers.length
 															: 0);
-
+													$scope.date =  data.date ;
 													$scope.begindate = data.startDate;
 													$scope.enddate = data.endDate;
-													$scope.rythm = data.rythm;
+													$scope.rythm =  data.rythm ;
 													for (var i = 0; i < data.courseTimesAndRooms.length; ++i) {
 														var tmp = data.courseTimesAndRooms[i];
 														var roomAndTimes = new RoomAndTimes(
@@ -251,6 +251,84 @@ courseHandler
 													}
 												});
 							};
+							
+							$scope.mapDateToInt = function(date){
+								if(date === "1. Semesterwoche") {
+									return 1;
+								}else if (date === "2. Semesterwoche"){
+									return 2;
+								}else if (date === "Datum (von - bis)"){
+									return 3;
+								}else { 
+									return null;
+								}
+							}
+							
+							$scope.mapRythmToInt = function(rythm){
+								if(rythm === "wöchentlich") {
+									return 1;
+								}else if (rythm === "14-täglich"){
+									return 2;
+								}else if (rythm === "unregelmässig"){
+									return 3;
+								}else { 
+									return null;
+								}
+							}
+							$scope.getDate = function(dateInt) { 
+								if(dateInt == 1){
+									return "1. Semesterwoche";
+								}else if (dateInt == 2){
+									return "2. Semesterwoche";
+								}else if (dateInt == 3){
+// return "Datum (von - bis)";
+									return "Siehe Datum";
+								}else{
+									return null;
+								}
+							};
+							
+							$scope.getRythm = function(rythmInt)
+							{
+								if(rythmInt == 1){
+									return "wöchentlich";
+								}else if (rythmInt == 2){
+									return "14-täglich";
+								}else if (rythmInt == 3) {
+									return "unregelmässig";
+								}else{
+									return null;
+								}
+							};
+							
+							$scope.adaptDate = function(){  
+								if($scope.coursetype){
+									if($scope.coursetype === "BL") {
+										$scope.date=3;
+									}
+								}
+							};
+							
+							$scope.checkCourseType = function(){
+								return ($scope.coursetype === 'BL');
+							}
+							
+							$scope.copyCourse = function(moduleid, courseid){
+								$http
+								.get(
+										rest
+												+ 'courses/copycourse/moduleid/'+moduleid
+												+ '/courseid/'
+												+ courseid)
+								.success(
+										function(response) {
+											alert(response.message);
+											 if (response.status === "ok") {
+												 $route.reload();
+											 }
+										}
+										);
+							}
 
 							$scope.addRoomAndTimes = function() {
 								if ($scope.roomsAndTimes == null) {
@@ -317,21 +395,24 @@ courseHandler
 
 							};
 							$scope.addLecturer = function() {
-								var availableLecturers = [];
-								for (var i = 0; i < $scope.allemployees.length; ++i) {
-									if ($scope.allemployees[i].id == $scope.selectedLecturer
-											&& !staticDataController.contains(
-													$scope.selectedLecturers,
-													$scope.selectedLecturer)) {
-										$scope.selectedLecturers
-												.push($scope.allemployees[i]);
-									} else {
-										availableLecturers
-												.push($scope.allemployees[i]);
+								if($scope.allemployees) {
+									var availableLecturers = [];
+									
+									for (var i = 0; i < $scope.allemployees.length; ++i) {
+										if ($scope.allemployees[i].id == $scope.selectedLecturer
+												&& !staticDataController.contains(
+														$scope.selectedLecturers,
+														$scope.selectedLecturer)) {
+											$scope.selectedLecturers
+													.push($scope.allemployees[i]);
+										} else {
+											availableLecturers
+													.push($scope.allemployees[i]);
+										}
+	
 									}
-
+									$scope.allemployees = availableLecturers;
 								}
-								$scope.allemployees = availableLecturers;
 
 							};
 							$scope.deleteLecturer = function(id) {
@@ -418,12 +499,8 @@ courseHandler
 							 }
 							 });
 							 };
-							$scope.init = function() {
-
-// alert("module id: " +$routeParams.moduleid);
-// alert("plan id: " +$routeParams.planid);
-								$scope.planid = $routeParams.planid;
-// alert($scope.planid);
+							$scope.init = function() { 
+								$scope.planid = $routeParams.planid; 
 								$scope.getModuleDetails();
 								$scope.getCourseDetails();
 								$scope.showableRoomsAndTimes=[];
@@ -446,6 +523,7 @@ courseHandler
 								$scope.swstotpergroup = null;
 								$scope.nrOfLecturers = null;
 								$scope.swsperlecturer = null;
+								$scope.date = null;
 								$scope.begindate = null;
 								$scope.enddate = null;
 								$scope.rythm = null;
@@ -476,5 +554,18 @@ courseHandler
 								$scope.roomlabel = "";
 								$scope.roomcapacity = "";
 								$scope.roomcomments = "";
+							};
+							
+							$scope.initRoomsAndTables = function() {
+								$scope.initRoomAndTimeModels();
+								if ((typeof $routeParams.planid) !== "undefined") {
+									$scope.planid = $routeParams.planid;
+								}
+								if ((typeof $routeParams.moduleid) !== "undefined") {
+									$scope.moduleid = $routeParams.moduleid;
+								}
+								if ((typeof $routeParams.courseid) !== "undefined") {
+									$scope.getSpecificCourseDetails();
+								}
 							};
 						} ]).$inject = [ 'Employees', 'StaticData' ];

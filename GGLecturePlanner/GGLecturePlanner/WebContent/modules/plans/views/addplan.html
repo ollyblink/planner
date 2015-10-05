@@ -1,7 +1,7 @@
 
 <div><a href="#/plans">zurück</a></div>
 <div class="container"
-	ng-init="getPlanDetails();getSemesterTypes();getYears()">
+	ng-init="getPlanDetails();getSemesterTypes();getYears()" ng-show="isAdmin()">
 	<form name="form" ng-submit="addPlan()" role="form">
 		<div class="form-group">
 			<label for="semester">Semester</label> <select class="form-control" name="semester"

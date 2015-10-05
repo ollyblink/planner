@@ -1,22 +1,54 @@
 'use strict';
 
-angular.module('Home')
+angular
+		.module('Home')
 
-.controller('HomeController',
-		[ '$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
-  
-			
-			$scope.canUpdate = function() {
-				var roles = $rootScope.globals.currentUser.userdetails.roles;
+		.controller(
+				'HomeController',
+				[
+						'$scope',
+						'$rootScope',
+						'$http',
+						function($scope, $rootScope, $http) {
 
-				if (roles) {
-					for (var i = 0; i < roles.length; ++i) {
+							var rest = "rest/login/changepassword";
 
-						if (roles[i].abbreviation === "Admin") {
-							return true;
-						}
-					}
-				}
-				return false;
-			};
-		} ]);
+							$scope.init = function() {
+								$scope.couldChangePassword = true;
+								$scope.samePW = true;
+								$scope.couldNotChangePasswordMessage = null;
+								$scope.couldChangePasswordMessage = null;
+
+							};
+							$scope.changePassword = function() { 
+								if ($scope.newPw === $scope.repeatNewPw) {
+									$scope.samePW = true;
+									$http
+											.post(
+													rest,
+													{
+														id: $rootScope.globals.currentUser.userdetails.id,
+														username : $rootScope.globals.currentUser.userdetails.username,
+														oldPw : $scope.oldPw,
+														newPw : $scope.newPw
+													})
+											.success(
+													function(response) {
+//														alert(response.status);
+														if (response.status === "ok") {
+															$scope.couldChangePassword = true;
+															$scope.couldChangePasswordMessage = response.message;
+														} else {
+															$scope.couldChangePassword = false;
+															$scope.couldNotChangePasswordMessage = response.message;
+														}
+													});
+								} else {
+									$scope.couldChangePassword = false;
+									$scope.samePW = false;
+									$scope.couldNotChangePasswordMessage = null;
+									$scope.couldChangePasswordMessage = null;
+								}
+							}
+
+						} ]);

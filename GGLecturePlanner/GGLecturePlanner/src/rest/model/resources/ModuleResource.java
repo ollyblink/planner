@@ -56,60 +56,34 @@ public class ModuleResource {
 	@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response addModule(Map<String, Object> moduleDetails, @Context HttpServletResponse servletResponse
 
-	// @FormParam("moduleprimarynrs") String modulePrimaryNrs, @FormParam("semesternr") String semesterNr,
-	// @FormParam("assessmenttype") String assessmentType, @FormParam("assessmentdate") String assessmentDate,
-	// @FormParam("moduletypes") List<String> moduleTypes, @FormParam("responsibleemployee") int responsibleEmployeeId,
-	// @FormParam("comments") String comments, @FormParam("disciplines") List<String> disciplines, @FormParam("department") String department,
-	// @FormParam("planid") int planId, @FormParam("moduleid") Integer moduleId
-
 	) throws IOException {
-		System.out.println("Keys: " + moduleDetails.keySet());
+		System.out.println("Keys: " + moduleDetails.keySet()); 
 		System.out.println("Values: " + moduleDetails.values());
 		ArrayList<String> primaryNrs = new ArrayList<String>(((List<String>) moduleDetails.get("modulePrimaryNrs")));
-		// String[] pNs = ((String) ).split(StaticDataDao.instance.outerSplittingPattern);
-		// for (String pN : pNs) {
-		// primaryNrs.add(pN);
-		// }
-//		ArrayList<ModuleType> moduleTypesReal = new ArrayList<>();
-//		List<String> mTypeAbbreviations = ((List<String>) moduleDetails.get("moduletypes"));
-//		for (String type : mTypeAbbreviations) {
-//			moduleTypesReal.add(StaticDataDao.instance.getModuleType(type));
-//		}
-//		System.out.println("Actual module types: " + moduleTypesReal);
-//
-//		ArrayList<Discipline> disciplineReal = new ArrayList<>();
-//
-//		List<String> discs = ((List<String>) moduleDetails.get("disciplines"));
-//		for (String type : discs) {
-//			disciplineReal.add(StaticDataDao.instance.getDiscipline(type));
-//		}
-////		System.out.println("Disciplines: " + disciplineReal);
-//		System.out.println("Disciplines & ModuletypeS: " +moduleDetails.get("selectedDisciplinesAndModuleParts"));
-//		System.out.println("Disciplines & ModuletypeS: type:"+moduleDetails.get("selectedDisciplinesAndModuleParts").getClass().getSimpleName());
-//		
-		Map<Discipline, List<ModuleType>> disciplinesWithModuletypes = new HashMap<>(); 
-		ArrayList<LinkedHashMap<String, String>> discs = ((ArrayList<LinkedHashMap<String, String>>) moduleDetails.get("selectedDisciplinesAndModuleParts"));
-		for(LinkedHashMap<String, String> o: discs){
+		Map<Discipline, List<ModuleType>> disciplinesWithModuletypes = new HashMap<>();
+		ArrayList<LinkedHashMap<String, String>> discs = ((ArrayList<LinkedHashMap<String, String>>) moduleDetails
+				.get("selectedDisciplinesAndModuleParts"));
+		for (LinkedHashMap<String, String> o : discs) {
 			String discipline = o.get("discipline");
-			String moduleType = o.get("moduletype"); 
-			Discipline actualDiscipline  =StaticDataDao.instance.getDiscipline(discipline);
+			String moduleType = o.get("moduletype");
+			Discipline actualDiscipline = StaticDataDao.instance.getDiscipline(discipline);
 			List<ModuleType> moduleTypesForDiscipline = disciplinesWithModuletypes.get(actualDiscipline);
-			if(moduleTypesForDiscipline == null){
+			if (moduleTypesForDiscipline == null) {
 				moduleTypesForDiscipline = new ArrayList<>();
 				disciplinesWithModuletypes.put(actualDiscipline, moduleTypesForDiscipline);
 			}
-			moduleTypesForDiscipline.add(StaticDataDao.instance.getModuleType(moduleType));  
+			moduleTypesForDiscipline.add(StaticDataDao.instance.getModuleType(moduleType));
 		}
 		System.out.println(disciplinesWithModuletypes);
 		ArrayList<Discipline> disciplines = new ArrayList<>();
-		for(Discipline d: disciplinesWithModuletypes.keySet()){
+		for (Discipline d : disciplinesWithModuletypes.keySet()) {
 			d.setModuleTypes(disciplinesWithModuletypes.get(d));
 			disciplines.add(d);
 		}
-		System.out.println("Disciplines: " +disciplines);
+		System.out.println("Disciplines: " + disciplines);
 		try {
 			Employee responsibleEmployee = new Employee();
- 
+
 			Integer emplId = null;
 			try {
 				emplId = (Integer) moduleDetails.get("responsibleemployee");
@@ -124,7 +98,7 @@ public class ModuleResource {
 					responsibleEmployee.setId(null);
 				}
 			}
- 
+
 			Integer actualModuleId = null;
 			try {
 				actualModuleId = Integer.parseInt((String) moduleDetails.get("moduleid"));
@@ -145,12 +119,12 @@ public class ModuleResource {
 			} catch (NullPointerException e) {
 				module.setAssessmentType(null);
 			}
-  
+
 			module.setAssessmentDate(((String) moduleDetails.get("assessmentdate")));
 			module.setResponsibleEmployee(responsibleEmployee);
 
 			module.setComments(((String) moduleDetails.get("comments")));
-//			module.setModuleTypes(moduleTypesReal);
+			// module.setModuleTypes(moduleTypesReal);
 			module.setDisciplines(disciplines);
 
 			try {

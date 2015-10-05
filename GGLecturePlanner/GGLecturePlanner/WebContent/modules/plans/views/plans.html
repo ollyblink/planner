@@ -4,22 +4,22 @@
 </div>
 <div ng-init="getAllPlans()">
 	<h2>Pläne</h2>
-	<div>
+	<div ng-show="isAdmin()">
 		<a href="#/plans/addplan">(+) Plan hinzufügen</a>
 	</div>
-
 	<!-- 	<div class="alert alert-info" ng-show="responseMessage.length > 0">{{responseMessage}}</div> -->
 	<div class="table-responsive">
 		<table class="table table-striped">
-			<tr ng-repeat="plan in plans | orderBy:'year+semester'">
+			<tr ng-repeat="plan in plans | orderBy:'year+semester'" ng-show="planContainsModuleAsLecturerOrMV(plan.modules) || isAdmin()">
 				<th>{{plan.semester}}&nbsp;{{plan.year}}</th>
 				<td>{{plan.modules.length}} <span ng-if="plan.modules.length == 1">Modul</span><span ng-if="plan.modules.length != 1">Module</span> </td>
+				 
 				<td><a href="#/modules/planid/{{plan.id}}">Module anzeigen/ändern/hinzufügen</a></td>
-				<td><a href="#/plans/changeplan/planid/{{plan.id}}">Plan
+				<td ng-show="isAdmin()"><a href="#/plans/changeplan/planid/{{plan.id}}">Plan
 						bearbeiten</a></td>
-				<td><a ng-click="deletePlan(plan.id)">Plan löschen</a></td>
+				<td ng-show="isAdmin()"><a ng-click="deletePlan(plan.id)">Plan löschen</a></td>
 				<!-- 			<td><a href="printPlan.html?planid={{plan.id}}">Plan drucken</a></td> -->
-				<td><a ng-click="copyPlan(plan.id)">Plan kopieren</a></td>
+				<td ng-show="isAdmin()"><a ng-click="copyPlan(plan.id)">Plan kopieren</a></td>
 			</tr>
 		</table>
 	</div>

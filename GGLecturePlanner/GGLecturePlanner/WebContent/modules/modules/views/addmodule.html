@@ -1,10 +1,10 @@
 
-<div class="container" ng-init="init()">
+<div class="container" ng-init="init()" >
 
 	<div>
 		<a href="#/modules/planid/{{planDetails.id}}">zurück</a>
 	</div>
-	<div>
+	<div  ng-show="isAdmin()|| isMV(moduleDetails.id)">
 		<form name="form" ng-submit="addModule()" role="form">
 			<input type="hidden" name="planid" value="{{planDetails.id}}" /> <input
 				type="hidden" name="moduleid" value="{{moduleDetails.id}}" />
@@ -115,20 +115,19 @@
 							local-data="allemployees" search-fields="firstName,lastName"
 							title-field="firstName,lastName" minlength="1"
 							input-class="form-control form-control-small"
-							match-class="highlight"></div>
+							match-class="highlight"   ng-show="isAdmin()"></div>
 							<div >Ausgewählt: {{getResponsibleEmployee().firstName}} {{getResponsibleEmployee().lastName}}</div>
 					</td>
 				</tr>
 <!-- 				<div></div> -->
 				<tr class="form-group">
 					<td><label for="comments">Kommentare (z.B. bzgl.
-							Anstellung, etc.):</label></td>
+							Modul, etc.):</label></td>
 					<td><textarea class="form-control" ng-model="comments"
 							NAME="comments" COLS=40 ROWS=6></textarea></td>
 				</tr>
 				<tr class="form-actions">
 					<td></td>
-					<!-- 				<td><input type="submit" value="Submit" /></td> -->
 					<td class="form-actions">
 						<button type="submit" class="btn btn-danger"
 							ng-show="!moduleDetails.id">Modul hinzufügen</button>

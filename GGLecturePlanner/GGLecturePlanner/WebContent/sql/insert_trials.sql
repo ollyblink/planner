@@ -70,8 +70,7 @@ insert into departments values (13,'Geocomp','GIScience: Geocomputation');
 insert into departments values (14,'GTT','Geography Teacher Training');
 insert into departments values (15,'HT','Head Teaching');
 
- ---- Add some lecturers
- 
+ ---- Add some lecturers 
 insert into employees values (1, '1','Christian', 'Berndt', 'cb@geo.uzh.ch', null, null,false,'cberndt',null,null);
 insert into employees values (2,'2','Christian', 'Huggel', 'ch@geo.uzh.ch', null, null,false,'chuggel',null,null);
 insert into employees values (3,'3','Ross', 'Purves', 'rsp@geo.uzh.ch', null, null,false,'rpurves',null,null);
@@ -82,7 +81,7 @@ insert into employees values (7,'7','Markus', 'Egli', 'me@geo.uzh.ch', 70610,nul
 insert into employees values (8,'A1','Yvonne', 'Scheidegger', 'ys@geo.uzh.ch', null,null,false,'yscheidegger','1234', null); 
 insert into employees values (9,'A1','Oliver', 'Zihler', 'ozihler@geo.uzh.ch', null,null,false,'ozihler','1000:5b42403333393039373532:b46bf94225080ca578c99e35f318ebd879858a2e3ae1935525a3ebe4ad56322f369b8fcf1407c9a1a97f554f2c9dfeb409927ffe32c93d5bf590109236357940', null); 
 
-delete from employees where id>0
+select * from employees;
 insert into employees_to_roles values (1, 'Prof');
 insert into employees_to_roles values (2, 'Doz mit PhD');
 insert into employees_to_roles values (3, 'Prof');
@@ -92,11 +91,16 @@ insert into employees_to_roles values (6, 'Prof');
 insert into employees_to_roles values (7, 'Prof');
 insert into employees_to_roles values (8, 'Admin');
 insert into employees_to_roles values (9, 'Admin');
+select * from lecturers_to_courses;
 select * from employees;
+Update employees set password = 'password1' where id=? and username=?;
  --====PLANS 
-insert into plans values (1, 'FS', 2015);
+ insert into plans values (1, 'FS', 2015);
 insert into plans values (2,'HS', 2015);
-
+-- select * from plans;
+-- select id as moduleid from modules where responsible_employee=9
+-- union
+-- select module_id_fk as moduleid from lecturers_to_courses where lecturer_fk=9;
 --===MODULES  
 insert into modules values (1,  1, 'PP', '', 1, 'keine (Posterfair)');
 insert into modules values (2,  1, 'MP', 'KW2', 2,'');
@@ -114,8 +118,8 @@ insert into modules_to_disciplines values (1, 'BSc');
 insert into modules_to_disciplines values (2, 'BSc');
 
 ----===MODULES_TO_MODULE_TYPES 
-insert into modules_to_module_types values(1, 'PF');
-insert into modules_to_module_types values(2, 'PF');
+insert into disciplines_to_module_types values(1, 'PF');
+insert into disciplines_to_module_types values(2, 'PF');
 
 insert into module_nrs values (1, 'PHZH 110');
 insert into module_nrs values (2, 'GEO 111');

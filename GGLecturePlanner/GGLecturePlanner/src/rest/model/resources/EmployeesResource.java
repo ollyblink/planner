@@ -21,11 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import com.sun.research.ws.wadl.Application;
-
 import rest.dao.EmployeeDao;
 import rest.dao.MessageDao;
-import rest.dao.StaticDataDao;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.ResponseMessage;
 import rest.model.datastructures.Role;

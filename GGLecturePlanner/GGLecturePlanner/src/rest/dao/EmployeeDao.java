@@ -11,6 +11,7 @@ import java.util.Map;
 import rest.auth.CurrentlyLoggedinUsers;
 import rest.auth.PasswordFactory;
 import rest.model.datastructures.Employee;
+import rest.model.datastructures.Module;
 import rest.model.datastructures.Role;
 import rest.model.datastructures.TrueFalseTupel;
 
@@ -27,6 +28,9 @@ public enum EmployeeDao {
 	private PreparedStatement updateEmployeeStatement;
 	private PreparedStatement deleteRolesFromEmployee;
 	private PreparedStatement getUserForUsername;
+	private PreparedStatement getModulesAsLecturer;
+	private PreparedStatement getModulesAsMV;
+	private PreparedStatement changePw;
 
 	private EmployeeDao() {
 		try {
@@ -63,6 +67,13 @@ public enum EmployeeDao {
 
 			this.getUserForUsername = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("select id from employees where username=?");
+
+			this.getModulesAsMV = DBConnectionProvider.instance.prepareStatement("select id as moduleid from modules where responsible_employee=?");
+
+			this.getModulesAsLecturer = DBConnectionProvider.instance
+					.prepareStatement("select module_id_fk as moduleid from lecturers_to_courses where lecturer_fk=?;");
+
+			this.changePw = DBConnectionProvider.instance.prepareStatement("Update employees set password = ? where id=? and username=?;");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -89,7 +100,7 @@ public enum EmployeeDao {
 		this.addEmployeeStatement.setString(7, employee.getExternalInstitute());
 		try {
 			this.addEmployeeStatement.setObject(8, employee.getIsPaidSeparately().getValue());
-		}catch(NullPointerException e){
+		} catch (NullPointerException e) {
 			this.addEmployeeStatement.setObject(8, false);
 		}
 		this.addEmployeeStatement.setString(9, employee.getUsername());
@@ -105,7 +116,7 @@ public enum EmployeeDao {
 	}
 
 	private void addRoles(int employeeId, ArrayList<Role> roles) throws SQLException {
-		if(roles == null){
+		if (roles == null) {
 			return;
 		}
 		for (Role role : roles) {
@@ -172,7 +183,7 @@ public enum EmployeeDao {
 			employee.setInternalCostCenter(r.getInt("internal_cost_center"));
 			employee.setExternalInstitute(r.getString("external_institute"));
 			boolean trueFalse = r.getBoolean("is_external_paid_separately");
-			employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse?"Ja":"Nein")));
+			employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse ? "Ja" : "Nein")));
 			employee.setUsername(r.getString("username"));
 			employee.setComments(r.getString("comments"));
 			employee.setRoles(employeesToRoles.get(r.getInt("id")));
@@ -240,7 +251,7 @@ public enum EmployeeDao {
 			employee.setInternalCostCenter(r.getInt("internal_cost_center"));
 			employee.setExternalInstitute(r.getString("external_institute"));
 			boolean trueFalse = r.getBoolean("is_external_paid_separately");
-			employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse?"Ja":"Nein")));
+			employee.setIsPaidSeparately(new TrueFalseTupel(trueFalse, (trueFalse ? "Ja" : "Nein")));
 			employee.setUsername(r.getString("username"));
 			employee.setPassword(null);
 			employee.setComments(r.getString("comments"));
@@ -270,7 +281,7 @@ public enum EmployeeDao {
 		}
 	}
 
-	private boolean userExistsWithPassword(String username, String password) throws SQLException {
+	public boolean userExistsWithPassword(String username, String password) throws SQLException {
 		checkUserPw.setString(1, username);
 		ResultSet r = checkUserPw.executeQuery();
 		String passwordHash = null;
@@ -294,16 +305,54 @@ public enum EmployeeDao {
 		ResultSet r = this.getUserForUsername.executeQuery();
 		while (r.next()) {
 			Employee employee = getEmployeeDetails(r.getInt("id"));
+			employee.setModulesAsLecturer(getModulesAsLecturer(employee.getId()));
+			employee.setModulesAsMV(getModulesAsMV(employee.getId()));
 			return employee;
 		}
 		r.close();
 		return null;
 	}
 
+	private ArrayList<Module> getModulesAsMV(Integer employeeId) throws SQLException {
+		getModulesAsMV.setInt(1, employeeId);
+
+		ResultSet r = getModulesAsMV.executeQuery();
+		ArrayList<Module> modules = new ArrayList<>();
+		while (r.next()) {
+			Module module = new Module();
+			module.setId(r.getInt("moduleid"));
+			modules.add(module);
+		}
+		r.close();
+		return modules;
+	}
+
+	private ArrayList<Module> getModulesAsLecturer(Integer employeeId) throws SQLException {
+		getModulesAsLecturer.setInt(1, employeeId);
+
+		ResultSet r = getModulesAsLecturer.executeQuery();
+		ArrayList<Module> modules = new ArrayList<>();
+		while (r.next()) {
+			Module module = new Module();
+			module.setId(r.getInt("moduleid"));
+			modules.add(module);
+		}
+		r.close();
+		return modules;
+	}
+
 	public boolean deleteEmployee(int employeeId) throws SQLException {
 		deleteEmployee.setInt(1, employeeId);
 		int count = deleteEmployee.executeUpdate();
 		return count > 0;
+	}
+
+	public void changePassword(Integer employeeId, String username, String newPw) throws SQLException {
+		changePw.setString(1, newPw);
+		changePw.setInt(2, employeeId);
+		changePw.setString(3, username);
+		changePw.executeUpdate();
+
 	}
 
 }

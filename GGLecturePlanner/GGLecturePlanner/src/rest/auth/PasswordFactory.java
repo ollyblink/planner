@@ -97,9 +97,9 @@ public enum PasswordFactory {
 		String randomPassword = "";
 
 		for (int i = 0; i < 10; ++i) {
-			randomPassword += ((char) (random.nextInt(90) + 33)) + "";
+			randomPassword += ((char) (random.nextInt(74) + 48)) + "";
 		}
 		return randomPassword;
-	}
+	} 
 
 }

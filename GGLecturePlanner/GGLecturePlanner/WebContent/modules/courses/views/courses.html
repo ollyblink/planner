@@ -6,14 +6,14 @@
 		<span ng-repeat="m in moduleDetails.primaryNrs">{{m}}/</span>:
 		Lernveranstaltungen
 	</h2>
-	<div>
+	<div ng-show="isAdmin()">
 		<a
 			href="#/courses/addcourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}">(+)
 			LVA hinzufügen</a>
 	</div>
 	<table class="table table-striped">
 		<tr>
-			<th>Kursbeschreibung</th>
+			<th>Kursbezeichnung</th>
 			<th>VVZ Nr</th>
 			<th>Modulteil</th>
 			<th># Gruppen</th>
@@ -22,6 +22,7 @@
 			<th>Dozenten</th>
 			<th># Doz.</th>
 			<th>SWS/Doz.</th>
+			<th>Start</th>
 			<th>Beginn-Datum</th>
 			<th>End-Datum</th>
 			<th>Verteilung über Semester / Veranstaltungs-rhythmus</th>
@@ -42,34 +43,36 @@
 			<td>{{course.lecturers.length}}</td>
 			<td>{{course.swsTotalPerGroup/course.lecturers.length | number:
 				2}}</td>
-			<td>{{course.startDate}}</td>
-			<td>{{course.endDate}}</td>
-			<td>{{course.rythm}}</td>
+			<td>{{getDate(course.date)}}</td>
+			<td ng-if="course.startDate"))>{{course.startDate}}</td><td ng-if="!course.startDate"></td>
+			<td ng-if="course.endDate">{{course.endDate}}</td><td ng-if="!course.endDate"></td>
+			<td>{{getRythm(course.rythm)}}</td>
 			<td>{{course.comments}}</td>
-			<td><a ng-click="showRoomsAndTimes(course.id)">Räume &
-					Zeiten anzeigen</a></td>
-			<td><a
-				href="#/courses/changecourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}/courseid/{{course.id}}">bearbeiten</a></td>
-			<td><a ng-click="deleteCourse(moduleDetails.id, course.id)">löschen</a></td>
+			<td><a href="#/courses/roomsandtimes/planid/{{planid}}/moduleid/{{moduleDetails.id}}/courseid/{{course.id}}">Räume &
+					Zeiten für LVA anzeigen</a></td>
+			<td ng-show="isAdmin()||isMV(moduleDetails.id)"><a
+				href="#/courses/changecourse/planid/{{planid}}/moduleid/{{moduleDetails.id}}/courseid/{{course.id}}">LVA bearbeiten</a></td>
+			<td ng-show="isAdmin()"><a ng-click="copyCourse(moduleDetails.id, course.id)">LVA kopieren</a></td>
+			<td ng-show="isAdmin()"><a ng-click="deleteCourse(moduleDetails.id, course.id)">LVA löschen</a></td>
 		</tr>
-		<tr ng-repeat="course in courses">
-			<table ng-show="canShowRoomsAndTimes(course.id)">
-				<tr>
-					<th>Wochentag</th>
-					<th>Zeiten</th>
-					<th>Gewünschter Hörsaal</th>
-					<th>Kapazität des gew. Raumes</th>
-					<th>Kommentare</th>
-				</tr>
-				<tr ng-repeat="t in course.courseTimesAndRooms">
-					<td>{{t.dayOfWeek}}</td>
-					<td>{{t.times.startTime}} - {{t.times.endTime}}</td>
-					<td>{{t.roomLabel}}</td>
-					<td>{{t.roomCapacity}}</td>
-					<td>{{t.comments}}</td>
-				</tr>
-			</table>
-		</tr>
+<!-- 		<tr ng-repeat="course in courses"> -->
+<!-- 			<table ng-show="canShowRoomsAndTimes(course.id)"> -->
+<!-- 				<tr> -->
+<!-- 					<th>Wochentag</th> -->
+<!-- 					<th>Zeiten</th> -->
+<!-- 					<th>Gewünschter Hörsaal</th> -->
+<!-- 					<th>Kapazität des gew. Raumes</th> -->
+<!-- 					<th>Kommentare</th> -->
+<!-- 				</tr> -->
+<!-- 				<tr ng-repeat="t in course.courseTimesAndRooms"> -->
+<!-- 					<td>{{t.dayOfWeek}}</td> -->
+<!-- 					<td>{{t.times.startTime}} - {{t.times.endTime}}</td> -->
+<!-- 					<td>{{t.roomLabel}}</td> -->
+<!-- 					<td>{{t.roomCapacity}}</td> -->
+<!-- 					<td>{{t.comments}}</td> -->
+<!-- 				</tr> -->
+<!-- 			</table> -->
+<!-- 		</tr> -->
 
 	</table>
 </div>

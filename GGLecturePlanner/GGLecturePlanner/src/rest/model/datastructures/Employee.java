@@ -25,30 +25,13 @@ public class Employee {
 	private String comments;
 
 	private ArrayList<Role> roles;
-	private ArrayList<Course> courses;
+	private ArrayList<Module> modulesAsLecturer;
+	private ArrayList<Module> modulesAsMV;
 
 	public Employee() {
 
 	}
-
-	public Employee(Integer id, String employeeNr, String firstName, String lastName, String email, Integer internalCostCenter,
-			String externalInstitute, TrueFalseTupel isPaidSeparately, String username, String password, String comments, ArrayList<Role> roles,
-			ArrayList<Course> courses) {
-		this.id = id;
-		this.employeeNr = employeeNr;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.internalCostCenter = internalCostCenter;
-		this.externalInstitute = externalInstitute;
-		this.isPaidSeparately = isPaidSeparately;
-		this.username = username;
-		this.password = password;
-		this.comments = comments;
-		this.roles = roles;
-		this.courses = courses;
-	}
-
+ 
 	public TrueFalseTupel getIsPaidSeparately() {
 		return isPaidSeparately;
 	}
@@ -145,12 +128,12 @@ public class Employee {
 		this.roles = roles;
 	}
 
-	public ArrayList<Course> getCourses() {
-		return courses;
+	public ArrayList<Module> getModulesAsLecturer() {
+		return modulesAsLecturer;
 	}
 
-	public void setCourses(ArrayList<Course> courses) {
-		this.courses = courses;
+	public void setModulesAsLecturer(ArrayList<Module> modulesAsLecturer) {
+		this.modulesAsLecturer = modulesAsLecturer;
 	}
 
 	@Override
@@ -178,12 +161,23 @@ public class Employee {
 		return true;
 	}
 
+ 
+
 	@Override
 	public String toString() {
 		return "Employee [id=" + id + ", employeeNr=" + employeeNr + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", internalCostCenter=" + internalCostCenter + ", externalInstitute=" + externalInstitute + ", isPaidSeparately="
 				+ isPaidSeparately + ", username=" + username + ", password=" + password + ", comments=" + comments + ", roles=" + roles
-				+ ", courses=" + courses + "]";
+				+ ", modulesAsLecturer=" + modulesAsLecturer + ", modulesAsMV=" + modulesAsMV + "]";
 	}
+
+	public void setModulesAsMV(ArrayList<Module> modulesAsMV) {
+		this.modulesAsMV = modulesAsMV;
+	}
+
+	public ArrayList<Module> getModulesAsMV() {
+		return modulesAsMV;
+	}
+ 
 
 }

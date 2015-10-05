@@ -1,9 +1,14 @@
 package rest.model.resources;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,11 +23,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import rest.dao.CourseDao;
 import rest.dao.EmployeeDao;
+import rest.dao.PlanDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Course;
 import rest.model.datastructures.CourseTimesAndRooms;
@@ -110,17 +116,29 @@ public class CourseResource {
 			} catch (Exception e) {
 				course.setSwsTotalPerGroup(null);
 			}
-
 			try {
-				course.setStartDate((String) courseData.get("begindate"));
+				course.setDate(""+courseData.get("date"));
 			} catch (Exception e) {
+				e.printStackTrace();
+				course.setDate(null);
+			} 
+			System.out.println("Begindate:" + courseData.get("begindate"));
+			System.out.println("Enddate:" + courseData.get("enddate"));
+			System.out.println("Date:" + courseData.get("date"));
+
+			DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+			try { 
+				course.setStartDate(new Date(df.parse(((String) courseData.get("begindate"))).getTime()));
+			} catch (Exception e) { 
 				course.setStartDate(null);
 			}
-			try {
-				course.setEndDate((String) courseData.get("enddate"));
-			} catch (Exception e) {
+			try { 
+				course.setEndDate(new Date(df.parse(((String) courseData.get("enddate"))).getTime()));
+			} catch (Exception e) { 
 				course.setEndDate(null);
 			}
+			System.out.println("Course start date: " + course.getStartDate());
+			System.out.println("Course end date: " + course.getEndDate());
 			try {
 				course.setRythm((String) courseData.get("rythm"));
 			} catch (Exception e) {
@@ -221,11 +239,11 @@ public class CourseResource {
 					times.setEndTime(null);
 				}
 				cTR.setTimes(times);
-				System.out.println("CTR: " + cTR);
+				// System.out.println("CTR: " + cTR);
 				courseTimesAndRooms.add(cTR);
 			}
-			System.out.println("Before insertion: " + courseData.get("roomsandtimes"));
-			System.out.println(courseTimesAndRooms);
+			// System.out.println("Before insertion: " + courseData.get("roomsandtimes"));
+			// System.out.println(courseTimesAndRooms);
 			course.setCourseTimesAndRooms(courseTimesAndRooms);
 
 			if (courseId == null) {
@@ -286,11 +304,11 @@ public class CourseResource {
 	@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response deleteCourse(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId) throws IOException {
 
-		try { 
+		try {
 			boolean deleted = CourseDao.instance.deleteCourse(moduleId, courseId);
-			if(deleted){
+			if (deleted) {
 				return Response.ok(new ResponseMessage("Delete course: moduleid " + moduleId + ", courseid: " + courseId, "ok")).build();
-			}else{
+			} else {
 				return Response.status(Status.NOT_MODIFIED).build();
 			}
 
@@ -307,5 +325,19 @@ public class CourseResource {
 	public int nextRoomId() {
 		return CourseDao.instance.getNextCourseRoomsAndTimesId();
 	}
+
+	@GET
+	@Path("/copycourse/moduleid/{moduleid}/courseid/{courseid}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response copyPlan(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId, @Context HttpServletResponse servletResponse) throws IOException {
+		try {
+			CourseDao.instance.copyCourse(moduleId, courseId);
+			return Response.ok(new ResponseMessage("copied course: " + courseId, "ok")).build();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return Response.status(Status.NOT_MODIFIED).build();
+		}
+	}
+
 
 }

@@ -1,16 +1,15 @@
 
 <h2>Übersicht</h2>
-<div ng-show="canUpdate()">
+<div>
 	<ul>
-		<li><a href="#/plans">Pläne/Module/Kurse
+		<li ng-show="isAdmin()"><a href="#/plans">Pläne/Module/Kurse
 				anzeigen/ändern/hinzufügen</a></li>
-		<li><a href="#/employees">Angestellten
-				anzeigen/ändern/hinzufügen</a></li>
+		<li ng-show="isAdmin()"><a href="#/employees">Angestellten
+				anzeigen/ändern/hinzufügen</a></li> 
+		<li ng-show="!isAdmin()"><a href="#/plans">Meine Module
+				anzeigen</a></li>
+		<li><a href="#/changepw">Passwort ändern</a></li>
 	</ul>
 </div>
-<div ng-show="!canUpdate()">
-	<ul>
-		<li><a href="#/plans">Meine Pläne anzeigen</a></li>
-	</ul>
-</div>
-  
+
+

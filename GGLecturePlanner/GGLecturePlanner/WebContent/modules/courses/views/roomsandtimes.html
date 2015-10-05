@@ -1,0 +1,27 @@
+<div class="table-responsive" ng-init="initRoomsAndTables()" >
+	<div>
+		<a href="#/courses/planid/{{planid}}/moduleid/{{moduleid}}">zurück</a>
+	</div>
+	<h2>
+		<span>{{course.courseDescription}}/</span>:
+		Räume und Zeiten
+	</h2>
+	<div ng-if="isAdmin() || isMV(moduleid)" class="alert alert-danger">Wichtig: Änderungen zu Räumen und Zeiten bitte unter LVA bearbeiten durchführen</div>
+
+	<table class="table table-striped">
+		<tr>
+			<th>Wochentag</th>
+			<th>Zeiten</th>
+			<th>Gewünschter Hörsaal</th>
+			<th>Kapazität des gew. Raumes</th>
+			<th>Kommentare</th>
+		</tr>
+		<tr ng-repeat="t in course.courseTimesAndRooms">
+			<td>{{t.dayOfWeek}}</td>
+			<td>{{t.times.startTime}} - {{t.times.endTime}}</td>
+			<td>{{t.roomLabel}}</td>
+			<td>{{t.roomCapacity}}</td>
+			<td>{{t.comments}}</td>
+		</tr>  
+	</table>
+</div>

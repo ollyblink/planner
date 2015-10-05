@@ -1,14 +1,14 @@
 'use strict';
 
-// declare modules 
-angular.module('app', ["angucomplete-alt"]);
-angular.module('Authentication', ["angucomplete-alt"]);
-angular.module('Home', ["angucomplete-alt"]);
-angular.module('StaticData', ["angucomplete-alt"]);
-angular.module('Employees', ["angucomplete-alt"]);
-angular.module('Plans', ["angucomplete-alt"]);
-angular.module('Modules', ["angucomplete-alt"]);
-angular.module('Courses', ["angucomplete-alt"]); 
+// declare modules
+angular.module('app', [ "angucomplete-alt" ]);
+angular.module('Authentication', [ "angucomplete-alt" ]);
+angular.module('Home', [ "angucomplete-alt" ]);
+angular.module('StaticData', [ "angucomplete-alt" ]);
+angular.module('Employees', [ "angucomplete-alt" ]);
+angular.module('Plans', [ "angucomplete-alt" ]);
+angular.module('Modules', [ "angucomplete-alt" ]);
+angular.module('Courses', [ "angucomplete-alt" ]);
 
 // Don't forget to add the modules here!!!
 angular
@@ -37,6 +37,12 @@ angular
 												templateUrl : 'modules/home/views/home.html'
 											})
 									.when(
+											'/changepw',
+											{
+												controller : 'HomeController',
+												templateUrl : 'modules/home/views/changepassword.html'
+											})
+									.when(
 											'/plans',
 											{
 												controller : 'PlansController',
@@ -60,6 +66,7 @@ angular
 												controller : 'ModulesController',
 												templateUrl : 'modules/modules/views/modules.html'
 											})
+
 									.when(
 											'/modules/addmodule/planid/:planid',
 											{
@@ -91,6 +98,12 @@ angular
 												templateUrl : 'modules/courses/views/addcourse.html'
 											})
 									.when(
+											'/courses/roomsandtimes/planid/:planid/moduleid/:moduleid/courseid/:courseid',
+											{
+												controller : 'CoursesController',
+												templateUrl : 'modules/courses/views/roomsandtimes.html'
+											})
+									.when(
 											'/employees',
 											{
 												controller : 'EmployeesController',
@@ -116,8 +129,7 @@ angular
 											}).otherwise({
 										redirectTo : '/login'
 									});
- 
-							
+
 						} ])
 
 		.run(
@@ -130,6 +142,45 @@ angular
 							// keep user logged in after page refresh
 							$rootScope.globals = $cookieStore.get('globals')
 									|| {};
+							$rootScope.isAdmin = function() {
+								var roles = $rootScope.globals.currentUser.userdetails.roles;
+
+								if (roles) {
+									for (var i = 0; i < roles.length; ++i) {
+										if (roles[i].abbreviation === "Admin") {
+											return true;
+										}
+									}
+								}
+								return false;
+							};
+
+							$rootScope.isLecturer = function(moduleid) {
+								var modulesAsLecturer = $rootScope.globals.currentUser.userdetails.modulesAsLecturer;
+								return $rootScope.checkModuleContainment(
+										modulesAsLecturer, moduleid);
+							}
+
+							$rootScope.isMV = function(moduleid) {
+								var modulesAsMV = $rootScope.globals.currentUser.userdetails.modulesAsMV;
+								return $rootScope.checkModuleContainment(
+										modulesAsMV, moduleid);
+							}
+
+							$rootScope.checkModuleContainment = function(
+									moduleArray, moduleId) {
+								if (moduleArray) {
+									for (var i = 0; i < moduleArray.length; ++i) {
+										// alert(moduleArray[i].id+ " "
+										// +moduleId);
+										if (moduleArray[i].id === moduleId) {
+											return true;
+										}
+									}
+								}
+								return false;
+							}
+
 							if ($rootScope.globals.currentUser) {
 								$http.defaults.headers.common['Authorization'] = 'Basic '
 										+ $rootScope.globals.currentUser.authdata; // jshint
@@ -144,4 +195,5 @@ angular
 									$location.path('/login');
 								}
 							});
+
 						} ]);

@@ -123,5 +123,22 @@ angular
 									$location.path("/plans/addplan");
 								} 
 							};
-
+							$scope.planContainsModuleAsLecturerOrMV = function(modules) { 
+								if(modules){
+									var userModulesAsLecturer = $rootScope.globals.currentUser.userdetails.modulesAsLecturer;
+									var userModulesAsMV= $rootScope.globals.currentUser.userdetails.modulesAsMV;
+									for(var i = 0; i<userModulesAsMV.length;++i){ 
+										userModulesAsLecturer.push(userModulesAsMV[i]);
+									} 
+									for(var i = 0; i < modules.length;++i){
+										for(var j = 0; j < userModulesAsLecturer.length;++j) {
+//											alert(modules[i].id+ " == "+userModulesAsLecturer[j].id);
+	 										if(modules[i].id ==  userModulesAsLecturer[j].id) {
+												return true;
+											} 
+										}
+									}
+								}
+								return false;
+							};
 						} ]);

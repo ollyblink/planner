@@ -10,6 +10,7 @@ import rest.model.datastructures.Course;
 import rest.model.datastructures.CourseTimesAndRooms;
 import rest.model.datastructures.Employee;
 import rest.model.datastructures.Times;
+import rest.model.resources.CourseResource;
 
 public enum CourseDao {
 	instance;
@@ -44,7 +45,7 @@ public enum CourseDao {
 					.prepareStatement("select distinct module_part from course_module_parts where course_id_fk=? and module_id_fk = ?;");
 
 			this.insertIntoCourse = DBConnectionProvider.instance.getDataSource().getConnection()
-					.prepareStatement("insert into courses values (?,?,?,?,?,?,?,?,?,?,?,?,?);");
+					.prepareStatement("insert into courses values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
 			this.insertCourseTimesRooms = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("insert into courses_times_and_rooms values(?,?,?,?,?,?,?,?,?);");
 			this.insertLecturersToCourses = DBConnectionProvider.instance.getDataSource().getConnection()
@@ -58,8 +59,8 @@ public enum CourseDao {
 					.prepareStatement(
 							"update courses set " + "course_description=?, " + "vvznr = ?, " + "nr_of_groups = ?, "
 									+ "nr_of_students_expected_per_group = ?, " + "is_max_nr_students_expected_per_group = ?, "
-									+ "sws_tot_per_group = ?, " + "start_date = ?, " + "end_date = ?, " + "rythm = ?, " + "comments = ?, "
-									+ "course_type_fk = ?" + "where " + "id = ? " + "and " + "module_id_fk=?" + ";");
+									+ "sws_tot_per_group = ?, " + " date=?, " + "start_date = ?, " + "end_date = ?, " + "rythm = ?, "
+									+ "comments = ?, " + "course_type_fk = ?" + "where " + "id = ? " + "and " + "module_id_fk=?" + ";");
 
 			this.deleteCourse = DBConnectionProvider.instance.getDataSource().getConnection()
 					.prepareStatement("delete from courses where module_id_fk=? and id = ?;");
@@ -114,18 +115,19 @@ public enum CourseDao {
 		updateCourse.setInt(4, course.getNrOfStudentsExpectedPerGroup());
 		updateCourse.setBoolean(5, course.getIsMaxNrStudentsExpectedPerGroup());
 		updateCourse.setFloat(6, course.getSwsTotalPerGroup());
-		updateCourse.setString(7, course.getStartDate());
-		updateCourse.setString(8, course.getEndDate());
-		updateCourse.setString(9, course.getRythm());
-		updateCourse.setString(10, course.getComments());
+		updateCourse.setString(7, course.getDate());
+		updateCourse.setDate(8, course.getStartDate());
+		updateCourse.setDate(9, course.getEndDate());
+		updateCourse.setString(10, course.getRythm());
+		updateCourse.setString(11, course.getComments());
 		String courseType = null;
 		if (course.getCourseType() != null) {
 			courseType = course.getCourseType().getAbbreviation();
 		}
-		updateCourse.setString(11, courseType);
+		updateCourse.setString(12, courseType);
 
-		updateCourse.setInt(12, course.getId());
-		updateCourse.setInt(13, course.getModuleNr());
+		updateCourse.setInt(13, course.getId());
+		updateCourse.setInt(14, course.getModuleNr());
 
 		updateCourse.executeUpdate();
 	}
@@ -252,14 +254,15 @@ public enum CourseDao {
 		} catch (Exception e) {
 			this.insertIntoCourse.setObject(8, null);
 		}
-		this.insertIntoCourse.setString(9, course.getStartDate());
-		this.insertIntoCourse.setString(10, course.getEndDate());
-		this.insertIntoCourse.setString(11, course.getRythm());
-		this.insertIntoCourse.setString(12, course.getComments());
+		this.insertIntoCourse.setString(9, course.getDate());
+		this.insertIntoCourse.setDate(10, course.getStartDate());
+		this.insertIntoCourse.setDate(11, course.getEndDate());
+		this.insertIntoCourse.setString(12, course.getRythm());
+		this.insertIntoCourse.setString(13, course.getComments());
 		if (course.getCourseType() != null) {
-			this.insertIntoCourse.setString(13, course.getCourseType().getAbbreviation());
+			this.insertIntoCourse.setString(14, course.getCourseType().getAbbreviation());
 		} else {
-			this.insertIntoCourse.setString(13, null);
+			this.insertIntoCourse.setString(14, null);
 		}
 
 		this.insertIntoCourse.executeUpdate();
@@ -316,8 +319,10 @@ public enum CourseDao {
 			course.setNrOfStudentsExpectedPerGroup(r.getInt("nr_of_students_expected_per_group"));
 			course.setIsMaxNrStudentsExpectedPerGroup(r.getBoolean("is_max_nr_students_expected_per_group"));
 			course.setSwsTotalPerGroup(r.getFloat("sws_tot_per_group"));
-			course.setStartDate(r.getString("start_date"));
-			course.setEndDate(r.getString("end_date"));
+			course.setDate(r.getString("date"));
+			System.out.println("Course get Date() :  "+course.getDate());
+			course.setStartDate(r.getDate("start_date"));
+			course.setEndDate(r.getDate("end_date"));
 			course.setRythm(r.getString("rythm"));
 			course.setComments(r.getString("comments"));
 			if (r.getString("course_type_fk") != null) {
@@ -337,6 +342,7 @@ public enum CourseDao {
 			// Get all the course module parts for each course
 			course.setModuleParts(getModuleParts(moduleId, course.getId()));
 		}
+		 
 		return courses;
 	}
 
@@ -409,6 +415,15 @@ public enum CourseDao {
 		}
 
 		return null;
+	}
+
+	public void copyCourse(int moduleId, int courseId) throws SQLException {
+		Course course = getCourseDetails(moduleId, courseId);
+		course.setId(getNextCourseId());
+		for(CourseTimesAndRooms cTR: course.getCourseTimesAndRooms()){
+			cTR.setId(getNextCourseRoomsAndTimesId());
+		}
+		addCourse(course);
 	}
 
 }

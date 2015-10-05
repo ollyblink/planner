@@ -80,7 +80,7 @@ angular
 													email : $scope.email,
 													internalcostcenter : $scope.internalCostCenter,
 													externalinstitute : $scope.externalInstitute,
-													ispaidseparately : $scope.isPaidSeparately.value,
+													ispaidseparately : ($scope.isPaidSeparately?$scope.isPaidSeparately.value:null),
 													username : $scope.username,
 													comments : $scope.comments,
 													

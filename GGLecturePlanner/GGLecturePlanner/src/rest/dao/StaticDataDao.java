@@ -162,7 +162,7 @@ public enum StaticDataDao {
 
 	public ArrayList<Integer> getYears() {
 		ArrayList<Integer> years = new ArrayList<>();
-		for (int year = 1970; year < 2050; ++year) {
+		for (int year = 2014; year < 2030; ++year) {
 			years.add(year);
 		}
 		return years;

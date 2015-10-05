@@ -1,192 +1,210 @@
 <div ng-init="initAddCourse()">
-		<a href="#/courses/planid/{{planid}}/moduleid/{{moduleDetails.id}}">zurück</a>
-	</div>
-<form  name="form" ng-submit="addCourse()"
-	role="form">
-	
-	<table>
-		<tr>
-			<td>LVA des Moduls</td>
-			<td><p ng-repeat="pm in moduleDetails.primaryNrs track by pm">{{pm}}</p></td>
-		</tr>
-		<tr>
-			<td><label for="coursetype">Art des Kurses</label></td>
-			<td><select name="coursetype" ng-model="coursetype">
-					<option
-						ng-repeat="c in courseTypes track by c.abbreviation | orderBy:'abbreviation'"
-						value="{{c.abbreviation}}">{{c.abbreviation}}:
-						{{c.description}}</option>
-			</select></td>
-		</tr>
-		<tr>
-			<td><label for="coursedescription">Kursbeschreibung
-					(E.g. Grundzüge Fernerkundung)</label></td>
-			<td><input name="coursedescription" ng-model="coursedescription" /></td>
-		</tr>
-		<tr>
-			<td><label for="vvznr">VVZ Nr.</label></td>
-			<td><input name="vvznr" ng-model="vvznr" /></td>
-		</tr>
-		<tr>
-			<td><label>Modulteil </label></td>
-			<td><select name="primarynr" ng-model="selectedPrimaryNr"
-				ng-change="addModulePart()">
-					<option ng-repeat="pm in moduleDetails.primaryNrs" value="{{pm}}">{{pm}}</option>
-			</select> <select name="modulpart" ng-model="selectedModulePartNr"
-				ng-change="addModulePart()">
-					<option ng-repeat="n in modulePartNrs" value="{{n}}">{{n}}</option>
-			</select></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><div ng-repeat="m in selectedModuleParts">
-					{{m}} <a ng-click="deleteModulePart(m)">delete</a>
-				</div></td>
-		</tr>
+	<a href="#/courses/planid/{{planid}}/moduleid/{{moduleDetails.id}}">zurück</a>
+</div> 
+<div>
+	<form name="form" ng-submit="addCourse()" role="form"
+		ng-show="isAdmin() || isMV(moduleDetails.id)">
+		<table>
+			<tr>
+				<td>LVA des Moduls</td>
+				<td><p ng-repeat="pm in moduleDetails.primaryNrs track by pm">{{pm}}</p></td>
+			</tr>
+			<tr>
+				<td><label for="coursetype">Art des Kurses</label></td>
+				<td><select name="coursetype" ng-model="coursetype"
+					ng-change="adaptDate()">
+						<option
+							ng-repeat="c in courseTypes track by c.abbreviation | orderBy:'abbreviation'"
+							value="{{c.abbreviation}}">{{c.abbreviation}}:
+							{{c.description}}</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td><label for="coursedescription">Kursbezeichnung
+						(E.g. Grundzüge Fernerkundung)</label></td>
+				<td><input name="coursedescription"
+					ng-model="coursedescription" /></td>
+			</tr>
+			<tr>
+				<td><label for="vvznr">VVZ Nr.</label></td>
+				<td><input name="vvznr" ng-model="vvznr" /></td>
+			</tr>
+			<tr>
+				<td><label>Modulteil </label></td>
+				<td><select name="primarynr" ng-model="selectedPrimaryNr"
+					ng-change="addModulePart()">
+						<option ng-repeat="pm in moduleDetails.primaryNrs" value="{{pm}}">{{pm}}</option>
+				</select> <select name="modulpart" ng-model="selectedModulePartNr"
+					ng-change="addModulePart()">
+						<option ng-repeat="n in modulePartNrs" value="{{n}}">{{n}}</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><div ng-repeat="m in selectedModuleParts">
+						{{m}} <a ng-click="deleteModulePart(m)">delete</a>
+					</div></td>
+			</tr>
 
-		<tr>
-			<td><label for="nrofgroups">Anzahl Gruppen</label></td>
-			<td><input type="number" ng-model="nrofgroups" name="nrofgroups" /></td>
-		</tr>
-		<tr>
-			<td><label for="nrofstudentsexpectedpergroup">Anzahl
-					Studenten erwartet pro Gruppe</label></td>
-			<td><input type="Number" ng-model="nrofstudentsexpectedpergroup"
-				name="nrofstudentsexpectedpergroup" /></td>
-		</tr>
-		<tr>
-			<td><label for="ismaxnrofstudentsexpectedpergroup">Maximale
-					Anzahl Studenten pro Gruppe?</label></td>
-			<td>
-				<fieldset>
-					<input type="radio" id="yes"
-						ng-model="ismaxnrofstudentsexpectedpergroup"
-						name="ismaxnrofstudentsexpectedpergroup" ng-value="true"><label
-						for="yes"> Ja</label><br> <input type="radio" id="no"
-						ng-model="ismaxnrofstudentsexpectedpergroup"
-						name="ismaxnrofstudentsexpectedpergroup" ng-value="false"><label
-						for="no"> Nein</label><br>
-				</fieldset>
-			</td>
-		</tr>
-		<tr>
-			<td><label for="lecturers">Dozierende (ausgewählt:
-					{{selectedLecturers.length}})</label></td>
-			<td><select name="lecturers" ng-model="selectedLecturer"
-				ng-change="addLecturer()">
-					<option ng-repeat="e in allemployees| orderBy:'lastName'"
-						value="{{e.id}}">{{e.firstName}} {{e.lastName}}</option>
-			</select></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><div ng-repeat="l in selectedLecturers | orderBy:'lastName'">
-					{{l.firstName}} {{l.lastName}} <a ng-click="deleteLecturer(l.id)">delete</a>
-				</div></td>
-		</tr>
-		<tr>
-			<td><label for="swstotpergroup">SWS (Semesterwochenstunde) total pro Gruppe</label></td>
-			<td><input type="number" ng-model="swstotpergroup"
-				name="swstotpergroup" /></td>
-		</tr>
-		<tr>
-			<td><label for="swsperlecturer">SWS/Dozent</label></td>
-			<td><input ng-model="swsperlecturer" name="swsperlecturer"
-				disabled="disabled"
-				ng-value="{{swsperlecturer=(swstotpergroup/selectedLecturers.length) | number:
+			<tr>
+				<td><label for="nrofgroups">Anzahl Gruppen</label></td>
+				<td><input type="number" ng-model="nrofgroups"
+					name="nrofgroups" /></td>
+			</tr>
+			<tr>
+				<td><label for="nrofstudentsexpectedpergroup">Anzahl
+						Studenten erwartet pro Gruppe</label></td>
+				<td><input type="Number"
+					ng-model="nrofstudentsexpectedpergroup"
+					name="nrofstudentsexpectedpergroup" /></td>
+			</tr>
+			<tr>
+				<td><label for="ismaxnrofstudentsexpectedpergroup">Maximale
+						Anzahl Studenten pro Gruppe?</label></td>
+				<td>
+					<fieldset>
+						<input type="radio" id="yes"
+							ng-model="ismaxnrofstudentsexpectedpergroup"
+							name="ismaxnrofstudentsexpectedpergroup" ng-value="true"><label
+							for="yes"> Ja</label><br> <input type="radio" id="no"
+							ng-model="ismaxnrofstudentsexpectedpergroup"
+							name="ismaxnrofstudentsexpectedpergroup" ng-value="false"><label
+							for="no"> Nein</label><br>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="lecturers">Dozierende (ausgewählt:
+						{{selectedLecturers.length}})</label></td>
+				<td><select name="lecturers" ng-model="selectedLecturer"
+					ng-change="addLecturer()">
+						<option ng-repeat="e in allemployees| orderBy:'lastName'"
+							value="{{e.id}}">{{e.firstName}} {{e.lastName}}</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><div
+						ng-repeat="l in selectedLecturers | orderBy:'lastName'">
+						{{l.firstName}} {{l.lastName}} <a ng-click="deleteLecturer(l.id)">delete</a>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label for="swstotpergroup">SWS
+						(Semesterwochenstunde) total pro Gruppe</label></td>
+				<td><input type="number" ng-model="swstotpergroup"
+					name="swstotpergroup" /></td>
+			</tr>
+			<tr>
+				<td><label for="swsperlecturer">SWS/Dozent</label></td>
+				<td><input ng-model="swsperlecturer" name="swsperlecturer"
+					disabled="disabled"
+					ng-value="{{swsperlecturer=(swstotpergroup/selectedLecturers.length) | number:
 				2}}" /></td>
-		</tr>
-		<tr>
-			<td><label for="begindate">Beginn-Datum</label></td>
-			<td><input ng-model="begindate" name="begindate" /></td>
-		</tr>
-		<tr>
-			<td><label for="enddate">End-Datum</label></td>
-			<td><input ng-model="enddate" name="enddate" /></td>
-		</tr>
-		<tr>
-			<td><label for="rythm">Verteilung über Semester /
-					Verantsaltungs-Rhythmus</label></td>
-			<td><input ng-model="rythm" name="rythm" /></td>
-		</tr>
-		<tr>
-			<td><label for="comments">Kommentare zum Kurs:</label></td>
-			<td><textarea ng-model="comments" name="comments" cols=40 rows=6></textarea></td>
-		</tr>
-	</table>
-	<div ng-show="canShowRoomtable()&&!roomtableIsVisible">
-
-		<a ng-click="showRoomtable()">(+) Raum und Zeiten hinzufügen</a>
-
-	</div>
-	<table name="roomtable" ng-show="roomtableIsVisible">
-		<tr>
-			<th colspan="2">Zeiten und Rüume</th>
-		</tr>
-		<tr>
-			<td><label for="dayofweek">Wochentag</label></td>
-			<td><select name="dayofweek" ng-model="dayofweek">
-					<option ng-repeat="day in dayAbbreviations" value="{{day}}">{{day}}</option>
-			</select></td>
-		</tr>
-		<tr>
-			<td><label for="begintime">Startzeit</label></td>
-			<td><input type="time" name="begintime" ng-model="begintime" /></td>
-		</tr>
-		<tr>
-			<td><label for="endtime">End-Zeit</label></td>
-			<td><input type="time" name="endtime" ng-model="endtime" /></td>
-		</tr>
-		<tr>
-			<td><label for="roomlabel">Gewünschter Hörsaal</label></td>
-			<td><input name="roomlabel" ng-model="roomlabel" /></td>
-		</tr>
-		<tr>
-			<td><label for="roomcapacity">Kapazität des gewünschten
-					Raums</label></td>
-			<td><input name="roomcapacity" type="number"
-				ng-model="roomcapacity" /></td>
-		</tr>
-		<tr>
-			<td><label for="roomcomments">Kommentare zum Raum oder
-					zu Zeiten:</label></td>
-			<td><textarea name="roomcomments" cols=40 rows=6
-					ng-model="roomcomments"></textarea></td>
-		</tr>
-		<tr>
-			<td>
-			<td><a name="addroomandtimes" ng-click="addRoomAndTimes()">Raum
-					und Zeiten hinzufügen</a></td>
-		</tr>
-		<table ng-show="canShowRoomtable()">
-			<tr ng-repeat="r in roomsAndTimes">
-				<td>{{r.getDayOfWeek()}}</td>
-				<td>{{r.getBeginTime()}}</td>
-				<td>{{r.getEndTime()}}</td>
-				<td>{{r.getRoomLabel()}}</td>
-				<td>{{r.getRoomCapacity()}}</td>
-				<td>{{r.getRoomComments()}}</td>
-				<td><a ng-click="deleteRoomsAndTimes(r.getId())">delete</a></td>
+			</tr>
+			<tr>
+				<td><label for="date">Datum</label></td>
+				<td><select ng-model="date" ng-disabled="checkCourseType()">
+						<option value="1">1. Semesterwoche</option>
+						<option value="2">2. Semesterwoche</option>
+						<option value="3">Datum (von - bis)</option>
+				</select></td>
+			</tr>
+			<tr ng-show="date == 3">
+				<td><label>Daten</label></td>
+				<td><input ng-model="begindate" type="date"
+					ng-required="checkCourseType()" /> <input ng-model="enddate"
+					type="date" ng-required="checkCourseType()" /></td>
+			</tr>
+			<!-- 		<tr> -->
+			<!-- 			<td><label for="begindate">Beginn-Datum</label></td> -->
+			<!-- 			<td><input ng-model="begindate" name="begindate" /></td> -->
+			<!-- 		</tr> -->
+			<!-- 		<tr> -->
+			<!-- 			<td><label for="enddate">End-Datum</label></td> -->
+			<!-- 			<td><input ng-model="enddate" name="enddate" /></td> -->
+			<!-- 		</tr> -->
+			<tr>
+				<td><label for="rythm">Verteilung über Semester /
+						Verantsaltungs-Rhythmus</label></td>
+				<td><select ng-model="rythm" name="rythm">
+						<option></option>
+						<option value="1">wöchentlich</option>
+						<option value="2">14-täglich</option>
+						<option value="3">unregelmässig</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td><label for="comments">Kommentare bzgl. Kurs:</label></td>
+				<td><textarea ng-model="comments" name="comments" cols=40
+						rows=6></textarea></td>
 			</tr>
 		</table>
-	</table>
+		<div ng-show="canShowRoomtable()&&!roomtableIsVisible">
 
-	<!-- 		<input type="hidden" name="moduleid" value="{{getModuleId()}}"> -->
-	<!-- 		<input type="hidden" name="courseid" value="{{courseid}}"> <input -->
-	<!-- 			type="hidden" name="roomsandtimesdata" -->
-	<!-- 			value="{{formatRoomsAndTimesForTransfer()}}"> <input -->
-	<!-- 			type="hidden" name="modulepartsdata" -->
-	<!-- 			value="{{formatModulePartsForTransfer()}}"> <input -->
-	<!-- 			type="hidden" name="lecturersdata" -->
-	<!-- 			value="{{formatLecturersForTransfer()}}"> -->
-	<table>
-		<tr>
-			<td class="form-actions">
-				<button type="submit" class="btn btn-danger"
-					ng-show="moduleDetails.id&&!course.id">Kurs hinzufügen</button>
-				<button type="submit" class="btn btn-danger"
-					ng-show="moduleDetails.id&&course.id">Kurs ändern</button>
-			</td>
-		</tr>
-	</table>
-</form>
+			<a ng-click="showRoomtable()">(+) Raum und Zeiten hinzufügen</a>
+
+		</div>
+		<table name="roomtable" ng-show="roomtableIsVisible">
+			<tr>
+				<th colspan="2">Zeiten und Rüume</th>
+			</tr>
+			<tr>
+				<td><label for="dayofweek">Wochentag</label></td>
+				<td><select name="dayofweek" ng-model="dayofweek">
+						<option ng-repeat="day in dayAbbreviations" value="{{day}}">{{day}}</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td><label for="begintime">Startzeit</label></td>
+				<td><input type="time" name="begintime" ng-model="begintime" /></td>
+			</tr>
+			<tr>
+				<td><label for="endtime">End-Zeit</label></td>
+				<td><input type="time" name="endtime" ng-model="endtime" /></td>
+			</tr>
+			<tr>
+				<td><label for="roomlabel">Gewünschter Hörsaal</label></td>
+				<td><input name="roomlabel" ng-model="roomlabel" /></td>
+			</tr>
+			<tr>
+				<td><label for="roomcapacity">Kapazität des gewünschten
+						Raums</label></td>
+				<td><input name="roomcapacity" type="number"
+					ng-model="roomcapacity" /></td>
+			</tr>
+			<tr>
+				<td><label for="roomcomments">Kommentare bzgl. Raum
+						oder zu Zeiten:</label></td>
+				<td><textarea name="roomcomments" cols=40 rows=6
+						ng-model="roomcomments"></textarea></td>
+			</tr>
+			<tr>
+				<td>
+				<td><a name="addroomandtimes" ng-click="addRoomAndTimes()">Raum
+						und Zeiten hinzufügen</a></td>
+			</tr>
+			<table ng-show="canShowRoomtable()">
+				<tr ng-repeat="r in roomsAndTimes">
+					<td>{{r.getDayOfWeek()}}</td>
+					<td>{{r.getBeginTime()}}</td>
+					<td>{{r.getEndTime()}}</td>
+					<td>{{r.getRoomLabel()}}</td>
+					<td>{{r.getRoomCapacity()}}</td>
+					<td>{{r.getRoomComments()}}</td>
+					<td><a ng-click="deleteRoomsAndTimes(r.getId())">delete</a></td>
+				</tr>
+			</table>
+		</table>
+		<table>
+			<tr>
+				<td class="form-actions">
+					<button type="submit" class="btn btn-danger"
+						ng-show="moduleDetails.id&&!course.id">Kurs hinzufügen</button>
+					<button type="submit" class="btn btn-danger"
+						ng-show="moduleDetails.id&&course.id">Kurs ändern</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>

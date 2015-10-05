@@ -126,9 +126,10 @@ create table modules(
 	nr_of_groups int,
 	nr_of_students_expected_per_group int,
 	is_max_nr_students_expected_per_group bool, -- flag for is this the max number of students expected for that group? --> will have a 'max' indication
-	sws_tot_per_group real,  
-	start_date text, -- e.g. '1. Woche'
-	end_date text,
+	sws_tot_per_group real,
+	date text,   
+	start_date date, -- e.g. '1. Woche'
+	end_date date,
 	rythm text, -- e.g. ca. 3 Termine 
 	comments text,
 	course_type_fk text references course_types(abbr) on delete cascade on update cascade,
@@ -227,6 +228,6 @@ create table last_modified_log(
 	modifying_date timestamp not null
 );
 -- Tables end 
-delete from modules_to_disciplines_to_module_types where module_id_fk=1 discipline_fk='MSc' and module_type_fk='PF';
-select * from modules_to_disciplines_to_module_types;
+-- delete from modules_to_disciplines_to_module_types where module_id_fk=1 discipline_fk='MSc' and module_type_fk='PF';
+-- select * from modules_to_disciplines_to_module_types;
 -- update courses set is_max_nr_students_expected_per_group=true where module_id_fk = 9 AND id = 29;
