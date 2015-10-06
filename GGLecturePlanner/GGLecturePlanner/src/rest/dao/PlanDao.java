@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import rest.model.datastructures.Course;
 import rest.model.datastructures.CourseTimesAndRooms;
 import rest.model.datastructures.Employee;
+import rest.model.datastructures.IAbbrDescr;
 import rest.model.datastructures.Module;
 import rest.model.datastructures.Plan;
 import rest.model.datastructures.Role;
+import rest.model.datastructures.Times;
 
 public enum PlanDao {
 	instance;
@@ -39,15 +41,13 @@ public enum PlanDao {
 		this.addPlanStatement = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("insert into plans(id, semester, year) values (?,?,?);");
 
-		this.deletePlanStatement = DBConnectionProvider.instance.getDataSource().getConnection()
-				.prepareStatement("delete from plans where id=?;");
+		this.deletePlanStatement = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("delete from plans where id=?;");
 		this.updatePlan = DBConnectionProvider.instance.getDataSource().getConnection()
 				.prepareStatement("update plans set semester=?, year=? where id=?;");
 
 		this.existsPlanId = DBConnectionProvider.instance.getDataSource().getConnection().prepareStatement("select * from plans where id=?");
 	}
 
-	 
 	public ArrayList<Plan> getAllPlans() throws SQLException {
 		ArrayList<Plan> plans = new ArrayList<>();
 
@@ -57,28 +57,25 @@ public enum PlanDao {
 		while (r.next()) {
 			int planid = r.getInt("id");
 			Plan plan = new Plan(planid, r.getString("semester"), r.getInt("year"), null);
-			 
-			
+
 			ArrayList<Module> modules = new ArrayList<>();
 			Statement s1 = DBConnectionProvider.instance.getDataSource().getConnection().createStatement();
-			ResultSet r1 = s1.executeQuery("select distinct module_id_fk from plans_to_modules where plan_id_fk = "+planid);
-			while(r1.next()){
+			ResultSet r1 = s1.executeQuery("select distinct module_id_fk from plans_to_modules where plan_id_fk = " + planid);
+			while (r1.next()) {
 				Module module = new Module();
 				module.setId(r1.getInt("module_id_fk"));
 				modules.add(module);
 			}
 			r1.close();
 			s1.close();
-			
+
 			plan.setModules(modules);
 			plans.add(plan);
-			
+
 		}
 		r.close();
 		s.close();
 
-		
-		
 		return plans;
 	}
 
@@ -93,7 +90,7 @@ public enum PlanDao {
 	private boolean existsPlanId(int planId) throws SQLException {
 		existsPlanId.setInt(1, planId);
 		ResultSet r = existsPlanId.executeQuery();
-		while(r.next()){
+		while (r.next()) {
 			return true;
 		}
 		return false;
@@ -203,33 +200,36 @@ public enum PlanDao {
 	public String createHTMLPage(int planId) throws SQLException {
 		Plan plan = retrieveFullPlan(planId);
 
-		String content = "<h1>Lehrauftr�ge " + plan.getSemester() + " " + plan.getYear() + "</h1>" + "<table>" + "<tr>" + "<th>VVZNr</th>"
+		String content = "<h1>Lehraufträge " + plan.getSemester() + " " + plan.getYear() + "</h1>" + "<table>" + "<tr>" + "<th>VVZNr</th>"
 				+ "<th>Modul</th>" + "<th>Modulteil</th>" + "<th>Semester</th>" + "<th>Disziplin</th>" + "<th>Bezeichnung der Veranstaltung</th>"
 				+ "<th>Vorname Nachname</th>" + "<th>Funktion an der Uni bei internen DozentInnen (Prof, PD, OA, Wimi)</th>"
-				+ "<th>externe DozentInnen (ETH, PSI, WSL, ...)</th>" + "<th>externe DozentInnen (x)</th>" + "<th>Anz. Gruppen</th>"
-				+ "<th>Wochentag</th>" + "<th>Zeit</th>" + "<th>Verteilung �ber Semester / Veranstaltung-rhytmus</th>" + "<th>Beginn-Datum</th>"
+				+ "<th>externe DozentInnen (ETH, PSI, WSL, ...)</th>" + "<th>externe DozentInnen (x)</th>"
+				+ "<th>Kostenstelle Abt.? - nicht MNF?</th><th>Kommentare zu Dozenten</th>"
+				+ "<th>Verteilung über Semester / Veranstaltungs-rhytmus</th>" + "<th>Start</th>" + "<th>Beginn-Datum</th>"
 				+ "<th>End-Datum falls nicht ganzes Semester</th>" + "<th>Typ Veranstaltung (VL, UE, Exkursion, Blockkurs, ...)</th>"
-				+ "<th>Anzahl Studenten erwartet pro Gruppe</th>" + "<th>Gew�nschter H�rsaal / Semnarraum</th>"
-				+ "<th>Kapazit�t des gew. Raumes</th>" + "<th>SWS tot. pro Gruppe</th>" + "<th>Anz. Dozenten (inkl. Profs.)</th>"
-				+ "<th>SWS/Doz. Pr�senzzeit</th>" + "<th>Kostenstelle Abt.? - nicht MNF?</th>"
-				+ "<th>Bemerkungen (o.k. = keine �nderungen, aktualisiert, nicht mehr g�ltig)</th>" + "<th>Pr�fungen</th>"
-				+ "<th>Eintrag von (K�rzel)</th>" + "</tr>";
+				+ "<th># Gruppen</th>" + "<th>Anzahl Studenten erwartet pro Gruppe</th>" + "<th>SWS tot. pro Gruppe</th>"
+				+ "<th>Anz. Dozenten (inkl. Profs.)</th>" + "<th>SWS/Doz. Präsenzzeit</th>"
+				+ "<th>Bemerkungen (o.k. = keine Änderungen, aktualisiert, nicht mehr gültig)</th>" + "<th>Prüfungen</th>" + "<th>Wochentag</th>"
+				+ "<th>Zeit</th>" + "<th>Gewünschter Hörsaal / Seminarraum</th>" + "<th>Kapazität des gew. Raumes</th>"
+				+ "<th>Kommentare zu Räumen & Zeiten</th>" + "<th>Eintrag von (Kürzel)</th><th>Kommentare zum Modul</th></tr>";
 
 		for (Module module : plan.getModules()) {
 			for (Course course : module.getCourses()) {
 				content += "<tr>" + "<td>" + course.getVvzNr() + "</td>" + "<td>" + formatList(module.getPrimaryNrs()) + "</td>" + "<td>"
 						+ formatList(course.getModuleParts()) + "</td>" + "<td>" + module.getSemesterNr() + "</td>" + "<td>"
-						+ formatList(module.getDisciplines()) + "</td>" + "<td>" + course.getCourseDescription() + "</td>"
-						+ formatLecturers(course.getLecturers())
-						// + "<td>"++"</td>"
-						// + "<td>"++"</td>"
-						// + "<td>"++"</td>"
-						// + "<td>"++"</td>"
-						// + "<td>"++"</td>"
-						// + "<td>"++"</td>"
-						+ "<td></td>" + "<td></td>" + "<td></td>" + "<td></td>" + "<td></td>" + "<td></td>" + "</tr>";
-				for (CourseTimesAndRooms cTR : course.getCourseTimesAndRooms()) {
-				}
+						+ formatAbbrDescrList(module.getDisciplines()) + "</td>" + "<td>" + course.getCourseDescription() + "</td>"
+						+ formatLecturers(course.getLecturers()) + "<td>" + switchRythm(course.getRythm()) + "</td>" + "<td>"
+						+ switchDate(course.getDate()) + "</td>" + "<td>" + course.getStartDate() + "</td>" + "<td>" + course.getEndDate() + "</td>"
+						+ "<td>" + course.getCourseType().getAbbreviation() + "</td>" + "<td>" + course.getNrOfGroups() + "</td>" + "<td>"
+						+ course.getNrOfStudentsExpectedPerGroup() + " " + (course.getIsMaxNrStudentsExpectedPerGroup() ? "(max)" : "") + "</td>"
+						+ "<td>" + course.getSwsTotalPerGroup() + "</td>" + "<td>" + course.getLecturers().size() + "</td><td>"
+						+ (course.getSwsTotalPerGroup() / course.getLecturers().size()) + "</td>" + "<td>" + course.getComments() + "</td>" + "<td>"
+						+ module.getAssessmentType().getAbbreviation() + " " + module.getAssessmentDate() + "</td>"
+
+						+ formatTimesAndRooms(course.getCourseTimesAndRooms()) + "<td>"
+						+ module.getResponsibleEmployee().getFirstName().substring(0, 1)  
+						+ module.getResponsibleEmployee().getLastName().substring(0, 1) + "</td><td>" + module.getComments() + "</td></tr>";
+
 			}
 		}
 
@@ -238,15 +238,96 @@ public enum PlanDao {
 		return html;
 	}
 
-	private String formatLecturers(ArrayList<Employee> lecturers) {
-		String formattedLecturers = "";
-		for (Employee l : lecturers) {
-			formattedLecturers += "<td>" + l.getFirstName() + " " + l.getLastName() + "</td>";
-			formattedLecturers += "<td>" + formatRoles(l.getRoles()) + "</td>";
-			formattedLecturers += "<td>" + l.getExternalInstitute() + "</td>";
-			formattedLecturers += "<td>" + (l.getIsPaidSeparately().getValue() ? "x" : "") + "</td>";
-			formattedLecturers += "<td>" + (l.getInternalCostCenter() == null ? "" : l.getInternalCostCenter()) + "</td>";
+	private String switchRythm(String rythm) {
+		switch (rythm) {
+		case "1":
+			return "wöchentlich";
+		case "2":
+			return "14-täglich";
+		case "3":
+			return "unregelmässig";
+		default:
+			return "";
 		}
+	}
+
+	private String switchDate(String date) {
+		switch (date) {
+		case "1":
+			return "1. Sem. Woche";
+		case "2":
+			return "2. Sem. Woche";
+		case "3":
+			return "Siehe Daten";
+		default:
+			return "";
+		}
+	}
+
+	private String formatTimesAndRooms(ArrayList<CourseTimesAndRooms> courseTimesAndRooms) {
+		String timesAndRooms = "<td><ol>";
+		for (CourseTimesAndRooms cTR : courseTimesAndRooms) {
+			timesAndRooms += "<li>" + cTR.getDayOfWeek() + "</li>";
+		}
+		timesAndRooms += "</ol></td>";
+		timesAndRooms += "<td><ol>";
+		for (CourseTimesAndRooms cTR : courseTimesAndRooms) {
+			Times times = cTR.getTimes();
+			if (times != null) {
+				timesAndRooms += "<li>" + times.getStartTime() + " - " + times.getEndTime() + "</li>";
+			}
+		}
+		timesAndRooms += "</ol></td>";
+		timesAndRooms += "<td><ol>";
+		for (CourseTimesAndRooms cTR : courseTimesAndRooms) {
+			timesAndRooms += "<li>" + cTR.getRoomLabel() + "</li>";
+		}
+		timesAndRooms += "</ol></td>";
+		timesAndRooms += "<td><ol>";
+		for (CourseTimesAndRooms cTR : courseTimesAndRooms) {
+			timesAndRooms += "<li>" + cTR.getRoomCapacity() + "</li>";
+		}
+		timesAndRooms += "</ol></td>";
+		timesAndRooms += "<td><ol>";
+		for (CourseTimesAndRooms cTR : courseTimesAndRooms) {
+			timesAndRooms += "<li>" + cTR.getComments() + "</li>";
+		}
+		timesAndRooms += "</ol></td>";
+		return timesAndRooms;
+	}
+
+	private String formatLecturers(ArrayList<Employee> lecturers) {
+		String formattedLecturers = "<td><ol>";
+		for (Employee l : lecturers) {
+			formattedLecturers += "<li>" + l.getFirstName() + " " + l.getLastName() + "</li>";
+		}
+		formattedLecturers += "</ol></td>";
+		formattedLecturers += "<td><ol>";
+		for (Employee l : lecturers) {
+			formattedLecturers += "<li>" + formatRoles(l.getRoles()) + "</li>";
+		}
+		formattedLecturers += "</ol></td>";
+
+		formattedLecturers += "<td><ol>";
+		for (Employee l : lecturers) {
+			formattedLecturers += "<li>" + l.getExternalInstitute() + "</li>";
+		}
+		formattedLecturers += "</ol></td>";
+		formattedLecturers += "<td><ol>";
+		for (Employee l : lecturers) {
+			formattedLecturers += "<li>" + (l.getIsPaidSeparately().getValue() ? "x" : "") + "</li>";
+		}
+		formattedLecturers += "</ol></td>";
+		formattedLecturers += "<td><ol>";
+		for (Employee l : lecturers) {
+			formattedLecturers += "<li>" + (l.getInternalCostCenter() == null ? "" : l.getInternalCostCenter()) + "</li>";
+		}
+		formattedLecturers += "</ol></td>";
+		formattedLecturers += "<td><ol>";
+		for (Employee l : lecturers) {
+			formattedLecturers += "<li>" + (l.getComments()) + "</li>";
+		}
+		formattedLecturers += "</ol></td>";
 		return formattedLecturers;
 	}
 
@@ -255,7 +336,9 @@ public enum PlanDao {
 		for (int i = 0; i < roles.size() - 1; ++i) {
 			roleString += roles.get(i).getAbbreviation() + ",";
 		}
-		roleString += roles.get(roles.size() - 1).getAbbreviation();
+		if (roles.size() > 0) {
+			roleString += roles.get(roles.size() - 1).getAbbreviation();
+		}
 		return roleString;
 	}
 
@@ -264,13 +347,27 @@ public enum PlanDao {
 		for (int i = 0; i < list.size() - 1; ++i) {
 			formattedData += list.get(i).toString() + "\n";
 		}
-		formattedData += list.get(list.size() - 1).toString();
+		if (list.size() > 0) {
+			formattedData += list.get(list.size() - 1).toString();
+		}
+		return formattedData;
+	}
+
+	private <T extends IAbbrDescr> String formatAbbrDescrList(ArrayList<T> list) {
+		String formattedData = "";
+		for (int i = 0; i < list.size() - 1; ++i) {
+			formattedData += list.get(i).getAbbreviation() + "\n";
+		}
+		if (list.size() > 0) {
+			formattedData += list.get(list.size() - 1).getAbbreviation();
+		}
 		return formattedData;
 	}
 
 	private String getHTMLBasics(int planId, String content) {
-		return "<html>" + "<head><title>Plan " + planId + "</title><link rel=\"stylesheet\" type=\"text/css\" href=\"../../../style.css\" /></head>"
-				+ "<body><div class=\"container\" >" + content + "</div></body>" + "</html>";
+		return "<html>" + "<head><title>Plan " + planId + "</title>" + "<style>" + "      body,div, table, tr, td, p { " + "font-family: arial;"
+				+ "font-size: 6px; " + "text-align: left;" + "vertical-align: top;" + "}" + "ol {  margin: 0;  padding: 0; }" + "    </style>"
+				+ "</head>" + "<body><div class=\"container\" >" + content + "</div></body>" + "</html>";
 	}
 
 	private Plan retrieveFullPlan(int planId) throws SQLException {

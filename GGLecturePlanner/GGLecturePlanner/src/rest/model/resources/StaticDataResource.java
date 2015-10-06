@@ -22,7 +22,7 @@ import rest.model.datastructures.Role;
 import rest.model.datastructures.SemesterType;
 import rest.model.datastructures.TrueFalseTupel;
 
-@Path("/staticresources") 
+@Path("/staticresources")
 public class StaticDataResource {
 
 	@Context
@@ -32,83 +32,84 @@ public class StaticDataResource {
 
 	@GET
 	@Path("/assessmenttypes")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<AssessmentType> getAllAssessmentTypes() {
 		return new ArrayList<>(StaticDataDao.instance.getAssessmentTypes().values());
 	}
 
 	@GET
 	@Path("/coursetypes")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<CourseType> getAllCourseTypes() {
 		return new ArrayList<>(StaticDataDao.instance.getCourseTypes().values());
 	}
 
 	@GET
 	@Path("/moduletypes")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<ModuleType> getAllModuleTypes() {
 		return new ArrayList<>(StaticDataDao.instance.getModuleTypes().values());
 	}
 
 	@GET
 	@Path("/roles")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Role> getAllRoles() {
 		Collection<Role> roles = StaticDataDao.instance.getRoles().values();
 		ArrayList<Role> choosableRoles = new ArrayList<>();
-		for(Role role: roles){
-			if(!role.getAbbreviation().equalsIgnoreCase("MV")) {
-				choosableRoles.add(role);
-			}
+		for (Role role : roles) {
+			// if(!role.getAbbreviation().equalsIgnoreCase("MV")) {
+			choosableRoles.add(role);
+			// }
 		}
 		return choosableRoles;
 	}
 
 	@GET
 	@Path("/disciplines")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Discipline> getAllDisciplines() {
 		return new ArrayList<>(StaticDataDao.instance.getDisciplines().values());
 	}
 
 	@GET
 	@Path("/departments")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Department> getAllDepartments() {
 		return new ArrayList<>(StaticDataDao.instance.getDepartments().values());
 	}
 
 	@GET
 	@Path("/semestertypes")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<SemesterType> getAllSemesterTypes() {
 		return StaticDataDao.instance.getSemesterTypes();
 	}
 
 	@GET
 	@Path("/years")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Integer> getAllYears() {
 		return StaticDataDao.instance.getYears();
 	}
 
 	@GET
 	@Path("/numbers")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public ArrayList<Integer> getNumberRange() {
 		return StaticDataDao.instance.getNumberRange(1, 10);
 	}
+
 	@GET
 	@Path("/dayabbreviations")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Set<String> getDayAbbreviations() {
 		return StaticDataDao.instance.getDayAbbreviations();
 	}
-	
+
 	@GET
 	@Path("/truefalse")
-	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Set<TrueFalseTupel> getTrueFalseValues() {
 		return StaticDataDao.instance.getTrueFalseValues();
 	}

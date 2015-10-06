@@ -3,7 +3,7 @@ package rest.model.datastructures;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Role {
+public class Role implements IAbbrDescr{
 	@Override
 	public String toString() {
 		return "Role [abbreviation=" + abbreviation + ", description=" + description + "]";

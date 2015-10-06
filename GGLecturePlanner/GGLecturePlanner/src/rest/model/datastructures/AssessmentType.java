@@ -3,7 +3,7 @@ package rest.model.datastructures;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AssessmentType {
+public class AssessmentType implements IAbbrDescr{
 	@Override
 	public String toString() {
 		return "AssessmentType [abbreviation=" + abbreviation + ", description=" + description + "]";

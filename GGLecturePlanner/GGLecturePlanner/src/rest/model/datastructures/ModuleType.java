@@ -3,7 +3,7 @@ package rest.model.datastructures;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class ModuleType {
+public class ModuleType implements IAbbrDescr {
 	@Override
 	public String toString() {
 		return "ModuleType [abbreviation=" + abbreviation + ", description=" + description + "]";

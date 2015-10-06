@@ -43,17 +43,16 @@ insert into disciplines values ('LD', 'Lehrdiplomausbildung');
 insert into disciplines values ('PHZH', 'Pädagog. Hochschule ZH'); 
 
 ----Not yet done
-insert into roles values ('Admin', 'Administrator');
-insert into roles values ('MV', 'Modulverantwortlicher');
+insert into roles values ('Admin', 'Administrator'); 
 insert into roles values ('Doz ohne PhD', 'Lehrbeauftragte/r ohne PhD');
 insert into roles values ('Doz mit PhD', 'Lehrbeauftragte/r mit PhD');
 insert into roles values ('Doz ex annex', 'Lehrbeauftragte/r extern (angestellt ETH, WSL, …) - keine Bezahlung'); 
 insert into roles values ('Doz ex privat', 'Lehrbeauftragte/r extern (angestellt privat, kantonal, …) - Bezahlung');
 insert into roles values ('PD/TP', 'Privatdozierende/Titularprofessor');
 insert into roles values ('Prof', 'Professor (ausserord./ordentlich/SNF)');
- 
- 
- --add departments
+insert into roles values ('Ass', 'Semester/Teaching Assistent');
+ select * from roles;
+  --add departments
 insert into departments values (1,'3G','Physical Geography Glaciology and Geomorphodynamics');
 insert into departments values (2,'2B','Physical Geography Soil Science and Biogeochemistry');
 insert into departments values (3,'2K','Physical Geography Hydrology and Climate');
@@ -93,7 +92,7 @@ insert into employees_to_roles values (8, 'Admin');
 insert into employees_to_roles values (9, 'Admin');
 select * from lecturers_to_courses;
 select * from employees;
-Update employees set password = 'password1' where id=? and username=?;
+Update employees set password = 'password1' where id=2 and username='chuggel';
  --====PLANS 
  insert into plans values (1, 'FS', 2015);
 insert into plans values (2,'HS', 2015);

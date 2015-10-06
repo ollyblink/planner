@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Discipline implements Comparable<Discipline>{
+public class Discipline implements IAbbrDescr, Comparable<Discipline>{
 	 
 
 	@Override

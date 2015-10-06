@@ -3,7 +3,7 @@ package rest.model.datastructures;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class CourseType {
+public class CourseType implements IAbbrDescr{
 	@Override
 	public String toString() {
 		return "CourseType [abbreviation=" + abbreviation + ", description=" + description + "]";

@@ -2,7 +2,7 @@
 <div>
 	<a href="#/employees">zurück</a>
 </div>
-<div class="container" ng-init="init()"  ng-show="isAdmin()">
+<div class="container" ng-init="init()" ng-show="isAdmin()">
 	<div class="title">
 		<h2>Angestellte/n hinzufügen/ändern</h2>
 	</div>
@@ -12,20 +12,24 @@
 			</tr>
 			<tr>
 				<td><label for="employeenr">Angestelltennummer</label></td>
-				<td><input class="form-group" ng-model="employeeNr" name="employeenr" /></td>
+				<td><input class="form-group" ng-model="employeeNr"
+					name="employeenr" /></td>
 			</tr>
 			<tr>
 				<td><label for="firstname">Vorname</label></td>
-				<td><input class="form-group" ng-model="firstName" name="firstname" required /></td>
+				<td><input class="form-group" ng-model="firstName"
+					name="firstname" required /></td>
 			</tr>
 			<tr>
 				<td><label for="lastname">Nachname</label></td>
-				<td><input class="form-group" ng-model="lastName" name="lastname" required /></td>
+				<td><input class="form-group" ng-model="lastName"
+					name="lastname" required /></td>
 			</tr>
 			<tr>
 				<td><label>Rolle(n)</label></td>
-				<td><span ng-repeat="r in allroles"> <input class="form-group"
-						type="checkbox" name="roles" value="{{r.abbreviation}}"
+				<td><span ng-repeat="r in allroles"> <input
+						class="form-group" type="checkbox" name="roles"
+						value="{{r.abbreviation}}"
 						ng-checked="employeeHasRole(r.abbreviation)"
 						ng-change="addOrRemove(r)" ng-model="emplroles">{{r.description}}<br />
 				</span></td>
@@ -39,22 +43,25 @@
 						Kostenstelle</label></td>
 				<td><input class="form-group" ng-model="internalCostCenter"
 					value="{{internalCostCenter}}" type="number"
-					name="internalcostcenter" ng-disabled="externalInstitute||(isPaidSeparately.value)" /></td>
+					name="internalcostcenter"
+					ng-disabled="externalInstitute||(isPaidSeparately.value)" /></td>
 			</tr>
 			<tr>
 				<td><label for="externalinstitute">Externes Institut</label></td>
 				<td><input class="form-group" ng-model="externalInstitute"
-					name="externalinstitute" ng-disabled="internalCostCenter"/></td>
+					name="externalinstitute" ng-disabled="internalCostCenter" /></td>
 			</tr>
 			<tr>
 				<td><label for="ispaidseparately">Separat bezahlt?</label></td>
-				<td><select class="form-group" name="ispaidseparately" id="ispaidseparately"
+				<td><select class="form-group" name="ispaidseparately"
+					id="ispaidseparately"
 					ng-options="tf.name for tf in trueFalse track by tf.name"
 					ng-model="isPaidSeparately" ng-disabled="internalCostCenter"></select></td>
 			</tr>
 			<tr>
 				<td><label for="username">Nutzername</label></td>
-				<td><input class="form-group" ng-model="username" name="username" required /></td>
+				<td><input class="form-group" ng-model="username"
+					name="username" required /></td>
 			</tr>
 
 			<tr>

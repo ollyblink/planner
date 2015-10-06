@@ -52,14 +52,14 @@ public class PlansResource {
 			e.printStackTrace();
 		}
 		return new ArrayList<>();
-	}
+	} 
 
 	@GET
 	@Path("/plandetails/{planid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Plan getPlanDetails(@PathParam("planid") int planId) {
 		try {
-			return PlanDao.instance.getPlanDetailsFor(planId);
+			return PlanDao.instance.getPlanDetailsFor(planId); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -74,10 +74,9 @@ public class PlansResource {
 			PlanDao.instance.deletePlan(planId);
 			return Response.ok(new ResponseMessage("deleted plan: " + planId, "ok")).build();
 		} catch (SQLException e) {
-			e.printStackTrace();
-
+			e.printStackTrace(); 
 			return Response.status(Status.NOT_MODIFIED).build();
-		}
+		} 
 	}
 
 	@POST
@@ -110,7 +109,7 @@ public class PlansResource {
 
 		try {
 			PlanDao.instance.changePlan(Integer.parseInt(plans.get("id")), plans.get("semester"), Integer.parseInt(plans.get("year")));
-			return Response.ok(
+			return Response.ok( 
 					new ResponseMessage("Changed plan with id: " + plans.get("id") + ", semester: " + plans.get("semester") + ", year "
 							+ Integer.parseInt(plans.get("year")), "ok")).build();
 		} catch (SQLException e) {

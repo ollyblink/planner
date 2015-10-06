@@ -74,8 +74,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label for="lecturers">Dozierende (ausgewählt:
-						{{selectedLecturers.length}})</label></td>
+				<td><label for="lecturers">Dozierende </label></td>
 				<td><select name="lecturers" ng-model="selectedLecturer"
 					ng-change="addLecturer()">
 						<option ng-repeat="e in allemployees| orderBy:'lastName'"
@@ -147,7 +146,7 @@
 		</div>
 		<table name="roomtable" ng-show="roomtableIsVisible">
 			<tr>
-				<th colspan="2">Zeiten und Rüume</th>
+				<th colspan="2">Zeiten und Räume</th>
 			</tr>
 			<tr>
 				<td><label for="dayofweek">Wochentag</label></td>

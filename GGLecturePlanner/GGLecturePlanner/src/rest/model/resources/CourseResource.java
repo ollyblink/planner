@@ -5,10 +5,9 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +27,6 @@ import javax.ws.rs.core.UriInfo;
 
 import rest.dao.CourseDao;
 import rest.dao.EmployeeDao;
-import rest.dao.PlanDao;
 import rest.dao.StaticDataDao;
 import rest.model.datastructures.Course;
 import rest.model.datastructures.CourseTimesAndRooms;
@@ -53,7 +51,6 @@ public class CourseResource {
 	@Context
 	Request request;
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
 	@POST
 	@Path("/addcourse/")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -117,28 +114,22 @@ public class CourseResource {
 				course.setSwsTotalPerGroup(null);
 			}
 			try {
-				course.setDate(""+courseData.get("date"));
+				course.setDate("" + courseData.get("date"));
 			} catch (Exception e) {
 				e.printStackTrace();
 				course.setDate(null);
-			} 
-			System.out.println("Begindate:" + courseData.get("begindate"));
-			System.out.println("Enddate:" + courseData.get("enddate"));
-			System.out.println("Date:" + courseData.get("date"));
-
-			DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
-			try { 
-				course.setStartDate(new Date(df.parse(((String) courseData.get("begindate"))).getTime()));
-			} catch (Exception e) { 
+			}
+			DateFormat dateFormatter = new SimpleDateFormat("yyyy-mm-dd");
+			try {
+				course.setStartDate(new Date(dateFormatter.parse(((String) courseData.get("begindate"))).getTime()));
+			} catch (Exception e) {
 				course.setStartDate(null);
 			}
-			try { 
-				course.setEndDate(new Date(df.parse(((String) courseData.get("enddate"))).getTime()));
-			} catch (Exception e) { 
+			try {
+				course.setEndDate(new Date(dateFormatter.parse(((String) courseData.get("enddate"))).getTime()));
+			} catch (Exception e) {
 				course.setEndDate(null);
 			}
-			System.out.println("Course start date: " + course.getStartDate());
-			System.out.println("Course end date: " + course.getEndDate());
 			try {
 				course.setRythm((String) courseData.get("rythm"));
 			} catch (Exception e) {
@@ -169,82 +160,7 @@ public class CourseResource {
 			course.setLecturers(lecturers);
 			course.setModuleParts((ArrayList<String>) courseData.get("moduleparts"));
 
-			ArrayList<CourseTimesAndRooms> courseTimesAndRooms = new ArrayList<>();
-			ArrayList<Map<String, Object>> tRs = (ArrayList<Map<String, Object>>) courseData.get("roomsandtimes");
-			for (Map<String, Object> tR : tRs) {
-				CourseTimesAndRooms cTR = new CourseTimesAndRooms();
-				Object idObject = tR.get("id");
-				try {
-					cTR.setId((Integer) idObject);
-				} catch (ClassCastException e) {
-					try {
-						cTR.setId(Integer.parseInt((String) idObject));
-					} catch (NumberFormatException n) {
-						cTR.setId(null);
-					}
-				}
-				cTR.setComments((String) tR.get("roomcomments"));
-				cTR.setCourseId(course.getId());
-				cTR.setModuleId(course.getModuleNr());
-				cTR.setDayOfWeek((String) tR.get("dayofweek"));
-				Object roomCapacityObject = tR.get("roomcapacity");
-				try {
-					cTR.setRoomCapacity((Integer) roomCapacityObject);
-				} catch (ClassCastException e) {
-					try {
-						cTR.setRoomCapacity(Integer.parseInt((String) roomCapacityObject));
-					} catch (NumberFormatException n) {
-						cTR.setRoomCapacity(null);
-					}
-				}
-				cTR.setRoomLabel((String) tR.get("roomlabel"));
-
-				Times times = new Times();
-				Integer startHour, startMin, startSec = 0, endHour, endMin, endSec = 0;
-				try {
-					String[] startParts = ((String) tR.get("begintime")).split(":");
-					try {
-						startHour = Integer.parseInt(startParts[0]);
-					} catch (Exception e) {
-						startHour = null;
-					}
-					try {
-						startMin = Integer.parseInt(startParts[1]);
-					} catch (Exception e) {
-						startMin = null;
-					}
-					if (startHour != null && startMin != null) {
-						times.setStartTime(new Time(startHour, startMin, startSec));
-					}
-				} catch (NullPointerException e) {
-					times.setStartTime(null);
-				}
-				try {
-					String[] endParts = ((String) tR.get("endtime")).split(":");
-					try {
-						endHour = Integer.parseInt(endParts[0]);
-					} catch (Exception e) {
-						endHour = null;
-					}
-					try {
-						endMin = Integer.parseInt(endParts[1]);
-					} catch (Exception e) {
-						endMin = null;
-					}
-
-					if (endHour != null && endMin != null) {
-						times.setStartTime(new Time(endHour, endMin, endSec));
-					}
-				} catch (NullPointerException e) {
-					times.setEndTime(null);
-				}
-				cTR.setTimes(times);
-				// System.out.println("CTR: " + cTR);
-				courseTimesAndRooms.add(cTR);
-			}
-			// System.out.println("Before insertion: " + courseData.get("roomsandtimes"));
-			// System.out.println(courseTimesAndRooms);
-			course.setCourseTimesAndRooms(courseTimesAndRooms);
+			course.setCourseTimesAndRooms(captureTimesAndRooms(courseData, course));
 
 			if (courseId == null) {
 				CourseDao.instance.addCourse(course);
@@ -258,6 +174,71 @@ public class CourseResource {
 			return Response.status(Status.NOT_MODIFIED).build();
 
 		}
+	}
+
+	private ArrayList<CourseTimesAndRooms> captureTimesAndRooms(Map<String, Object> courseData, Course course) {
+		ArrayList<CourseTimesAndRooms> courseTimesAndRooms = new ArrayList<>();
+		ArrayList<Map<String, Object>> tRs = (ArrayList<Map<String, Object>>) courseData.get("roomsandtimes");
+		for (Map<String, Object> tR : tRs) {
+			CourseTimesAndRooms cTR = new CourseTimesAndRooms();
+			captureId(tR, cTR);
+			cTR.setComments((String) tR.get("roomcomments"));
+			cTR.setCourseId(course.getId());
+			cTR.setModuleId(course.getModuleNr());
+			cTR.setDayOfWeek((String) tR.get("dayofweek"));
+			captureRoomCapacity(tR, cTR);
+			cTR.setRoomLabel((String) tR.get("roomlabel"));
+			captureRoomTimes(tR, cTR);
+			courseTimesAndRooms.add(cTR);
+		}
+		return courseTimesAndRooms;
+	}
+
+	private void captureId(Map<String, Object> tR, CourseTimesAndRooms cTR) {
+		Object idObject = tR.get("id");
+		try {
+			cTR.setId((Integer) idObject);
+		} catch (ClassCastException e) {
+			try {
+				cTR.setId(Integer.parseInt((String) idObject));
+			} catch (NumberFormatException n) {
+				cTR.setId(null);
+			}
+		}
+	}
+
+	private void captureRoomCapacity(Map<String, Object> tR, CourseTimesAndRooms cTR) {
+		Object roomCapacityObject = tR.get("roomcapacity");
+		try {
+			cTR.setRoomCapacity((Integer) roomCapacityObject);
+		} catch (ClassCastException e) {
+			try {
+				cTR.setRoomCapacity(Integer.parseInt((String) roomCapacityObject));
+			} catch (NumberFormatException n) {
+				cTR.setRoomCapacity(null);
+			}
+		}
+	}
+
+	private void captureRoomTimes(Map<String, Object> tR, CourseTimesAndRooms cTR) {
+		Times times = new Times();
+
+		DateFormat timeFormatter = new SimpleDateFormat("HH:mm");
+
+		try {
+			times.setStartTime(new Time(timeFormatter.parse((String) tR.get("begintime")).getTime()));
+		} catch (Exception e) {
+			times.setStartTime(null);
+			e.printStackTrace();
+		}
+		try {
+			times.setEndTime(new Time(timeFormatter.parse((String) tR.get("endtime")).getTime()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			times.setEndTime(null);
+		}
+		cTR.setTimes(times);
+		System.out.println("Times: " + cTR.getTimes());
 	}
 
 	@GET
@@ -329,7 +310,8 @@ public class CourseResource {
 	@GET
 	@Path("/copycourse/moduleid/{moduleid}/courseid/{courseid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response copyPlan(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId, @Context HttpServletResponse servletResponse) throws IOException {
+	public Response copyPlan(@PathParam("moduleid") int moduleId, @PathParam("courseid") int courseId, @Context HttpServletResponse servletResponse)
+			throws IOException {
 		try {
 			CourseDao.instance.copyCourse(moduleId, courseId);
 			return Response.ok(new ResponseMessage("copied course: " + courseId, "ok")).build();
@@ -339,5 +321,9 @@ public class CourseResource {
 		}
 	}
 
-
+	public static void main(String[] args) throws ParseException {
+		DateFormat df = new SimpleDateFormat("HH:mm");
+		java.util.Date parse = df.parse("12:00");
+		System.out.println(new java.sql.Time(parse.getTime()));
+	}
 }

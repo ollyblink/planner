@@ -20,6 +20,7 @@
 				<td ng-show="isAdmin()"><a ng-click="deletePlan(plan.id)">Plan löschen</a></td>
 				<!-- 			<td><a href="printPlan.html?planid={{plan.id}}">Plan drucken</a></td> -->
 				<td ng-show="isAdmin()"><a ng-click="copyPlan(plan.id)">Plan kopieren</a></td>
+				<td ng-show="isAdmin()"><a href="rest/plans/printplan/{{plan.id}}">Plan drucken/Druckansicht</a></td>
 			</tr>
 		</table>
 	</div>
