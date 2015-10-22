@@ -51,7 +51,7 @@ insert into roles values ('Doz ex privat', 'Lehrbeauftragte/r extern (angestellt
 insert into roles values ('PD/TP', 'Privatdozierende/Titularprofessor');
 insert into roles values ('Prof', 'Professor (ausserord./ordentlich/SNF)');
 insert into roles values ('Ass', 'Semester/Teaching Assistent');
- select * from roles;
+ select * from plans;
   --add departments
 insert into departments values (1,'3G','Physical Geography Glaciology and Geomorphodynamics');
 insert into departments values (2,'2B','Physical Geography Soil Science and Biogeochemistry');
@@ -151,7 +151,7 @@ insert into courses_times_and_rooms values (4, 4, 1, '14:00:00','15:45:00', 'Mo'
 insert into courses_times_and_rooms values (5, 5, 2, '16:15:00','18:00:00', 'Mo', 18, 'Y25-H-86',null);
 insert into courses_times_and_rooms values (6, 6, 2, '15:00:00','17:00:00', 'Di', 18, 'Y25-H-86',null);
 insert into courses_times_and_rooms values (7, 7, 2, '17:15:00','19:00:00', 'Di', 18, 'Y25-H-86',null);
-
+select * from courses_times_and_rooms;
 -- --- Add some lecturers to some courses 
 insert into lecturers_to_courses values (2, 1, 1);
 insert into lecturers_to_courses values (2, 1, 2);

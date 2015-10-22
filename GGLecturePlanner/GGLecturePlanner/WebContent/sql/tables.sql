@@ -2,7 +2,7 @@
 plans,
 plans_to_modules,
 modules,
-disciplines_to_module_types,
+-- disciplines_to_module_types,
 modules_to_disciplines_to_module_types,
 module_nrs,
 modules_to_disciplines, 
