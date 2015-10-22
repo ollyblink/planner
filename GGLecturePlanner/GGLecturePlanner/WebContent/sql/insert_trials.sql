@@ -80,8 +80,7 @@ insert into employees values (7,'7','Markus', 'Egli', 'me@geo.uzh.ch', 70610,nul
 insert into employees values (8,'A1','Yvonne', 'Scheidegger', 'ys@geo.uzh.ch', null,null,false,'yscheidegger','1234', null); 
 insert into employees values (9,'A1','Oliver', 'Zihler', 'ozihler@geo.uzh.ch', null,null,false,'ozihler','1000:5b42403333393039373532:b46bf94225080ca578c99e35f318ebd879858a2e3ae1935525a3ebe4ad56322f369b8fcf1407c9a1a97f554f2c9dfeb409927ffe32c93d5bf590109236357940', null); 
 
-select * from employees;
-insert into employees_to_roles values (1, 'Prof');
+ insert into employees_to_roles values (1, 'Prof');
 insert into employees_to_roles values (2, 'Doz mit PhD');
 insert into employees_to_roles values (3, 'Prof');
 insert into employees_to_roles values (4, 'Prof');
@@ -89,17 +88,10 @@ insert into employees_to_roles values (5, 'Prof');
 insert into employees_to_roles values (6, 'Prof');
 insert into employees_to_roles values (7, 'Prof');
 insert into employees_to_roles values (8, 'Admin');
-insert into employees_to_roles values (9, 'Admin');
-select * from lecturers_to_courses;
-select * from employees;
-Update employees set password = 'password1' where id=2 and username='chuggel';
+insert into employees_to_roles values (9, 'Admin'); 
  --====PLANS 
  insert into plans values (1, 'FS', 2015);
-insert into plans values (2,'HS', 2015);
--- select * from plans;
--- select id as moduleid from modules where responsible_employee=9
--- union
--- select module_id_fk as moduleid from lecturers_to_courses where lecturer_fk=9;
+insert into plans values (2,'HS', 2015); 
 --===MODULES  
 insert into modules values (1,  1, 'PP', '', 1, 'keine (Posterfair)');
 insert into modules values (2,  1, 'MP', 'KW2', 2,'');
@@ -151,7 +143,7 @@ insert into courses_times_and_rooms values (4, 4, 1, '14:00:00','15:45:00', 'Mo'
 insert into courses_times_and_rooms values (5, 5, 2, '16:15:00','18:00:00', 'Mo', 18, 'Y25-H-86',null);
 insert into courses_times_and_rooms values (6, 6, 2, '15:00:00','17:00:00', 'Di', 18, 'Y25-H-86',null);
 insert into courses_times_and_rooms values (7, 7, 2, '17:15:00','19:00:00', 'Di', 18, 'Y25-H-86',null);
-select * from courses_times_and_rooms;
+ 
 -- --- Add some lecturers to some courses 
 insert into lecturers_to_courses values (2, 1, 1);
 insert into lecturers_to_courses values (2, 1, 2);

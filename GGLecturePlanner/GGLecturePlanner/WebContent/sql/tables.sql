@@ -15,14 +15,8 @@ courses_times_and_rooms,
 employees_to_roles,
 last_modified_log,
 course_module_parts,
-day_abbr
-cascade;
---  
- --Drop only if needed
--- drop type if exists  
--- day_abbr cascade; 
--- -- time_interval
--- cascade; 
+ 
+cascade; 
 
 --Drop only if needed
 drop table if exists
@@ -32,18 +26,7 @@ assessment_types,
 roles, 
 course_types cascade;
  
-
--- types
---========================================
--- create type time_interval as(
--- 	start_time time,
--- 	end_time time
--- );
--- 
-create table day_abbr (
-	day text primary key
-); 
--- 
+ 
 
 --End types
 --=========================================
@@ -84,8 +67,7 @@ create table roles (
 	abbr text primary key,
 	description text
 );	
-
-select * from roles;
+ 
 --End preexisting tables
 --=================================================
 --Simple tables 
@@ -213,21 +195,6 @@ create table lecturers_to_courses(
 	lecturer_fk int references employees(id) on delete cascade on update cascade,
 	foreign key (course_id_fk, module_id_fk) references courses(id, module_id_fk) on delete cascade on update cascade,
 	primary key(course_id_fk, module_id_fk, lecturer_fk)
-);
-
-
-
+); 
  -- End M to N tables and other complex tables 
--- ========================================================
- ----Last modified table
-create table last_modified_log(
-	id serial primary key,
-	table_name text not null,
-	id_in_table text not null, --as it may be an abbreviation (text) and not only an int
-	modifying_employee text not null,
-	modifying_date timestamp not null
-);
--- Tables end 
--- delete from modules_to_disciplines_to_module_types where module_id_fk=1 discipline_fk='MSc' and module_type_fk='PF';
--- select * from modules_to_disciplines_to_module_types;
--- update courses set is_max_nr_students_expected_per_group=true where module_id_fk = 9 AND id = 29;
+-- ========================================================  
